@@ -20,7 +20,7 @@ export default function QuizDetailsPage({
           <Button
             variant="ghost"
             size="sm"
-            className="-ml-2 text-muted-foreground hover:text-foreground"
+            className="-ml-2 text-muted-foreground hover:text-background"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard

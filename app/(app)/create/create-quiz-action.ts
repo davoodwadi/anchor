@@ -57,16 +57,18 @@ export async function createQuizAction(
     return { error: "Please provide a title and/or a file" };
   }
 
+  // 1. EXTRACT THE AMOUNT (Default to 10 if missing)
+  const amountRaw = formData.get("amount");
+  const amount = amountRaw ? parseInt(amountRaw.toString()) : 10;
+  const safeAmount = Math.min(Math.max(amount, 1), 20);
+
   const jsonSchema = QuizOutputSchema.toJSONSchema();
 
-  //   console.log("jsonSchema", typeof jsonSchema);
-  //   console.log("jsonSchema", JSON.stringify(jsonSchema, null, 2));
-
+  let quizId;
   try {
     const parts: any[] = [
       {
-        text: `Generate 3 multiple choice questions based on the attached document. 
-               If no document is attached, generate questions based on the topic: "${title}".`,
+        text: `Generate ${safeAmount} multiple choice questions based on the attached document.`,
       },
     ];
     if (file && file.size > 0) {
@@ -88,8 +90,6 @@ export async function createQuizAction(
     }
 
     console.log();
-    // console.log("parts", parts);
-
     // return { success: false, quizId: "some quiz id" };
 
     // --- Call Gemini with Zod Schema ---
@@ -111,8 +111,8 @@ export async function createQuizAction(
     // we run it through Zod.parse just to be 100% safe and get typed objects.
     const responseText = response.text;
     if (!responseText) throw new Error("No data returned from AI");
-    console.log("responseText", responseText);
-    console.log("responseText", typeof responseText);
+    // console.log("responseText", responseText);
+    // console.log("responseText", typeof responseText);
     const responseObject = JSON.parse(responseText);
     const parsedData = QuizOutputSchema.parse(responseObject);
 
@@ -124,6 +124,8 @@ export async function createQuizAction(
       .insert({ title, instructor_id: user.id })
       .select()
       .single();
+
+    quizId = quiz.id;
 
     if (quizError) throw new Error("DB Error: " + quizError.message);
 
@@ -152,10 +154,12 @@ export async function createQuizAction(
       // Insert Options
       await supabase.from("options").insert(optionsToInsert);
     }
-
-    return { success: true, quizId: quiz.id };
   } catch (error: any) {
     console.error("Quiz Generation Error:", error);
     return { error: error.message || "Failed to generate quiz" };
   }
+  if (quizId) {
+    redirect("/dashboard");
+  }
+  return { error: "Unknown error occurred" };
 }

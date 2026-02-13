@@ -114,7 +114,7 @@ export function QuizTaker({
         <CardContent className="flex flex-col items-center gap-8 pt-10 pb-10">
           {/* Big Score Display */}
           <div className="relative flex items-center justify-center">
-            <div className="absolute inset-0 border-4 border-muted rotate-45" />
+            {/* <div className="absolute inset-0 border-4 border-muted rotate-45" /> */}
             <div className="relative z-10 text-8xl font-black text-foreground font-heading tracking-tighter">
               {percentage}%
             </div>
@@ -192,7 +192,7 @@ export function QuizTaker({
                         ${
                           isSelected
                             ? "border-primary bg-primary/10 text-foreground"
-                            : "border-border bg-background text-muted-foreground hover:border-foreground hover:text-foreground"
+                            : "border-border bg-background text-foreground hover:border-foreground hover:text-foreground"
                         }
                       `}
                     >
