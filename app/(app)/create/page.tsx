@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  createQuizAction,
-  ActionState,
-} from "@/app/protected/create-quiz-action";
+import { createQuizAction, ActionState } from "./create-quiz-action";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -53,7 +50,7 @@ export default function CreateQuizPage() {
   // 3. Watch for success to redirect
   useEffect(() => {
     if (state.success && state.quizId) {
-      router.push("/protected");
+      router.push("/dashboard");
     }
   }, [state.success, state.quizId, router]);
 

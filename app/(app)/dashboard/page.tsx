@@ -16,7 +16,7 @@ export default function DashboardPage() {
             Manage your AI-generated assessments
           </p>
         </div>
-        <Link href="/protected/create">
+        <Link href="/create">
           <Button>
             <Plus className="w-4 h-4 mr-2" />
             Create New

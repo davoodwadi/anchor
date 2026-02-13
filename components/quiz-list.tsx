@@ -37,7 +37,7 @@ export async function QuizList() {
           <p className="text-muted-foreground mb-4">
             You haven't created any quizzes yet.
           </p>
-          <Link href="/protected/create">
+          <Link href="/create">
             <Button variant="outline">Get Started</Button>
           </Link>
         </CardContent>
@@ -48,11 +48,7 @@ export async function QuizList() {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {quizzes.map((quiz) => (
-        <Link
-          key={quiz.id}
-          href={`/protected/quiz/${quiz.id}`}
-          className="block group"
-        >
+        <Link key={quiz.id} href={`/quiz/${quiz.id}`} className="block group">
           <Card className="h-full transition-colors hover:bg-muted/50 hover:border-primary/50">
             <CardHeader>
               <CardTitle className="line-clamp-1 group-hover:text-primary transition-colors">

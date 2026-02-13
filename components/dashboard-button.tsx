@@ -8,7 +8,7 @@ export function DashboardButton() {
   const router = useRouter();
 
   const dashboard = async () => {
-    router.push("/protected");
+    router.push("/dashboard");
   };
 
   return <Button onClick={dashboard}>Dashboard</Button>;

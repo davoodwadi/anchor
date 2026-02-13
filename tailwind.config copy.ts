@@ -10,10 +10,6 @@ export default {
   ],
   theme: {
     extend: {
-      fontFamily: {
-        heading: ["var(--font-heading)", "sans-serif"],
-        body: ["var(--font-body)", "serif"],
-      },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
@@ -60,30 +56,6 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
-      },
-      // Add custom animations for the "glitch" or "flicker" effect
-      animation: {
-        // Slow down the cycle to 8 seconds so it's not constantly strobing
-        flicker: "flicker 8s infinite",
-      },
-      keyframes: {
-        flicker: {
-          // 0% to 90%: Perfectly stable (The Calm)
-          "0%, 89.999%": {
-            opacity: "1",
-          },
-          // 90% to 95%: Violent flickering (The Event)
-          "90%, 92%, 94%": {
-            opacity: "0.2",
-          },
-          "91%, 93%, 95%": {
-            opacity: "1",
-          },
-          // 95.1% to 100%: Back to stable
-          "95.001%, 100%": {
-            opacity: "1",
-          },
-        },
       },
     },
   },
