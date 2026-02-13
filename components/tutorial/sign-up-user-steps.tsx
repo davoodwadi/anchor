@@ -5,7 +5,7 @@ import { ArrowUpRight } from "lucide-react";
 export function SignUpUserSteps() {
   return (
     <ol className="flex flex-col gap-6">
-      {process.env.VERCEL_ENV === "preview" ||
+      {/* {process.env.VERCEL_ENV === "preview" ||
       process.env.VERCEL_ENV === "production" ? (
         <TutorialStep title="Set up redirect urls">
           <p>It looks like this App is hosted on Vercel.</p>
@@ -72,7 +72,7 @@ export function SignUpUserSteps() {
             Redirect URLs Docs <ArrowUpRight size={14} />
           </Link>
         </TutorialStep>
-      ) : null}
+      ) : null} */}
       <TutorialStep title="Sign up your first user">
         <p>
           Head over to the{" "}

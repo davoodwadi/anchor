@@ -64,8 +64,8 @@ export function Hero() {
           <span className="text-foreground font-bold border-b-2 border-primary">
             Anchor
           </span>{" "}
-          transforms your lecture notes into an interactive quiz. Use the power
-          of the AI to generate quizzes instantly.
+          secures your knowledge before it fades. Turn your lecture notes into
+          quizzes immediately.
         </p>
       </div>
     </div>
