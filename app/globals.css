@@ -82,6 +82,7 @@
   }
   html {
     scrollbar-gutter: stable;
+    overflow-y: scroll;
   }
   /* DEFAULT BODY: Use Lora (Serif) */
   body {

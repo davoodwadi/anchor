@@ -41,12 +41,6 @@ export const metadata: Metadata = {
     "Build interactive quizzes using Large Language Model grounded on your data",
 };
 
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   display: "swap",
-//   subsets: ["latin"],
-// });
-
 export default function RootLayout({
   children,
 }: Readonly<{

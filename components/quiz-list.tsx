@@ -11,8 +11,10 @@ import {
 import { Eye, Calendar } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { wait } from "@/lib/utils";
 
 export async function QuizList() {
+  // await wait(50000);
   const supabase = await createClient();
 
   // 1. Fetch User
@@ -49,7 +51,7 @@ export async function QuizList() {
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {quizzes.map((quiz) => (
         <Link key={quiz.id} href={`/quiz/${quiz.id}`} className="block group">
-          <Card className="h-full transition-colors hover:bg-muted/50 hover:border-primary/50">
+          <Card className="h-full transition-colors hover:bg-muted/50 hover:border-primary/50 rounded-none">
             <CardHeader>
               <CardTitle className="line-clamp-1 group-hover:text-primary transition-colors">
                 {quiz.title}

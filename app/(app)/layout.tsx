@@ -5,19 +5,25 @@ import { ThemeSwitcher } from "@/components/theme-switcher";
 import Link from "next/link";
 import { Suspense } from "react";
 import Nav from "@/app/Nav";
+import Footer from "@/app/Footer";
+
 export default function ProtectedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <main className="min-h-screen flex flex-col items-center">
-      <div className="flex-1 w-full flex flex-col gap-20 items-center">
-        <Nav />
-        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5">
-          {children}
+    <div>
+      <main className="min-h-screen flex flex-col items-center">
+        <div className="w-full flex flex-col gap-10 items-center">
+          <Nav />
+          <div className="w-full lg:w-5/6 mx-auto px-5 sm:px-6 md:px-8 flex flex-col ">
+            {children}
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+      <p className="py-12"></p>
+      <Footer />
+    </div>
   );
 }

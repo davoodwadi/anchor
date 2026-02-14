@@ -70,7 +70,7 @@ export async function QuizContent({
 
       <div className="grid gap-6">
         {quiz.questions.map((q: any, i: number) => (
-          <Card key={q.id} className="overflow-hidden">
+          <Card key={q.id} className="overflow-hidden rounded-none">
             <CardHeader className="pb-4 bg-muted/30 border-b">
               <CardTitle className="text-base font-medium leading-relaxed flex gap-3">
                 <span className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-xs">
