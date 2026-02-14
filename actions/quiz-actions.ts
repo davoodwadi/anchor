@@ -58,6 +58,7 @@ export async function submitQuiz(
       quiz_id: quizId,
       student_number: studentId,
       score: score,
+      total: questions.length,
     })
     .select()
     .single();
@@ -81,5 +82,10 @@ export async function submitQuiz(
 
   revalidatePath(`/quiz/${quizId}`); // Refresh instructor dashboard
 
-  return { success: true, score, total: questions.length };
+  return {
+    success: true,
+    score,
+    total: questions.length,
+    attempt_id: attempt.id,
+  };
 }

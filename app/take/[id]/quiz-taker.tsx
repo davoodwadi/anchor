@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { submitQuiz } from "@/actions/quiz-actions";
 import { QuizIdentity } from "./quiz-identity";
 import { QuizInvestigation } from "./quiz-investigation";
@@ -19,11 +20,13 @@ interface QuizTakerProps {
 }
 
 export function QuizTaker({ quizId, quizTitle, questions }: QuizTakerProps) {
+  const router = useRouter();
   // State Machine
-  const [view, setView] = useState<"identity" | "quiz" | "result">("identity");
+  const [view, setView] = useState<"identity" | "quiz">("identity");
 
   // Data State
   const [studentId, setStudentId] = useState("");
+  const [attemptId, setAttemptId] = useState<string | null>(null);
   const [result, setResult] = useState<{ score: number; total: number } | null>(
     null,
   );
@@ -41,7 +44,12 @@ export function QuizTaker({ quizId, quizTitle, questions }: QuizTakerProps) {
       const res = await submitQuiz(quizId, studentId, answers);
       if (res.success && res.score !== undefined) {
         setResult({ score: res.score, total: res.total || 0 });
-        setView("result");
+        // setView("result");
+        setAttemptId(res.attempt_id);
+        const params = new URLSearchParams({
+          attemptId: res.attempt_id.toString(),
+        });
+        router.push(`/take/${quizId}/results?${params.toString()}`);
       } else {
         alert("Error submitting quiz. Please try again.");
       }
@@ -52,16 +60,6 @@ export function QuizTaker({ quizId, quizTitle, questions }: QuizTakerProps) {
 
   if (view === "identity") {
     return <QuizIdentity onStart={handleStart} />;
-  }
-
-  if (view === "result" && result) {
-    return (
-      <QuizVerdict
-        score={result.score}
-        total={result.total}
-        studentId={studentId}
-      />
-    );
   }
 
   return (
