@@ -24,7 +24,7 @@ export default async function ResultPage(props: ResultPageProps) {
   console.log("attempt", attempt);
 
   return (
-    <div className="p-6 pt-12 flex items-center justify-center ">
+    <div className="min-h-screen flex items-center justify-center ">
       <QuizVerdict
         score={attempt.score}
         total={attempt.total}
