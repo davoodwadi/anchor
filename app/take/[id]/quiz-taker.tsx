@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { submitQuiz } from "./actions";
+import { submitQuiz } from "@/actions/quiz-actions";
 import { Loader2, User, Check, AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -212,7 +212,7 @@ export function QuizTaker({
         ))}
       </div>
 
-      {/* Footer / Submit */}
+      {/* Footer / Submit l/sup*/}
       <div className="pt-12 pb-24 border-t-4 border-muted">
         <Button
           onClick={handleSubmit}
