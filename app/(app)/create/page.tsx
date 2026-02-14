@@ -9,7 +9,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/card-wake";
 
 import { Input } from "@/components/ui/input";
 
@@ -36,16 +36,16 @@ export default function CreateQuizPage() {
 
   return (
     <div className="flex flex-col items-center justify-center p-4 ">
-      <Card className="w-full max-w-md border-2 border-border shadow-sm bg-zinc-950">
-        <CardHeader className="pb-4 border-b border-border bg-muted/20">
-          <CardTitle className="uppercase tracking-wide">Create Quiz</CardTitle>
+      <Card>
+        <CardHeader>
+          <CardTitle>Create Quiz</CardTitle>
 
           <CardDescription>
             Upload a PDF document. AI will generate questions for you.
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="pt-6">
+        <CardContent>
           <form action={formAction} className="space-y-6">
             <FormField label="Quiz Title" htmlFor="title">
               <Input

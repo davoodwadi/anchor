@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/card-wake";
 
 export function QuizDetailsSkeleton() {
   return (
@@ -17,10 +17,10 @@ export function QuizDetailsSkeleton() {
       <div className="grid gap-6">
         {[1, 2, 3].map((i) => (
           <Card key={i}>
-            <CardHeader className="pb-3 bg-muted/20">
+            <CardHeader>
               <Skeleton className="h-6 w-3/4" /> {/* Question Text */}
             </CardHeader>
-            <CardContent className="pt-4">
+            <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {/* 4 Options */}
                 <Skeleton className="h-12 w-full" />

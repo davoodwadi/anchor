@@ -7,7 +7,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/card-wake";
 import { Eye, Calendar } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";

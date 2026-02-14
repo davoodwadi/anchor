@@ -1,9 +1,3 @@
-import { DeployButton } from "@/components/deploy-button";
-import { EnvVarWarning } from "@/components/env-var-warning";
-import { AuthButton } from "@/components/auth-button";
-import { ThemeSwitcher } from "@/components/theme-switcher";
-import Link from "next/link";
-import { Suspense } from "react";
 import Nav from "@/app/Nav";
 import Footer from "@/app/Footer";
 

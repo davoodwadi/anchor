@@ -1,8 +1,10 @@
 import Link from "next/link";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "./logout-button";
 import { DashboardButton } from "./dashboard-button";
+import { SignupButton } from "./signup-button";
+import { LoginButton } from "./signin-button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Suspense } from "react";
 export async function AuthButton() {
@@ -11,7 +13,7 @@ export async function AuthButton() {
   const user = data?.claims;
 
   return (
-    <div className="flex items-center justify-between w-full">
+    <div className="flex items-center justify-between w-full px-2">
       {/* LEFT SIDE */}
       <div className="flex items-center gap-4">
         <ThemeSwitcher />
@@ -37,12 +39,8 @@ export async function AuthButton() {
           </>
         ) : (
           <>
-            <Button asChild variant="outline">
-              <Link href="/auth/login">Sign in</Link>
-            </Button>
-            <Button asChild variant="default">
-              <Link href="/auth/sign-up">Sign up</Link>
-            </Button>
+            <LoginButton />
+            <SignupButton />
           </>
         )}
       </div>

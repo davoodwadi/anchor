@@ -7,7 +7,7 @@ import { QuizListSkeleton } from "@/components/quiz-list-skeleton";
 
 export default function DashboardPage() {
   return (
-    <div className="container w-full p-6 ">
+    <div className="container w-full p-6 mx-auto">
       {/* 1. Static UI: Renders Instantly */}
       <div className="flex items-center justify-between mb-8">
         <div>
