@@ -3,9 +3,10 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import AttemptsList from "@/components/dashboard/AttemptsList";
 import { Skeleton } from "@/components/ui/skeleton";
-import { FileText, Calendar, Users } from "lucide-react";
+import { FileText, Calendar, Users, Link } from "lucide-react";
 import { format } from "date-fns";
-
+import { BackButton } from "@/components/back-button";
+import { ShareButton } from "./share-button";
 // 1. The Page Component is now SYNCHRONOUS.
 // It sets up the boundary and passes the Promise.
 export default function QuizPage({
@@ -39,12 +40,14 @@ async function QuizDashboard({ params }: { params: Promise<{ id: string }> }) {
   return (
     <>
       {/* --- SECTION 1: QUIZ META DATA (Alan Wake Style) --- */}
-      <div className="space-y-6">
+      <div className="flex flex-row items-center justify-between">
         <div className="flex flex-col gap-2 border-l-4 border-primary pl-6">
+          <BackButton />
           <h1 className="text-5xl font-heading font-bold uppercase tracking-tighter text-foreground">
             {quiz.title}
           </h1>
-          <div className="flex items-center gap-6 text-muted-foreground font-mono text-sm uppercase tracking-widest font-bold">
+
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-6 py-2 text-muted-foreground font-mono text-sm uppercase tracking-widest font-bold">
             <span className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
               {format(new Date(quiz.created_at), "MMM dd, yyyy")}
@@ -53,22 +56,35 @@ async function QuizDashboard({ params }: { params: Promise<{ id: string }> }) {
               <FileText className="w-4 h-4" />
               {quiz.questions.length} Questions
             </span>
-            <span className="text-primary flex items-center gap-2">
+            <span className="text-primary hidden md:flex items-center gap-2">
               <Users className="w-4 h-4" />
               Active
             </span>
           </div>
         </div>
-
         {/* Action Bar */}
-        <div className="flex gap-4 pt-4">
-          <a
+        <div className="items-center justify-center">
+          <ShareButton quizId={quiz.id} />
+          {/* <a
             href={`/take/${quiz.id}`}
             target="_blank"
-            className="inline-flex h-12 items-center justify-center bg-foreground text-background px-8 font-bold uppercase tracking-widest hover:bg-primary hover:text-primary-foreground transition-colors"
+            // className="bg-foreground px-2 py-1 text-background font-bold uppercase tracking-widest hover:bg-primary hover:text-primary-foreground transition-colors"
+            className="
+      bg-foreground text-background 
+      px-3 py-2 md:px-4 md:py-2
+      font-bold uppercase tracking-widest 
+      text-xs md:text-sm
+      hover:bg-primary hover:text-primary-foreground 
+      transition-colors
+      truncate max-w-[100px] md:max-w-none
+      flex items-center gap-2
+    "
           >
-            Open Public Link
-          </a>
+            <div className="block md:hidden">
+              <Link />
+            </div>
+            <div className="hidden md:block">Open Public Link</div>
+          </a> */}
         </div>
       </div>
 

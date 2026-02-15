@@ -31,7 +31,7 @@ export function Hero() {
           {/* 2. Padding reduced (p-2 vs p-4) */}
           <div className="p-2 md:p-4 bg-card border border-border shadow-sm group-hover:border-primary group-hover:shadow-[0_0_15px_rgba(var(--primary),0.3)] transition-all duration-500">
             {/* 3. Icon size reduced (w-8 vs w-16) */}
-            <FileText className="w-14 h-14 md:w-16 md:h-16 text-foreground group-hover:text-primary transition-colors" />
+            <FileText className="w-8 h-8 md:w-16 md:h-16 text-foreground group-hover:text-primary transition-colors" />
           </div>
           {/* 4. Text size reduced (text-xs vs text-xl) */}
           <span className="font-heading text-xs md:text-xl tracking-widest uppercase text-foreground">
@@ -42,7 +42,7 @@ export function Hero() {
         {/* The Connection */}
         <div className="relative flex items-center shrink-0">
           {/* 5. Line width reduced (w-4 vs w-16) */}
-          <span className="w-14 md:w-24 h-[1px] bg-border" />
+          <span className="w-12 md:w-24 h-[1px] bg-border" />
           {/* <Activity className="w-4 h-4 md:w-6 md:h-6 text-primary absolute left-1/2 -translate-x-1/2 " /> */}
         </div>
 
@@ -52,9 +52,9 @@ export function Hero() {
           <div className="flex flex-col items-center gap-2 md:gap-3 relative z-10">
             {/* 6. Center box scaling */}
             <div className="p-3 md:p-5 bg-background border-2 border-primary shadow-[0_0_20px_hsl(var(--primary)/0.5)] dark:shadow-[0_0_20px_hsl(var(--primary)/0.5)]">
-              <BrainCircuit className="w-16 h-16 md:w-20 md:h-20 text-primary" />
+              <BrainCircuit className="w-12 h-12 md:w-20 md:h-20 text-primary" />
             </div>
-            <span className="font-heading text-xs md:text-xl tracking-widest uppercase text-primary ">
+            <span className="font-heading text-sm md:text-xl tracking-widest uppercase text-primary ">
               LLM
             </span>
           </div>
@@ -62,13 +62,13 @@ export function Hero() {
 
         {/* Connection */}
         <div className="relative flex items-center shrink-0">
-          <span className="w-14 md:w-24 h-[1px] bg-border" />
+          <span className="w-12 md:w-24 h-[1px] bg-border" />
         </div>
 
         {/* Output */}
         <div className="flex flex-col items-center gap-2 md:gap-3 group">
           <div className="p-2 md:p-4 bg-card border border-border shadow-sm group-hover:border-primary group-hover:shadow-[0_0_15px_rgba(var(--primary),0.3)] transition-all duration-500">
-            <FileQuestion className="w-14 h-14 md:w-16 md:h-16 text-foreground group-hover:text-primary transition-colors" />
+            <FileQuestion className="w-8 h-8 md:w-16 md:h-16 text-foreground group-hover:text-primary transition-colors" />
           </div>
           <span className="font-heading text-xs md:text-xl tracking-widest uppercase text-foreground">
             Quiz

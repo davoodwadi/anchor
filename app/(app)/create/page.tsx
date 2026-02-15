@@ -35,7 +35,7 @@ export default function CreateQuizPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-4 ">
+    <div className="min-h-[calc(100vh-10rem)] flex flex-col items-center justify-center p-4 ">
       <Card>
         <CardHeader>
           <CardTitle>Create Quiz</CardTitle>

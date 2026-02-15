@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { submitQuiz } from "@/actions/quiz-actions";
 import { QuizIdentity } from "./quiz-identity";
 import { QuizInvestigation } from "./quiz-investigation";
-import { QuizVerdict } from "./quiz-verdict";
 
 export type Question = {
   id: string;
@@ -23,13 +22,8 @@ export function QuizTaker({ quizId, quizTitle, questions }: QuizTakerProps) {
   const router = useRouter();
   // State Machine
   const [view, setView] = useState<"identity" | "quiz">("identity");
-
   // Data State
   const [studentId, setStudentId] = useState("");
-  const [attemptId, setAttemptId] = useState<string | null>(null);
-  const [result, setResult] = useState<{ score: number; total: number } | null>(
-    null,
-  );
 
   // Async State
   const [isPending, startTransition] = useTransition();
@@ -43,9 +37,9 @@ export function QuizTaker({ quizId, quizTitle, questions }: QuizTakerProps) {
     startTransition(async () => {
       const res = await submitQuiz(quizId, studentId, answers);
       if (res.success && res.score !== undefined) {
-        setResult({ score: res.score, total: res.total || 0 });
+        // setResult({ score: res.score, total: res.total || 0 });
         // setView("result");
-        setAttemptId(res.attempt_id);
+        // setAttemptId(res.attempt_id);
         const params = new URLSearchParams({
           attemptId: res.attempt_id.toString(),
         });
@@ -55,8 +49,6 @@ export function QuizTaker({ quizId, quizTitle, questions }: QuizTakerProps) {
       }
     });
   };
-
-  // --- RENDER LOGIC ---
 
   if (view === "identity") {
     return <QuizIdentity onStart={handleStart} />;

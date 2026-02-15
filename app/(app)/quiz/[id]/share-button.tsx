@@ -3,6 +3,16 @@
 import { Button } from "@/components/ui/button";
 import { Check, Copy, Share2 } from "lucide-react";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
+const baseStyle = `
+      bg-foreground text-background 
+      px-3 py-2 md:px-4 md:py-2
+      font-bold uppercase tracking-widest 
+      text-xs md:text-sm
+      hover:bg-primary hover:text-primary-foreground 
+      transition-colors
+      truncate max-w-[100px] md:max-w-none
+      flex items-center gap-2`;
 
 export function ShareButton({ quizId }: { quizId: string }) {
   const [copied, setCopied] = useState(false);
@@ -21,17 +31,21 @@ export function ShareButton({ quizId }: { quizId: string }) {
       onClick={handleCopy}
       variant="outline"
       size="sm"
-      className={copied ? "text-green-600 border-green-200 bg-green-50" : ""}
+      className={
+        copied
+          ? cn(baseStyle, "text-green-600 border-green-200 bg-green-50")
+          : baseStyle
+      }
     >
       {copied ? (
         <>
-          <Check className="w-4 h-4 mr-2" />
-          Copied Link
+          <Check className="w-4 h-4" />
+          <div className="hidden md:block">Copied Link</div>
         </>
       ) : (
         <>
-          <Share2 className="w-4 h-4 mr-2" />
-          Share Quiz
+          <Share2 className="w-4 h-4" />
+          <div className="hidden md:block">Share Quiz</div>
         </>
       )}
     </Button>

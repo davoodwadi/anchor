@@ -8,7 +8,7 @@ export default function TakeQuizPage({
   params: Promise<{ id: string }>;
 }) {
   return (
-    <div className="min-h-screen bg-background p-6 md:p-12 font-body">
+    <div className="min-h-screen bg-background p-6 md:p-12 font-body flex justify-center items-center">
       <div className="max-w-4xl mx-auto">
         <Suspense fallback={<Loading />}>
           <QuizLoader params={params} />

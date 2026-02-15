@@ -19,7 +19,7 @@ export async function AuthButton() {
         <ThemeSwitcher />
 
         {user && (
-          <div className="flex flex-col leading-tight">
+          <div className="hidden md:flex md:flex-col leading-tight">
             <span className="text-sm font-semibold text-foreground">
               Welcome back
             </span>

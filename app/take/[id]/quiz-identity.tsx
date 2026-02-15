@@ -13,11 +13,12 @@ import { Button } from "@/components/ui/button";
 import { User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { cardVariants, buttonVariants } from "@/components/wake-variants";
+import { FormField } from "@/components/form-field";
 
 export function QuizIdentity({ onStart }: { onStart: (id: string) => void }) {
   const [localId, setLocalId] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (localId.trim()) onStart(localId.trim());
   };
@@ -34,22 +35,18 @@ export function QuizIdentity({ onStart }: { onStart: (id: string) => void }) {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-3">
-            <Label
-              htmlFor="student-id"
-              className="uppercase font-bold text-xs tracking-widest text-muted-foreground"
-            >
-              Agent ID / Student Number
-            </Label>
+          <FormField label="Agent ID / Student Number" htmlFor="student-id">
             <Input
               id="student-id"
-              placeholder="ENTER ID..."
+              name="title"
               value={localId}
+              placeholder="ENTER ID..."
               onChange={(e) => setLocalId(e.target.value)}
-              className="font-mono text-xl uppercase h-14 border-2 border-border rounded-none focus-visible:ring-0 focus-visible:border-primary"
               autoComplete="off"
+              required
             />
-          </div>
+          </FormField>
+
           <Button
             type="submit"
             className={buttonVariants({ variant: "large" })}
