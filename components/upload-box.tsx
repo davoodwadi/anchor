@@ -25,7 +25,7 @@ export function UploadBox({
         accept=".pdf"
         onChange={onChange}
         className="hidden"
-        required
+        // required
       />
 
       <label htmlFor="file" className={uploadBox({ state })}>
