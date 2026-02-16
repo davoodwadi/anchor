@@ -134,7 +134,7 @@ export async function generateQuizAction(
     }
   });
   // console.log("contents");
-  // console.dir(contents, { depth: null });
+  console.dir(contents, { depth: null });
   let aiResponseText = "";
   if (mode === "quiz") {
     // --- Call Gemini with Zod Schema ---

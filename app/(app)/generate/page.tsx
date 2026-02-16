@@ -1,8 +1,11 @@
 // app/generate/page.tsx
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 
 export default async function GenerateRootPage() {
+  await connection();
+
   const supabase = await createClient();
 
   // 1. Check Auth
