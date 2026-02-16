@@ -47,6 +47,8 @@ export default function GeneratePage({
   // console.log("user", user);
   // console.log("usessionIdr", sessionId);
   // console.log("initialHistory", initialHistory);
+  const lastModelResponse = history.at(-1);
+  console.log("lastModelResponse", lastModelResponse);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
@@ -104,9 +106,15 @@ export default function GeneratePage({
         newHistory.push(userMessagePart);
         setHistory(newHistory);
       } else {
+        let instruction = "";
+        if (lastModelResponse?.type === "explanation") {
+          instruction = `Explain the document in more detail. `;
+        } else {
+          instruction = `Explain the questions and choices in the quiz. `;
+        }
         const userMessagePart: GeneratedContent = {
           type: "user",
-          content: `Explain more. ` + addedConstraints,
+          content: instruction + addedConstraints,
           id: "1",
         };
         newHistory.push(userMessagePart);

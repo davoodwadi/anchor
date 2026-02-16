@@ -8,7 +8,7 @@ import { z } from "zod";
 import fs from "fs";
 import path from "path";
 
-const dummy = true;
+const dummy = false;
 const model = "gemini-3-flash-preview";
 
 type GeminiPart =
@@ -93,7 +93,7 @@ export async function generateQuizAction(
   }
   // 3. Now TypeScript knows 'lastItem' is definitely defined
   const currentUserText = lastItem.content;
-  // console.log("currentUserText", currentUserText);
+  console.log("currentUserText", currentUserText);
   const { error: userMsgError } = await supabase.from("chat_messages").insert({
     session_id: sessionId,
     user_id: user.id,
