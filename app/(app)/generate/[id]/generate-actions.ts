@@ -62,7 +62,7 @@ type GenerateInput = {
   history: GeneratedContent[];
   numQuestions: number;
   title: string;
-  fileBase64: string | null;
+  // extractedText: string | null;
 };
 const jsonSchema = QuizOutputSchema.toJSONSchema();
 
@@ -79,7 +79,7 @@ export async function generateQuizAction(
   if (dummy) {
     await wait(1000);
   }
-  const { sessionId, mode, history, numQuestions, title, fileBase64 } = input;
+  const { sessionId, mode, history, numQuestions, title } = input;
 
   const newId = crypto.randomUUID();
 
@@ -95,7 +95,7 @@ export async function generateQuizAction(
   }
   // 3. Now TypeScript knows 'lastItem' is definitely defined
   const currentUserText = lastItem.content;
-  console.log("currentUserText", currentUserText);
+  // console.log("currentUserText", currentUserText);
   const { error: userMsgError } = await supabase.from("chat_messages").insert({
     session_id: sessionId,
     user_id: user.id,
@@ -117,14 +117,14 @@ export async function generateQuizAction(
           text: item.content,
         },
       ];
-      if (item.file) {
-        userParts.push({
-          inlineData: {
-            mimeType: "application/pdf", // Explicitly force PDF to avoid octet-stream errors
-            data: item.file,
-          },
-        });
-      }
+      // if (item.file) {
+      //   userParts.push({
+      //     inlineData: {
+      //       mimeType: "application/pdf", // Explicitly force PDF to avoid octet-stream errors
+      //       data: item.file,
+      //     },
+      //   });
+      // }
       contents.push({ role: "user", parts: userParts });
     } else {
       contents.push({
@@ -134,7 +134,7 @@ export async function generateQuizAction(
     }
   });
   // console.log("contents");
-  console.dir(contents, { depth: null });
+  // console.dir(contents, { depth: null });
   let aiResponseText = "";
   if (mode === "quiz") {
     // --- Call Gemini with Zod Schema ---

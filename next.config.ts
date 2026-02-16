@@ -2,12 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
-  experimental: {
-    serverActions: {
-      bodySizeLimit: "200mb",
-    },
-    proxyClientMaxBodySize: "200mb",
-  },
+  // experimental: {
+  //   serverActions: {
+  //     bodySizeLimit: "200mb",
+  //   },
+  //   proxyClientMaxBodySize: "200mb",
+  // },
 };
 
 export default nextConfig;

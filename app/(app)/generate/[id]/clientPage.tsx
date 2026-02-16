@@ -22,10 +22,6 @@ import { Label } from "@/components/ui/label";
 import { buttonVariants } from "@/components/wake-variants";
 import { RitualLoading } from "./RitualLoading";
 
-const initialState: ActionState = {
-  success: false,
-};
-
 const noRefDoc = "Do not mention the document. ";
 // const noBullet = "Do not use bullet points in your response. ";
 const addedConstraints = noRefDoc;
@@ -43,11 +39,15 @@ export default function GeneratePage({
   const [title, setTitle] = useState("");
   const [numQuestions, setNumQuestions] = useState(3);
   const [fileName, setFileName] = useState<string | null>(null);
-  const [fileBase64, setFileBase64] = useState<string | null>(null);
+  // const [fileBase64, setFileBase64] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
   const [history, setHistory] = useState<GeneratedContent[]>(initialHistory);
+  const [extractedText, setExtractedText] = useState<string | null>(null);
+
   const [isLoading, setIsLoading] = useState(false);
 
-  // console.log("user", user);
+  // console.log("extractedText", extractedText);
+  // console.log("extractedText.length", extractedText?.length);
   // console.log("usessionIdr", sessionId);
   // console.log("initialHistory", initialHistory);
   const lastModelResponse = history.at(-1);
@@ -58,45 +58,92 @@ export default function GeneratePage({
     if (!selectedFile) return;
 
     setFileName(selectedFile.name);
+    setFile(selectedFile);
+    // console.log("selectedFile", selectedFile);
+    // console.log("extractTextClientSide");
+    const fullText = await extractTextClientSide(selectedFile);
+    // console.log("fullText", fullText);
+    // const toBase64 = (file: File) =>
+    //   new Promise<string>((resolve, reject) => {
+    //     const reader = new FileReader();
+    //     reader.readAsDataURL(file); // This creates the "data:...;base64,XXXX" string
+    //     reader.onload = () => {
+    //       const result = reader.result as string;
+    //       // Split by the comma and take the second part (the raw base64)
+    //       const base64 = result.split(",")[1];
+    //       resolve(base64);
+    //     };
+    //     reader.onerror = (error) => reject(error);
+    //   });
+    // try {
+    //   const pureBase64 = await toBase64(selectedFile);
+    //   setFileBase64(pureBase64); // Now state only contains "JVBERi..."
+    // } catch (err) {
+    //   console.error("Error reading file:", err);
+    // }
+  };
 
-    const toBase64 = (file: File) =>
-      new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file); // This creates the "data:...;base64,XXXX" string
-        reader.onload = () => {
-          const result = reader.result as string;
-          // Split by the comma and take the second part (the raw base64)
-          const base64 = result.split(",")[1];
-          resolve(base64);
-        };
-        reader.onerror = (error) => reject(error);
-      });
+  const extractTextClientSide = async (fileToParse: File) => {
+    if (!fileToParse) return;
+    setIsLoading(true);
 
     try {
-      const pureBase64 = await toBase64(selectedFile);
-      setFileBase64(pureBase64); // Now state only contains "JVBERi..."
-    } catch (err) {
-      console.error("Error reading file:", err);
+      // Dynamic import to prevent SSR server crash
+      const pdfjsLib = await import("pdfjs-dist");
+
+      // Set worker
+      pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+
+      // 4. Use the passed argument 'fileToParse', not the state 'file'
+      const arrayBuffer = await fileToParse.arrayBuffer();
+
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+      let fullText = "";
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items
+          // @ts-ignore - 'str' exists on TextItem, typescript sometimes complains about TextMarkedContent
+          .map((item) => item.str)
+          .join(" ");
+        fullText += pageText + "\n\n";
+      }
+
+      setExtractedText(fullText);
+      return fullText;
+    } catch (error) {
+      console.error("Error parsing PDF:", error);
+      alert("Failed to parse PDF.");
+    } finally {
+      setIsLoading(false);
     }
   };
   // 2. THE HANDLER
   const handleGenerate = async (mode: "quiz" | "explanation") => {
     setIsLoading(true);
     let newHistory: GeneratedContent[] = history;
-
+    // console.log("extractedText", extractedText);
+    // console.log("extractedText", typeof extractedText);
     if (history.length === 0) {
       // first request
       const userMessagePart: GeneratedContent = {
         type: "user",
         content:
           mode === "quiz"
-            ? `Generate ${numQuestions} multiple choice questions based on the attached document.`
-            : "Explain the attached document. " + addedConstraints,
+            ? `Generate ${numQuestions} multiple choice questions based on the following document.` +
+              addedConstraints +
+              "\n\n" +
+              extractedText
+            : "Explain the attached document. " +
+              addedConstraints +
+              "\n\n" +
+              extractedText,
         id: "1",
       };
-      if (fileBase64) {
-        userMessagePart.file = fileBase64;
-      }
+      // if (fileBase64) {
+      //   userMessagePart.file = fileBase64;
+      // }
       newHistory.push(userMessagePart);
       setHistory(newHistory);
     } else {
@@ -131,7 +178,6 @@ export default function GeneratePage({
       history,
       numQuestions, // <--- Passed directly
       title,
-      fileBase64,
     });
 
     if (result.success && result.data) {
