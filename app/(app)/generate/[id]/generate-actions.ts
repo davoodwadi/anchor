@@ -8,7 +8,7 @@ import { wait } from "@/lib/utils";
 import fs from "fs";
 import path from "path";
 
-const dummy = true;
+const dummy = false;
 const model = "gemini-3-flash-preview";
 
 type GeminiPart =
@@ -77,7 +77,7 @@ export async function generateQuizAction(
   if (!user) return redirect("/auth/login");
   //
   if (dummy) {
-    await wait(16000);
+    await wait(1000);
   }
   const { sessionId, mode, history, numQuestions, title, fileBase64 } = input;
 
