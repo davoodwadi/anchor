@@ -20,6 +20,8 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { buttonVariants } from "@/components/wake-variants";
+import { RitualLoading } from "./RitualLoading";
+
 const initialState: ActionState = {
   success: false,
 };
@@ -180,33 +182,38 @@ export default function GeneratePage({
           }
         })}
       </div>
+      {!isLoading && (
+        <div className="flex flex-col">
+          <div className="flex flex-row gap-2 my-4">
+            <Button
+              onClick={() => handleGenerate("explanation")}
+              disabled={isLoading}
+              className={buttonVariants({ variant: "large" })}
+            >
+              Explain
+            </Button>
 
-      <div className="flex flex-col">
-        <div className="flex flex-row gap-2 my-4">
+            <Button
+              onClick={() => handleGenerate("quiz")}
+              disabled={isLoading}
+              className={buttonVariants({ variant: "large" })}
+            >
+              Quiz
+            </Button>
+          </div>
           <Button
-            onClick={() => handleGenerate("explanation")}
+            onClick={() => redirect("/generate")}
             disabled={isLoading}
-            className={buttonVariants({ variant: "large" })}
+            className={buttonVariants({ variant: "large", color: "secondary" })}
           >
-            Explain
-          </Button>
-
-          <Button
-            onClick={() => handleGenerate("quiz")}
-            disabled={isLoading}
-            className={buttonVariants({ variant: "large" })}
-          >
-            Quiz
+            New Session
           </Button>
         </div>
-        <Button
-          onClick={() => redirect("/generate")}
-          disabled={isLoading}
-          className={buttonVariants({ variant: "large", color: "secondary" })}
-        >
-          New Session
-        </Button>
-      </div>
+      )}
+      {isLoading && <RitualLoading />}
+
+      {/* Invisible div to auto-scroll to bottom */}
+      <div id="scroll-anchor" />
     </div>
   );
 }

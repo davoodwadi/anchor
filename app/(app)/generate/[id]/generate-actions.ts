@@ -4,11 +4,11 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { GoogleGenAI } from "@google/genai";
 import { z } from "zod";
-
+import { wait } from "@/lib/utils";
 import fs from "fs";
 import path from "path";
 
-const dummy = false;
+const dummy = true;
 const model = "gemini-3-flash-preview";
 
 type GeminiPart =
@@ -76,7 +76,9 @@ export async function generateQuizAction(
   } = await supabase.auth.getUser();
   if (!user) return redirect("/auth/login");
   //
-
+  if (dummy) {
+    await wait(16000);
+  }
   const { sessionId, mode, history, numQuestions, title, fileBase64 } = input;
 
   const newId = crypto.randomUUID();
