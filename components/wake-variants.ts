@@ -12,7 +12,7 @@ export const buttonVariants = cva("", {
         //    - 'md:text-xl': Full size on desktop.
         "text-base sm:text-lg md:text-xl font-black tracking-widest uppercase",
         // Borders & Colors (Sensible defaults for a primary action)
-        "border-2 border-foreground bg-primary text-primary-foreground hover:bg-primary/90",
+        "border-0 border-foreground bg-primary text-primary-foreground hover:bg-primary/90",
 
         // The Brutalist Interaction (Shadows & Movement)
         "transition-all duration-100",

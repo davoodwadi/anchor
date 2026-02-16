@@ -7,8 +7,6 @@ export function HistoryItem({ item }: { item: GeneratedContent }) {
   // console.log("item", item);
   return (
     <div className="shadow-sm my-6">
-      <Separator className="my-4" />
-
       {/* 1. Render the Content */}
       <div className="">
         {item.type === "explanation" ? (

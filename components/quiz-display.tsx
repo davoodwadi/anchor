@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CheckCircle2, XCircle } from "lucide-react"; // Assuming you have lucide-react or similar icons
 import { cn } from "@/lib/utils"; // Assuming standard shadcn/tailwind utility
+import { Button } from "./ui/button";
 
 // 1. Define the Types based on your Zod Schema
 interface Question {
@@ -51,7 +52,7 @@ export function QuizDisplay({ data }: QuizDisplayProps) {
     <div className="flex flex-col gap-8 w-full">
       <div className="flex items-center justify-between border-b pb-4">
         <h3 className="text-xl font-bold">Quiz</h3>
-        <span className="text-sm font-medium bg-secondary px-3 py-1 rounded-full">
+        <span className="text-sm font-medium bg-secondary px-3 py-1 rounded-none">
           Score: {correctCount} / {data.questions.length}
         </span>
       </div>
@@ -66,8 +67,8 @@ export function QuizDisplay({ data }: QuizDisplayProps) {
             key={qIndex}
             className={cn(
               "p-6 rounded-lg border bg-card text-card-foreground shadow-sm transition-all",
-              isAnswered && isCorrect ? "border-green-200 bg-green-50/30" : "",
-              isAnswered && !isCorrect ? "border-red-200 bg-red-50/30" : "",
+              isAnswered && isCorrect ? " " : "",
+              isAnswered && !isCorrect ? " " : "",
             )}
           >
             <h4 className="font-semibold text-lg mb-4">
@@ -82,30 +83,30 @@ export function QuizDisplay({ data }: QuizDisplayProps) {
 
                 // Determine styling based on state
                 let optionStyle =
-                  "border-input hover:bg-accent hover:text-accent-foreground";
+                  "border-input hover:bg-accent hover:text-accent-foreground normal-case ";
 
                 if (isAnswered) {
                   if (isCorrectOption) {
                     optionStyle =
-                      "border-green-500 bg-green-100 text-green-900 ring-1 ring-green-500";
+                      "border-green-500 bg-green-100 text-green-900 ring-1 ring-green-500 normal-case";
                   } else if (isSelected && !isCorrectOption) {
                     optionStyle =
-                      "border-red-500 bg-red-100 text-red-900 ring-1 ring-red-500";
+                      "border-red-500 bg-red-100 text-red-900 ring-1 ring-red-500 normal-case";
                   } else {
-                    optionStyle = "opacity-50"; // Dim other options
+                    optionStyle = "opacity-70 normal-case"; // Dim other options
                   }
                 } else if (isSelected) {
                   optionStyle =
-                    "border-primary bg-primary/10 ring-1 ring-primary";
+                    "border-primary bg-primary/10 ring-1 ring-primary normal-case";
                 }
 
                 return (
-                  <button
+                  <Button
                     key={oIndex}
                     disabled={isAnswered}
                     onClick={() => handleSelect(qIndex, oIndex)}
                     className={cn(
-                      "flex items-center justify-between w-full p-4 text-left border rounded-md transition-all text-sm",
+                      "flex items-center justify-between w-full p-4 text-left border rounded-md transition-all text-sm text-wrap h-auto border-card bg-transparent shadow-none",
                       optionStyle,
                     )}
                   >
@@ -118,7 +119,7 @@ export function QuizDisplay({ data }: QuizDisplayProps) {
                     {isAnswered && isSelected && !isCorrectOption && (
                       <XCircle className="h-5 w-5 text-red-600" />
                     )}
-                  </button>
+                  </Button>
                 );
               })}
             </div>
