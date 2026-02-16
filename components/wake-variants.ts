@@ -10,9 +10,9 @@ export const buttonVariants = cva("", {
         //    - 'text-base': Start smaller on mobile to fit more text.
         //    - 'sm:text-lg': Scale up on tablets.
         //    - 'md:text-xl': Full size on desktop.
-        "text-base sm:text-lg md:text-xl font-black tracking-widest uppercase",
+        "text-base sm:text-lg md:text-xl  tracking-widest uppercase",
         // Borders & Colors (Sensible defaults for a primary action)
-        "border-0 border-foreground bg-primary text-primary-foreground hover:bg-primary/90",
+        "border-0 border-foreground",
 
         // The Brutalist Interaction (Shadows & Movement)
         "transition-all duration-100",
@@ -21,9 +21,14 @@ export const buttonVariants = cva("", {
         "disabled:opacity-50 disabled:shadow-none disabled:translate-x-0 disabled:translate-y-0",
       ].join(" "),
     },
+    color: {
+      default: " bg-primary text-primary-foreground hover:bg-primary/90",
+      secondary: " bg-card text-card-foreground hover:bg-card/90",
+    },
   },
   defaultVariants: {
     variant: "default",
+    color: "default",
   },
 });
 

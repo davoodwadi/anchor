@@ -6,6 +6,7 @@ import {
   GeneratedContent,
 } from "./generate-actions";
 import { User } from "@supabase/supabase-js";
+import { redirect } from "next/navigation";
 
 import { useActionState, useEffect, useState } from "react";
 import { HistoryItem } from "./history-item";
@@ -48,7 +49,7 @@ export default function GeneratePage({
   // console.log("usessionIdr", sessionId);
   // console.log("initialHistory", initialHistory);
   const lastModelResponse = history.at(-1);
-  console.log("lastModelResponse", lastModelResponse);
+  // console.log("lastModelResponse", lastModelResponse);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
@@ -180,21 +181,30 @@ export default function GeneratePage({
         })}
       </div>
 
-      <div className="flex flex-row gap-2 my-4">
-        <Button
-          onClick={() => handleGenerate("explanation")}
-          disabled={isLoading}
-          className={buttonVariants({ variant: "large" })}
-        >
-          Explain
-        </Button>
+      <div className="flex flex-col">
+        <div className="flex flex-row gap-2 my-4">
+          <Button
+            onClick={() => handleGenerate("explanation")}
+            disabled={isLoading}
+            className={buttonVariants({ variant: "large" })}
+          >
+            Explain
+          </Button>
 
+          <Button
+            onClick={() => handleGenerate("quiz")}
+            disabled={isLoading}
+            className={buttonVariants({ variant: "large" })}
+          >
+            Quiz
+          </Button>
+        </div>
         <Button
-          onClick={() => handleGenerate("quiz")}
+          onClick={() => redirect("/generate")}
           disabled={isLoading}
-          className={buttonVariants({ variant: "large" })}
+          className={buttonVariants({ variant: "large", color: "secondary" })}
         >
-          Quiz
+          New Session
         </Button>
       </div>
     </div>
