@@ -65,26 +65,6 @@ async function QuizDashboard({ params }: { params: Promise<{ id: string }> }) {
         {/* Action Bar */}
         <div className="items-center justify-center">
           <ShareButton quizId={quiz.id} />
-          {/* <a
-            href={`/take/${quiz.id}`}
-            target="_blank"
-            // className="bg-foreground px-2 py-1 text-background font-bold uppercase tracking-widest hover:bg-primary hover:text-primary-foreground transition-colors"
-            className="
-      bg-foreground text-background 
-      px-3 py-2 md:px-4 md:py-2
-      font-bold uppercase tracking-widest 
-      text-xs md:text-sm
-      hover:bg-primary hover:text-primary-foreground 
-      transition-colors
-      truncate max-w-[100px] md:max-w-none
-      flex items-center gap-2
-    "
-          >
-            <div className="block md:hidden">
-              <Link />
-            </div>
-            <div className="hidden md:block">Open Public Link</div>
-          </a> */}
         </div>
       </div>
 

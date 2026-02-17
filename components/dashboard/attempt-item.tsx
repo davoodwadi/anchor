@@ -20,6 +20,7 @@ interface AttemptItemProps {
 }
 
 export function AttemptItem({ attempt }: AttemptItemProps) {
+  // console.log("attempt", attempt);
   return (
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem

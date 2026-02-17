@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-
+import ProgressBar from "@/components/ProgressBar";
 export function RitualLoading() {
   return (
     <div className="w-full max-w-3xl py-8 px-8 bg-card border animate-in fade-in duration-300">
@@ -15,8 +15,9 @@ export function RitualLoading() {
           </div>
 
           {/* Brutalist "Redacted" Lines */}
-          <div className="h-4 w-3/4 bg-card-foreground animate-pulse delay-975" />
-          <div className="h-4 w-1/2 bg-card-foreground animate-pulse delay-950" />
+          {/* <div className="h-4 w-3/4 bg-card-foreground animate-pulse delay-975" /> */}
+          {/* <div className="h-4 w-1/2 bg-card-foreground animate-pulse delay-950" /> */}
+          <ProgressBar className="bg-white mt-4 mb-8" />
         </div>
       </div>
     </div>

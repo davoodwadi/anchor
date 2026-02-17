@@ -65,6 +65,7 @@ export default {
       animation: {
         // Slow down the cycle to 8 seconds so it's not constantly strobing
         flicker: "flicker 8s infinite",
+        "travel-snap": "travel 2.4s steps(1) infinite",
       },
       keyframes: {
         flicker: {
@@ -83,6 +84,10 @@ export default {
           "95.001%, 100%": {
             opacity: "1",
           },
+        },
+        travel: {
+          "0%": { opacity: "0.2" }, // Start Solid (Black)
+          "66.66%, 100%": { opacity: "1.0" }, // Snap to Pale at 1/3rd of the time
         },
       },
     },

@@ -16,12 +16,20 @@ export default function DashboardPage() {
             Manage your AI-generated quizzes
           </p>
         </div>
-        <Link href="/create">
-          <Button>
-            <Plus className="w-4 h-4 " />
-            <span className="ml-2 hidden md:inline">Create New</span>
-          </Button>
-        </Link>
+        <div className="flex flex-col gap-2 items-center justify-center ">
+          <Link href="/create">
+            <Button className="w-32">
+              <Plus className="w-4 h-4 " />
+              <span className="ml-2 hidden md:inline">New Quiz</span>
+            </Button>
+          </Link>
+          <Link href="/generate">
+            <Button className="w-32">
+              {/* <Plus className="w-4 h-4 " /> */}
+              <span className="ml-2 hidden md:inline">Learn</span>
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* 2. Streaming UI: Loads in background */}

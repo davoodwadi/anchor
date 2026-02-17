@@ -4,7 +4,7 @@ import {
   generateQuizAction,
   ActionState,
   GeneratedContent,
-} from "./generate-actions";
+} from "@/actions/generate-actions";
 import { User } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 
@@ -15,7 +15,6 @@ import { MarkdownComponent } from "@/components/markdown/markdown-component";
 
 import { Input } from "@/components/ui/input";
 import { UploadBox } from "@/components/upload-box";
-import { SubmitButton } from "@/components/submit-button";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -62,25 +61,6 @@ export default function GeneratePage({
     // console.log("selectedFile", selectedFile);
     // console.log("extractTextClientSide");
     const fullText = await extractTextClientSide(selectedFile);
-    // console.log("fullText", fullText);
-    // const toBase64 = (file: File) =>
-    //   new Promise<string>((resolve, reject) => {
-    //     const reader = new FileReader();
-    //     reader.readAsDataURL(file); // This creates the "data:...;base64,XXXX" string
-    //     reader.onload = () => {
-    //       const result = reader.result as string;
-    //       // Split by the comma and take the second part (the raw base64)
-    //       const base64 = result.split(",")[1];
-    //       resolve(base64);
-    //     };
-    //     reader.onerror = (error) => reject(error);
-    //   });
-    // try {
-    //   const pureBase64 = await toBase64(selectedFile);
-    //   setFileBase64(pureBase64); // Now state only contains "JVBERi..."
-    // } catch (err) {
-    //   console.error("Error reading file:", err);
-    // }
   };
 
   const extractTextClientSide = async (fileToParse: File) => {
@@ -178,6 +158,7 @@ export default function GeneratePage({
       history,
       numQuestions, // <--- Passed directly
       title,
+      sessionType: "generate",
     });
 
     if (result.success && result.data) {

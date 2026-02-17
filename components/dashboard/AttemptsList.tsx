@@ -20,7 +20,7 @@ export default async function AttemptsList({ quizId }: { quizId: string }) {
     )
     .eq("quiz_id", quizId)
     .order("submitted_at", { ascending: false });
-  // console.log("attempts", attempts);
+  // console.log("attempts.attempt_answers", attempts[0]?.attempt_answers);
   // console.log("quizId", quizId);
   // 2. Handle Empty State
   if (!attempts?.length) {

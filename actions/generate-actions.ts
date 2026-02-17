@@ -62,6 +62,7 @@ type GenerateInput = {
   history: GeneratedContent[];
   numQuestions: number;
   title: string;
+  sessionType: "generate" | "createQuiz";
   // extractedText: string | null;
 };
 const jsonSchema = QuizOutputSchema.toJSONSchema();
@@ -77,9 +78,9 @@ export async function generateQuizAction(
   if (!user) return redirect("/auth/login");
   //
   if (dummy) {
-    await wait(1000);
+    await wait(200000);
   }
-  const { sessionId, mode, history, numQuestions, title } = input;
+  const { sessionId, mode, history, numQuestions, title, sessionType } = input;
 
   const newId = crypto.randomUUID();
 
@@ -96,17 +97,21 @@ export async function generateQuizAction(
   // 3. Now TypeScript knows 'lastItem' is definitely defined
   const currentUserText = lastItem.content;
   // console.log("currentUserText", currentUserText);
-  const { error: userMsgError } = await supabase.from("chat_messages").insert({
-    session_id: sessionId,
-    user_id: user.id,
-    role: "user",
-    type: "user",
-    content: currentUserText,
-  });
+  if (sessionType === "generate") {
+    const { error: userMsgError } = await supabase
+      .from("chat_messages")
+      .insert({
+        session_id: sessionId,
+        user_id: user.id,
+        role: "user",
+        type: "user",
+        content: currentUserText,
+      });
 
-  if (userMsgError) {
-    console.error("Failed to save user message:", userMsgError);
-    return { success: false, error: "Database error saving user message" };
+    if (userMsgError) {
+      console.error("Failed to save user message:", userMsgError);
+      return { success: false, error: "Database error saving user message" };
+    }
   }
 
   history.map((item, index) => {
@@ -117,14 +122,6 @@ export async function generateQuizAction(
           text: item.content,
         },
       ];
-      // if (item.file) {
-      //   userParts.push({
-      //     inlineData: {
-      //       mimeType: "application/pdf", // Explicitly force PDF to avoid octet-stream errors
-      //       data: item.file,
-      //     },
-      //   });
-      // }
       contents.push({ role: "user", parts: userParts });
     } else {
       contents.push({
@@ -185,24 +182,75 @@ export async function generateQuizAction(
     }
   }
 
-  // update db
-  const { data: savedAiMsg, error: aiMsgError } = await supabase
-    .from("chat_messages")
-    .insert({
-      session_id: sessionId,
-      user_id: user.id,
-      role: "model",
-      type: mode, // 'quiz' or 'explanation'
-      content: aiResponseText,
-    })
-    .select()
-    .single();
+  // update db for generate
+  if (sessionType === "generate") {
+    const { data: savedAiMsg, error: aiMsgError } = await supabase
+      .from("chat_messages")
+      .insert({
+        session_id: sessionId,
+        user_id: user.id,
+        role: "model",
+        type: mode, // 'quiz' or 'explanation'
+        content: aiResponseText,
+      })
+      .select()
+      .single();
 
-  if (aiMsgError || !savedAiMsg) {
-    console.error("Failed to save AI message:", aiMsgError);
-    return { success: false, error: "Database error saving AI message" };
+    if (aiMsgError || !savedAiMsg) {
+      console.error("Failed to save AI message:", aiMsgError);
+      return { success: false, error: "Database error saving AI message" };
+    }
+    // update db
+  } else if (sessionType === "createQuiz") {
+    // update db for createQuiz
+    // --- Save to Supabase ---
+
+    // 2. Insert Questions & Options
+    // We do this sequentially or via Promise.all. Sequential is safer for debugging.
+    const parsedData = JSON.parse(aiResponseText);
+    const result = QuizOutputSchema.safeParse(parsedData);
+    if (!result.success) {
+      console.error("Schema Validation Error:", result.error.format());
+      return {
+        success: false,
+        error: "AI generated content does not match the required format",
+      };
+    }
+    const validatedData = result.data;
+
+    // 1. Create the Quiz
+    const { data: quiz, error: quizError } = await supabase
+      .from("quizzes")
+      .insert({ title, instructor_id: user.id })
+      .select()
+      .single();
+
+    if (quizError) throw new Error("DB Error: " + quizError.message);
+
+    for (const q of validatedData.questions) {
+      // Insert Question
+      const { data: questionData, error: qError } = await supabase
+        .from("questions")
+        .insert({
+          quiz_id: quiz.id,
+          question_text: q.question_text,
+        })
+        .select()
+        .single();
+
+      if (qError) continue; // Skip if a single question fails
+
+      // Prepare Options
+      const optionsToInsert = q.options.map((optText, idx) => ({
+        question_id: questionData.id,
+        option_text: optText,
+        is_correct: idx === q.correct_answer_index,
+      }));
+
+      // Insert Options
+      await supabase.from("options").insert(optionsToInsert);
+    }
   }
-  // update db
 
   return {
     success: true,
