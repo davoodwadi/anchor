@@ -1,4 +1,4 @@
-import { GeneratedContent } from "./generate-actions";
+import { GeneratedContent } from "@/actions/generate-actions";
 import { MarkdownComponent } from "@/components/markdown/markdown-component";
 import { QuizDisplay } from "@/components/quiz-display";
 import { Separator } from "@/components/ui/separator";
