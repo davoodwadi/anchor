@@ -78,7 +78,7 @@ export async function generateQuizAction(
   if (!user) return redirect("/auth/login");
   //
   if (dummy) {
-    await wait(200000);
+    await wait(2000);
   }
   const { sessionId, mode, history, numQuestions, title, sessionType } = input;
 

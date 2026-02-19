@@ -43,6 +43,7 @@ export default function GeneratePage({
   const [history, setHistory] = useState<GeneratedContent[]>(initialHistory);
   const [extractedText, setExtractedText] = useState<string | null>(null);
 
+  const [isPDFLoading, setIsPDFLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   // console.log("extractedText", extractedText);
@@ -65,7 +66,7 @@ export default function GeneratePage({
 
   const extractTextClientSide = async (fileToParse: File) => {
     if (!fileToParse) return;
-    setIsLoading(true);
+    setIsPDFLoading(true);
 
     try {
       // Dynamic import to prevent SSR server crash
@@ -96,7 +97,7 @@ export default function GeneratePage({
       console.error("Error parsing PDF:", error);
       alert("Failed to parse PDF.");
     } finally {
-      setIsLoading(false);
+      setIsPDFLoading(false);
     }
   };
   // 2. THE HANDLER
