@@ -62,7 +62,7 @@ export function QuizDisplay({ data }: QuizDisplayProps) {
           <div
             key={qIndex}
             className={cn(
-              "p-6 rounded-lg border bg-card text-card-foreground shadow-sm transition-all",
+              "p-6 border bg-card text-card-foreground shadow-sm transition-all",
               isAnswered && isCorrect ? " " : "",
               isAnswered && !isCorrect ? " " : "",
             )}
@@ -108,16 +108,15 @@ export function QuizDisplay({ data }: QuizDisplayProps) {
                 if (isAnswered) {
                   if (isCorrectOption) {
                     optionStyle =
-                      "border-green-500 bg-green-100 text-green-900 ring-1 ring-green-500 normal-case";
+                      "border-green-500 bg-green-900/10 text-foreground  normal-case";
                   } else if (isSelected && !isCorrectOption) {
                     optionStyle =
-                      "border-red-500 bg-red-100 text-red-900 ring-1 ring-red-500 normal-case";
+                      "border-red-500 bg-red-900/10 text-foreground  normal-case";
                   } else {
                     optionStyle = "opacity-70 normal-case"; // Dim other options
                   }
                 } else if (isSelected) {
-                  optionStyle =
-                    "border-primary bg-primary/10 ring-1 ring-primary normal-case";
+                  optionStyle = "border-primary bg-primary/10  normal-case";
                 }
 
                 return (
@@ -150,15 +149,15 @@ export function QuizDisplay({ data }: QuizDisplayProps) {
                 className={cn(
                   "mt-6 p-4 rounded-lg border text-sm shadow-sm transition-all animate-in fade-in zoom-in-95",
                   isCorrect
-                    ? "bg-green-50/80 border-green-200 text-green-900"
-                    : "bg-red-50/80 border-red-200 text-red-900",
+                    ? "bg-green-900/10 border-green-900 text-foreground"
+                    : "bg-red-900/10 border-red-900 text-foreground",
                 )}
               >
                 {/* Primary Explanation */}
                 <div className="flex gap-2 mb-3 ">
-                  <div className="font-bold shrink-0">
+                  {/* <div className="font-bold shrink-0">
                     {isCorrect ? "✓" : "✕"}
-                  </div>
+                  </div> */}
                   <p className="leading-relaxed">
                     {
                       question.options[question.correct_answer_index]
