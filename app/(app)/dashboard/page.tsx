@@ -8,6 +8,20 @@ import { QuizListSkeleton } from "@/components/quiz-list-skeleton";
 export default function DashboardPage() {
   return (
     <div className="container w-full p-6 mx-auto">
+      <div className="flex flex-row w-full gap-2 items-start justify-center mb-8">
+        <Link href="/create" className="w-full">
+          <Button className="w-full flex flex-row justify-between">
+            <Plus className="w-4 h-4 " />
+            <span className="ml-2 hidden md:inline">Quiz</span>
+          </Button>
+        </Link>
+        <Link href="/generate" className="w-full">
+          <Button className="w-full flex flex-row justify-between">
+            <Book className="w-4 h-4 " />
+            <span className="ml-2 hidden md:inline">Learn</span>
+          </Button>
+        </Link>
+      </div>
       {/* 1. Static UI: Renders Instantly */}
       <div className="flex items-center justify-between mb-8">
         <div>
@@ -15,20 +29,6 @@ export default function DashboardPage() {
           <p className="text-muted-foreground mt-1">
             Manage your AI-generated quizzes
           </p>
-        </div>
-        <div className="flex flex-col gap-2 items-center justify-center ">
-          <Link href="/create">
-            <Button className="w-32 flex flex-row justify-between">
-              <Plus className="w-4 h-4 " />
-              <span className="ml-2 hidden md:inline">Quiz</span>
-            </Button>
-          </Link>
-          <Link href="/generate">
-            <Button className="w-32 flex flex-row justify-between">
-              <Book className="w-4 h-4 " />
-              <span className="ml-2 hidden md:inline">Learn</span>
-            </Button>
-          </Link>
         </div>
       </div>
 

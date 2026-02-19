@@ -41,13 +41,23 @@ export default function GeneratePage({
   // const [fileBase64, setFileBase64] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [history, setHistory] = useState<GeneratedContent[]>(initialHistory);
-  const [extractedText, setExtractedText] = useState<string | null>(null);
+
+  const [extractedText, setExtractedText] = useState<string | null>(
+    initialHistory.length > 0
+      ? (initialHistory[0]?.extractedText ?? null)
+      : null,
+  );
 
   const [isPDFLoading, setIsPDFLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const disabled = history.length > 0;
 
+  // console.log("disabled", disabled);
   // console.log("extractedText", extractedText);
-  // console.log("extractedText.length", extractedText?.length);
+  // if (extractedText) {
+  //   console.log("extractedText:", extractedText.slice(0, 10) + "...");
+  // }
+  // console.log("initialHistory", initialHistory);
   // console.log("usessionIdr", sessionId);
   // console.log("initialHistory", initialHistory);
   const lastModelResponse = history.at(-1);
@@ -120,19 +130,18 @@ export default function GeneratePage({
               addedConstraints +
               "\n\n" +
               extractedText,
-        id: "1",
+        extractedText: extractedText,
+        id: "user-quiz1",
       };
-      // if (fileBase64) {
-      //   userMessagePart.file = fileBase64;
-      // }
+
       newHistory.push(userMessagePart);
       setHistory(newHistory);
     } else {
       if (mode === "quiz") {
         const userMessagePart: GeneratedContent = {
           type: "user",
-          content: `Generate ${numQuestions} multiple choice questions.`,
-          id: "1",
+          content: `Generate ${numQuestions} new multiple choice questions.`,
+          id: "user-quiz2",
         };
         newHistory.push(userMessagePart);
         setHistory(newHistory);
@@ -146,7 +155,7 @@ export default function GeneratePage({
         const userMessagePart: GeneratedContent = {
           type: "user",
           content: instruction + addedConstraints,
-          id: "1",
+          id: "exp1",
         };
         newHistory.push(userMessagePart);
         setHistory(newHistory);
@@ -192,14 +201,20 @@ export default function GeneratePage({
           type="number"
           min={1}
           max={20}
-          defaultValue={3}
+          value={numQuestions}
+          onChange={(e) => setNumQuestions(Number(e.target.value))}
           className=""
         />
       </div>
 
       <div>
         <Label htmlFor="file">Source Material (PDF)</Label>
-        <UploadBox fileName={fileName} onChange={handleFileChange} />
+        <UploadBox
+          fileName={fileName}
+          extractedText={extractedText}
+          disabled={disabled}
+          onChange={handleFileChange}
+        />
       </div>
 
       {/* 2. The History Loop */}

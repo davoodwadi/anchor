@@ -7,8 +7,9 @@ import { z } from "zod";
 import { wait } from "@/lib/utils";
 import fs from "fs";
 import path from "path";
+import { randomUUID } from "crypto";
 
-const dummy = false;
+const dummy = true;
 const model = "gemini-3-flash-preview";
 
 type GeminiPart =
@@ -43,6 +44,7 @@ export type GeneratedContent = {
   type: "explanation" | "quiz" | "user";
   content: string;
   file?: string;
+  extractedText?: string | null;
   id: string;
 };
 
@@ -96,6 +98,8 @@ export async function generateQuizAction(
   }
   // 3. Now TypeScript knows 'lastItem' is definitely defined
   const currentUserText = lastItem.content;
+  const extractedText = lastItem.extractedText;
+  // console.log("lastItem", lastItem);
   // console.log("currentUserText", currentUserText);
   if (sessionType === "generate") {
     const { error: userMsgError } = await supabase
@@ -106,6 +110,7 @@ export async function generateQuizAction(
         role: "user",
         type: "user",
         content: currentUserText,
+        extracted_text: extractedText,
       });
 
     if (userMsgError) {
@@ -131,6 +136,7 @@ export async function generateQuizAction(
     }
   });
   // console.log("contents");
+  // console.log("contents", contents);
   // console.dir(contents, { depth: null });
   let aiResponseText = "";
   if (mode === "quiz") {
@@ -184,6 +190,8 @@ export async function generateQuizAction(
 
   // update db for generate
   if (sessionType === "generate") {
+    newId = randomUUID();
+
     const { data: savedAiMsg, error: aiMsgError } = await supabase
       .from("chat_messages")
       .insert({

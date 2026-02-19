@@ -5,12 +5,16 @@ import { uploadBox } from "./ui/upload-box.styles";
 
 type UploadBoxProps = {
   fileName: string | null;
+  extractedText?: string | null;
+  disabled?: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error?: boolean;
 };
 
 export function UploadBox({
   fileName,
+  extractedText,
+  disabled,
   onChange,
   error = false,
 }: UploadBoxProps) {
@@ -25,41 +29,65 @@ export function UploadBox({
         accept=".pdf"
         onChange={onChange}
         className="hidden"
+        disabled={disabled}
         // required
       />
 
       <label htmlFor="file" className={uploadBox({ state })}>
-        {fileName ? <SelectedState fileName={fileName} /> : <EmptyState />}
+        {extractedText ? (
+          <SelectedState
+            fileName={fileName}
+            extractedText={extractedText}
+            disabled={disabled}
+          />
+        ) : (
+          <EmptyState />
+        )}
       </label>
     </div>
   );
 }
 
-function SelectedState({ fileName }: { fileName: string }) {
+function SelectedState({
+  fileName,
+  extractedText,
+  disabled,
+}: {
+  fileName?: string | null;
+  extractedText?: string | null;
+  disabled?: boolean | null;
+}) {
+  // console.log(extractedText);
   return (
-    <div className="flex flex-col items-center animate-in fade-in zoom-in-95 duration-300">
-      <div className="p-3 bg-background border-2 border-secondary rounded-full mb-2">
-        <CheckCircle2 className="w-6 h-6 text-secondary" />
-      </div>
-
-      <p className="text-sm font-bold text-foreground text-center px-4 truncate max-w-[250px]">
-        {fileName}
+    <div className="flex flex-col w-64 items-center animate-in fade-in zoom-in-95 duration-300">
+      <p className="text-sm font-bold text-foreground text-center px-4 line-clamp-3 break-all whitespace-normal">
+        {extractedText}
       </p>
 
-      <p className="text-xs text-primary uppercase font-bold mt-1 tracking-widest">
-        Click to Replace
-      </p>
+      {!disabled && (
+        <p className="text-xs text-primary uppercase font-bold mt-1 tracking-widest">
+          Click to Replace
+        </p>
+      )}
     </div>
   );
 }
 
-function EmptyState() {
+function EmptyState({ extractedText }: { extractedText?: string | null }) {
   return (
     <div className="flex flex-col items-center justify-center pt-5 pb-6 text-foreground">
-      <UploadCloud className="w-10 h-10 mb-3" />
-      <p className="text-sm uppercase font-bold tracking-wide">
-        Click to upload PDF
-      </p>
+      {extractedText ? (
+        <p className="text-sm font-bold text-foreground text-center px-4 line-clamp-3 break-all whitespace-normal">
+          {extractedText}
+        </p>
+      ) : (
+        <>
+          <UploadCloud className="w-10 h-10 mb-3" />
+          <p className="text-sm uppercase font-bold tracking-wide">
+            Click to upload PDF
+          </p>
+        </>
+      )}
     </div>
   );
 }

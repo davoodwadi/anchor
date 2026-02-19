@@ -41,7 +41,9 @@ export default async function ServerPage({
     content: msg.content,
     // If you saved file_data in DB, map it here, otherwise undefined
     file: msg.file_data || undefined,
+    extractedText: msg.extracted_text || null,
   }));
+
   // Pass the user object to the client component
   return (
     <Suspense>
