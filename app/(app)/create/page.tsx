@@ -163,7 +163,11 @@ export default function CreateQuizPage() {
 
           <div>
             <Label htmlFor="file">Source Material (PDF)</Label>
-            <UploadBox fileName={fileName} onChange={handleFileChange} />
+            <UploadBox
+              fileName={fileName}
+              extractedText={extractedText}
+              onChange={handleFileChange}
+            />
           </div>
           <div className="py-2">
             <Button

@@ -59,7 +59,7 @@ function SelectedState({
 }) {
   // console.log(extractedText);
   return (
-    <div className="flex flex-col w-64 items-center animate-in fade-in zoom-in-95 duration-300">
+    <div className="flex flex-col items-center animate-in fade-in zoom-in-95 duration-300">
       <p className="text-sm font-bold text-foreground text-center px-4 line-clamp-3 break-all whitespace-normal">
         {extractedText}
       </p>

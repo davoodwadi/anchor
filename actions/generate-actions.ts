@@ -9,7 +9,7 @@ import fs from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
 
-const dummy = true;
+const dummy = false;
 const model = "gemini-3-flash-preview";
 
 type GeminiPart =
