@@ -32,8 +32,10 @@ export async function QuizLoader({
     .single();
 
   if (error || !quiz) {
+    console.log(error);
     return notFound();
   }
+  console.log("quiz", quiz);
 
   return (
     <QuizTaker

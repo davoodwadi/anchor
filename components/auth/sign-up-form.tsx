@@ -28,6 +28,7 @@ export function SignUpForm({
   const router = useRouter();
 
   const handleSignUp = async (e: React.FormEvent) => {
+    console.log("signup requested");
     e.preventDefault();
     const supabase = createClient();
     setIsLoading(true);
@@ -47,6 +48,8 @@ export function SignUpForm({
           emailRedirectTo: `${window.location.origin}/dashboard`,
         },
       });
+      console.log("signup error: ", error);
+
       if (error) throw error;
       router.push("/auth/sign-up-success");
     } catch (error: unknown) {

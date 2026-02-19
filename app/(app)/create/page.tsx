@@ -38,6 +38,7 @@ export default function CreateQuizPage() {
   const [extractedText, setExtractedText] = useState<string | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isPDFLoading, setIsPDFLoading] = useState(false);
 
   const handleGenerate = async (mode: "quiz" | "explanation") => {
     setIsLoading(true);
@@ -90,7 +91,7 @@ export default function CreateQuizPage() {
   };
   const extractTextClientSide = async (fileToParse: File) => {
     if (!fileToParse) return;
-    setIsLoading(true);
+    setIsPDFLoading(true);
 
     try {
       // Dynamic import to prevent SSR server crash
@@ -121,7 +122,7 @@ export default function CreateQuizPage() {
       console.error("Error parsing PDF:", error);
       alert("Failed to parse PDF.");
     } finally {
-      setIsLoading(false);
+      setIsPDFLoading(false);
     }
   };
 
