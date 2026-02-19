@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Book } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import { QuizList } from "@/components/quiz-list";
@@ -25,7 +25,7 @@ export default function DashboardPage() {
           </Link>
           <Link href="/generate">
             <Button className="w-32">
-              {/* <Plus className="w-4 h-4 " /> */}
+              <Book className="w-4 h-4 " />
               <span className="ml-2 hidden md:inline">Learn</span>
             </Button>
           </Link>
