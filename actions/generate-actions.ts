@@ -82,7 +82,7 @@ export async function generateQuizAction(
   }
   const { sessionId, mode, history, numQuestions, title, sessionType } = input;
 
-  const newId = crypto.randomUUID();
+  let newId = "";
 
   //   console.log();
 
@@ -226,6 +226,9 @@ export async function generateQuizAction(
       .single();
 
     if (quizError) throw new Error("DB Error: " + quizError.message);
+
+    // new id to redirect to
+    newId = quiz.id;
 
     for (const q of validatedData.questions) {
       // Insert Question

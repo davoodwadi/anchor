@@ -73,7 +73,7 @@ export default function CreateQuizPage() {
     if (result.success && result.data) {
       // console.log("result.success", result.data);
       // Navigate to dashboard
-      router.push("/dashboard");
+      router.push(`/quiz/${result.data.id}`);
     }
 
     setIsLoading(false);
