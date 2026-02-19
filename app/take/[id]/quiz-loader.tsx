@@ -21,10 +21,13 @@ export async function QuizLoader({
       questions (
         id,
         question_text,
+        hint,
+        correct_answer_citation,
         options (
           id,
-          option_text
-        )
+          option_text,
+          option_explanation
+        ) 
       )
     `,
     )
@@ -35,7 +38,7 @@ export async function QuizLoader({
     console.log(error);
     return notFound();
   }
-  console.log("quiz", quiz);
+  // console.log("quiz", quiz);
 
   return (
     <QuizTaker

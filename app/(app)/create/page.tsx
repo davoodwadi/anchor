@@ -50,7 +50,7 @@ export default function CreateQuizPage() {
     const userMessagePart: GeneratedContent = {
       type: "user",
       content:
-        `Generate ${numQuestions} multiple choice questions based on the following document.` +
+        `Generate ${numQuestions} multiple choice questions based on the following document. ` +
         addedConstraints +
         "\n\n" +
         extractedText,

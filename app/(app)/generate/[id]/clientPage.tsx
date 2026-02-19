@@ -57,7 +57,7 @@ export default function GeneratePage({
   // if (extractedText) {
   //   console.log("extractedText:", extractedText.slice(0, 10) + "...");
   // }
-  // console.log("initialHistory", initialHistory);
+  // console.log("history", JSON.parse(history[1].content));
   // console.log("usessionIdr", sessionId);
   // console.log("initialHistory", initialHistory);
   const lastModelResponse = history.at(-1);
@@ -150,7 +150,7 @@ export default function GeneratePage({
         if (lastModelResponse?.type === "explanation") {
           instruction = `Explain the document in more detail. `;
         } else {
-          instruction = `Explain the questions and choices in the quiz. `;
+          instruction = `Explain the questions and why the correct choice is true. `;
         }
         const userMessagePart: GeneratedContent = {
           type: "user",
@@ -173,6 +173,7 @@ export default function GeneratePage({
 
     if (result.success && result.data) {
       setHistory((prev) => [...prev, result.data!]);
+      // console.log("result", result);
     }
 
     setIsLoading(false);

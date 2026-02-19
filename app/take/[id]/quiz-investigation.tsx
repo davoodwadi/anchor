@@ -35,7 +35,7 @@ export function QuizInvestigation({
   };
 
   const isComplete = Object.keys(answers).length === questions.length;
-
+  // console.log("questions", questions);
   return (
     <div className="space-y-8 max-w-3xl mx-auto">
       {/* Header */}

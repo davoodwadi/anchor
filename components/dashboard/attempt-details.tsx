@@ -15,7 +15,7 @@ export function AttemptDetails({ answers }: { answers: Answer[] }) {
   return (
     <div className="bg-muted/20 p-4 space-y-4 border-t-2 border-foreground">
       {answers.map((ans, i) => {
-        console.log("ans", ans);
+        // console.log("ans", ans);
         return (
           <div key={i} className="flex gap-4 group">
             {/* Status Indicator Line */}

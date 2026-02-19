@@ -21,9 +21,19 @@ type GeminiContent = {
   parts: GeminiPart[];
 };
 // 1. Define the Shape of the Data with Zod
+const OptionSchema = z.object({
+  option_text: z.string().describe("The text of the option"),
+  option_explanation: z
+    .string()
+    .describe("Explanation of why the option is correct/incorrect"),
+});
 const QuestionSchema = z.object({
   question_text: z.string().describe("The text of the question"),
-  options: z.array(z.string()).describe("A list of exactly 4 possible answers"),
+  hint: z.string().describe("A gentle hint that does not give away the answer"),
+  options: z
+    .array(OptionSchema)
+    .length(4)
+    .describe("A list of exactly 4 possible answers"),
   correct_answer_index: z
     .number()
     .int()
@@ -32,6 +42,11 @@ const QuestionSchema = z.object({
     .describe(
       "The index (0, 1, 2, or 3) of the correct option in the options array",
     ),
+  correct_answer_citation: z
+    .string()
+    .describe(
+      "The sentence from the original document that supports the correct option.",
+    ),
 });
 
 const QuizOutputSchema = z.object({
@@ -39,7 +54,9 @@ const QuizOutputSchema = z.object({
     .array(QuestionSchema)
     .describe("A list of multiple choice questions generated from the text"),
 });
+export type Question = z.infer<typeof QuestionSchema>;
 export type QuizData = z.infer<typeof QuizOutputSchema>;
+
 export type GeneratedContent = {
   type: "explanation" | "quiz" | "user";
   content: string;
@@ -239,27 +256,39 @@ export async function generateQuizAction(
     newId = quiz.id;
 
     for (const q of validatedData.questions) {
-      // Insert Question
+      // 1. Insert Question with Hint and Citation
       const { data: questionData, error: qError } = await supabase
         .from("questions")
         .insert({
           quiz_id: quiz.id,
           question_text: q.question_text,
+          hint: q.hint,
+          correct_answer_citation: q.correct_answer_citation, // <--- Added
         })
         .select()
         .single();
 
-      if (qError) continue; // Skip if a single question fails
+      if (qError) {
+        console.error("Error inserting question:", qError);
+        continue;
+      }
 
       // Prepare Options
-      const optionsToInsert = q.options.map((optText, idx) => ({
+      const optionsToInsert = q.options.map((opt, idx) => ({
         question_id: questionData.id,
-        option_text: optText,
+        option_text: opt.option_text, // <--- Access property
+        option_explanation: opt.option_explanation, // <--- Added
         is_correct: idx === q.correct_answer_index,
       }));
 
-      // Insert Options
-      await supabase.from("options").insert(optionsToInsert);
+      // 3. Insert Options
+      const { error: optError } = await supabase
+        .from("options")
+        .insert(optionsToInsert);
+
+      if (optError) {
+        console.error("Error inserting options:", optError);
+      }
     }
   }
 
@@ -277,17 +306,48 @@ const mockQuiz = {
         questions: [
           {
             question_text: "What is the capital of France?",
-            options: ["Berlin", "Madrid", "Paris", "Rome"],
+            hint: "It is where Eiffel Tower is.",
+            options: [
+              {
+                option_text: "Berlin",
+                option_explanation: "It is capital of Germany",
+              },
+              {
+                option_text: "Madrid",
+                option_explanation: "It is capital of Spain",
+              },
+              {
+                option_text: "Paris",
+                option_explanation: "It is correct",
+              },
+              {
+                option_text: "Rome",
+                option_explanation: "It is capital of Italy",
+              },
+            ],
             correct_answer_index: 2,
           },
           {
             question_text: "Which planet is known as the Red Planet?",
-            options: ["Earth", "Mars", "Jupiter", "Venus"],
-            correct_answer_index: 1,
-          },
-          {
-            question_text: "What is the chemical symbol for water?",
-            options: ["O2", "H2O", "CO2", "NaCl"],
+            hint: "Is it a popular travel destination!",
+            options: [
+              {
+                option_text: "Earth",
+                option_explanation: "It is known as the blue planet",
+              },
+              {
+                option_text: "Mars",
+                option_explanation: "Correct",
+              },
+              {
+                option_text: "Jupiter",
+                option_explanation: "It is not red",
+              },
+              {
+                option_text: "Venus",
+                option_explanation: "Incorrect",
+              },
+            ],
             correct_answer_index: 1,
           },
         ],
