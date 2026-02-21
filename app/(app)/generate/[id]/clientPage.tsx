@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { buttonVariants } from "@/components/shared/wake-variants";
 import { RitualLoading } from "./RitualLoading";
+import { BackButton } from "@/components/shared/back-button";
 
 const noRefDoc = "Do not mention the document. ";
 // const noBullet = "Do not use bullet points in your response. ";
@@ -167,6 +168,7 @@ export default function GeneratePage({
 
   return (
     <div className="min-h-[calc(100vh-10rem)] flex flex-col gap-10 p-4 ">
+      <BackButton href="/dashboard" />
       {/* 1. Initial Input Form (To start the conversation) */}
       <div>
         <Label htmlFor="title">Title</Label>

@@ -15,12 +15,11 @@ interface AttemptItemProps {
     score: number;
     total: number;
     submitted_at: string;
-    attempt_answers: any[];
+    quiz_responses: any[];
   };
 }
 
 export function AttemptItem({ attempt }: AttemptItemProps) {
-  // console.log("attempt", attempt);
   return (
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem
@@ -55,7 +54,7 @@ export function AttemptItem({ attempt }: AttemptItemProps) {
         </AccordionTrigger>
 
         <AccordionContent className="p-0">
-          <AttemptDetails answers={attempt.attempt_answers} />
+          <AttemptDetails answers={attempt.quiz_responses} />
         </AccordionContent>
       </AccordionItem>
     </Accordion>

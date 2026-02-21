@@ -11,16 +11,15 @@ export default async function AttemptsList({ quizId }: { quizId: string }) {
     .select(
       `
       id, student_number, score, total, submitted_at,
-      attempt_answers (
-        is_correct,
+      quiz_responses (
         question:questions ( question_text ), 
-        option:options ( option_text )
+        option:options ( option_text, is_correct )
       )
     `,
     )
     .eq("quiz_id", quizId)
     .order("submitted_at", { ascending: false });
-  // console.log("attempts.attempt_answers", attempts[0]?.attempt_answers);
+  // console.log("attempts.attempt_answers", attempts);
   // console.log("quizId", quizId);
   // 2. Handle Empty State
   if (!attempts?.length) {
