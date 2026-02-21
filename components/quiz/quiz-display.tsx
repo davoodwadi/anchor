@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, XCircle, BookOpen } from "lucide-react"; // Assuming you have lucide-react or similar icons
-import { cn } from "@/lib/utils"; // Assuming standard shadcn/tailwind utility
 import { QuizData } from "@/actions/generate-actions";
-import { optionVariants } from "@/components/shared/wake-variants";
+import { QuizQuestion } from "./quiz-question";
 
 interface QuizDisplayProps {
   data: QuizData;
@@ -13,10 +11,9 @@ interface QuizDisplayProps {
 export function QuizDisplay({ data }: QuizDisplayProps) {
   // Store user answers: { [questionIndex]: selectedOptionIndex }
   const [userAnswers, setUserAnswers] = useState<Record<number, number>>({});
-  const [showHints, setShowHints] = useState<Record<number, boolean>>({});
 
   const handleSelect = (questionIndex: number, optionIndex: number) => {
-    // Prevent changing answer if already answered (optional)
+    // Prevent changing answer if already answered
     if (userAnswers[questionIndex] !== undefined) return;
 
     setUserAnswers((prev) => ({
@@ -24,13 +21,8 @@ export function QuizDisplay({ data }: QuizDisplayProps) {
       [questionIndex]: optionIndex,
     }));
   };
-  const toggleHint = (qIndex: number) => {
-    setShowHints((prev) => ({ ...prev, [qIndex]: !prev[qIndex] }));
-  };
-  // console.log("showHints", showHints);
 
   // Calculate score
-  const answeredCount = Object.keys(userAnswers).length;
   const correctCount = data.questions.reduce((acc, question, index) => {
     return userAnswers[index] === question.correct_answer_index ? acc + 1 : acc;
   }, 0);
@@ -53,127 +45,18 @@ export function QuizDisplay({ data }: QuizDisplayProps) {
       </div>
 
       {data.questions.map((question, qIndex) => {
-        const userAnswer = userAnswers[qIndex];
-        const isAnswered = userAnswer !== undefined;
-        const isCorrect = userAnswer === question.correct_answer_index;
+        const isAnswered = userAnswers[qIndex] !== undefined;
 
         return (
-          <div
+          <QuizQuestion
             key={qIndex}
-            className={cn(
-              "p-6 border bg-card text-card-foreground shadow-sm transition-all",
-              isAnswered && isCorrect ? " " : "",
-              isAnswered && !isCorrect ? " " : "",
-            )}
-          >
-            <h4 className="font-semibold text-lg mb-4">
-              {qIndex + 1}. {question.question_text}
-            </h4>
-
-            {/* --- HINT SECTION START --- */}
-            <div className="min-h-[40px] mb-4 flex items-center">
-              {/* We use min-h to reserve space. Flex items-center keeps it tidy */}
-              {!isAnswered ? (
-                showHints[qIndex] ? (
-                  <div className="w-full text-sm bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-md italic animate-in fade-in duration-300">
-                    <strong>Hint:</strong> {question.hint}
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => toggleHint(qIndex)}
-                    className="text-xs text-muted-foreground hover:text-primary underline transition-colors"
-                  >
-                    Need a hint?
-                  </button>
-                )
-              ) : (
-                /* This empty div or 'null' inside a fixed-height parent 
-       prevents the options from jumping up when isAnswered becomes true */
-                <div className="h-[40px]" />
-              )}
-            </div>
-            {/* --- HINT SECTION END --- */}
-
-            <div className="grid gap-3">
-              {question.options.map((option, oIndex) => {
-                const isSelected = userAnswer === oIndex;
-                const isCorrectOption =
-                  question.correct_answer_index === oIndex;
-
-                // Determine styling based on state
-                let state: "default" | "selected" | "correct" | "incorrect" | "dimmed" = "default";
-
-                if (isAnswered) {
-                  if (isCorrectOption) {
-                    state = "correct";
-                  } else if (isSelected && !isCorrectOption) {
-                    state = "incorrect";
-                  } else {
-                    state = "dimmed"; // Dim other options
-                  }
-                } else if (isSelected) {
-                  state = "selected";
-                }
-
-                return (
-                  <button
-                    key={oIndex}
-                    disabled={isAnswered}
-                    onClick={() => handleSelect(qIndex, oIndex)}
-                    className={cn(
-                      optionVariants({ state }),
-                      "justify-between"
-                    )}
-                  >
-                    <span>{option.option_text}</span>
-
-                    {/* Icons for feedback */}
-                    {isAnswered && isCorrectOption && (
-                      <CheckCircle2 className="h-5 w-5 text-green-600" />
-                    )}
-                    {isAnswered && isSelected && !isCorrectOption && (
-                      <XCircle className="h-5 w-5 text-red-600" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Explanation/Feedback Text (Optional) */}
-            {isAnswered && (
-              <div
-                className={cn(
-                  "mt-6 p-4 rounded-lg border text-sm shadow-sm transition-all animate-in fade-in zoom-in-95",
-                  isCorrect
-                    ? "bg-green-900/10 border-green-900 text-foreground"
-                    : "bg-red-900/10 border-red-900 text-foreground",
-                )}
-              >
-                {/* Primary Explanation */}
-                <div className="flex gap-2 mb-3 ">
-                  {/* <div className="font-bold shrink-0">
-                    {isCorrect ? "✓" : "✕"}
-                  </div> */}
-                  <p className="leading-relaxed">
-                    {
-                      question.options[question.correct_answer_index]
-                        .option_explanation
-                    }
-                  </p>
-                </div>
-
-                {/* Citation Section */}
-                {question.correct_answer_citation && (
-                  <div className="pt-3 border-t border-current/10 flex items-start gap-2 opacity-80 italic">
-                    <BookOpen className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-                    <span className="text-xs">
-                      Source: {question.correct_answer_citation}
-                    </span>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+            question={question}
+            index={qIndex}
+            selectedOptionIndex={userAnswers[qIndex]}
+            onSelectOption={(optIndex) => handleSelect(qIndex, optIndex)}
+            isReadOnly={isAnswered}
+            showFeedback={isAnswered}
+          />
         );
       })}
     </div>

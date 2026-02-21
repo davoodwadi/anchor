@@ -47,7 +47,7 @@ export const cardVariants = cva(
 );
 
 export const optionVariants = cva(
-  "flex items-center p-4 border-2 cursor-pointer transition-all duration-200 tracking-wide text-sm md:text-base font-medium relative group w-full",
+  "flex items-center p-4 border-2 cursor-pointer transition-all duration-200 tracking-wide text-sm md:text-base font-medium relative group w-full normal-case",
   {
     variants: {
       state: {
@@ -56,7 +56,8 @@ export const optionVariants = cva(
         selected: "border-primary bg-primary/10 text-foreground",
         correct: "border-green-600 bg-green-900/10 text-foreground",
         incorrect: "border-red-600 bg-red-900/10 text-foreground",
-        disabled: "opacity-60 grayscale-[0.5] border-border bg-background text-foreground",
+        disabled:
+          "opacity-60 grayscale-[0.5] border-border bg-background text-foreground",
         dimmed: "opacity-70 border-border bg-background text-foreground",
       },
     },

@@ -6,12 +6,12 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 const baseStyle = `
       bg-foreground text-background 
-      px-3 py-2 md:px-4 md:py-2
+      px-4 py-3 md:px-4 md:py-2
       font-bold uppercase tracking-widest 
-      text-xs md:text-sm
+      text-sm
       hover:bg-primary hover:text-primary-foreground 
       transition-colors
-      truncate max-w-[100px] md:max-w-none
+      w-full md:w-auto justify-center
       flex items-center gap-2`;
 
 export function ShareButton({ quizId }: { quizId: string }) {
@@ -40,12 +40,12 @@ export function ShareButton({ quizId }: { quizId: string }) {
       {copied ? (
         <>
           <Check className="w-4 h-4" />
-          <div className="hidden md:block">Copied Link</div>
+          <div>Copied Link</div>
         </>
       ) : (
         <>
           <Share2 className="w-4 h-4" />
-          <div className="hidden md:block">Share Quiz</div>
+          <div>Share Quiz</div>
         </>
       )}
     </Button>

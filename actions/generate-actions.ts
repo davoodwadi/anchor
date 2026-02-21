@@ -21,13 +21,13 @@ type GeminiContent = {
   parts: GeminiPart[];
 };
 // 1. Define the Shape of the Data with Zod
-const OptionSchema = z.object({
+export const OptionSchema = z.object({
   option_text: z.string().describe("The text of the option"),
   option_explanation: z
     .string()
     .describe("Explanation of why the option is correct/incorrect"),
 });
-const QuestionSchema = z.object({
+export const QuestionSchema = z.object({
   question_text: z.string().describe("The text of the question"),
   hint: z.string().describe("A gentle hint that does not give away the answer"),
   options: z

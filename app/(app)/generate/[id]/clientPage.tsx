@@ -52,16 +52,7 @@ export default function GeneratePage({
   const [isLoading, setIsLoading] = useState(false);
   const disabled = history.length > 0;
 
-  // console.log("disabled", disabled);
-  // console.log("extractedText", extractedText);
-  // if (extractedText) {
-  //   console.log("extractedText:", extractedText.slice(0, 10) + "...");
-  // }
-  // console.log("history", JSON.parse(history[1].content));
-  // console.log("usessionIdr", sessionId);
-  // console.log("initialHistory", initialHistory);
   const lastModelResponse = history.at(-1);
-  // console.log("lastModelResponse", lastModelResponse);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
@@ -69,8 +60,6 @@ export default function GeneratePage({
 
     setFileName(selectedFile.name);
     setFile(selectedFile);
-    // console.log("selectedFile", selectedFile);
-    // console.log("extractTextClientSide");
     const fullText = await extractTextClientSide(selectedFile);
   };
 
@@ -114,8 +103,6 @@ export default function GeneratePage({
   const handleGenerate = async (mode: "quiz" | "explanation") => {
     setIsLoading(true);
     let newHistory: GeneratedContent[] = history;
-    // console.log("extractedText", extractedText);
-    // console.log("extractedText", typeof extractedText);
     if (history.length === 0) {
       // first request
       const userMessagePart: GeneratedContent = {

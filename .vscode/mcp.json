@@ -1,0 +1,24 @@
+{
+  "servers": {
+    "shadcn-mcp": {
+      "type": "stdio",
+      "command": "pnpm",
+      "args": [
+        "dlx",
+        "shadcn@latest",
+        "mcp",
+        "init",
+        "--client",
+        "vscode"
+      ]
+    },
+    "shadcn": {
+      "command": "npx",
+      "args": [
+        "shadcn@latest",
+        "mcp"
+      ]
+    }
+  },
+  "inputs": []
+}
