@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import ProgressBar from "@/components/shared/ProgressBar";
 export function RitualLoading() {
   return (
-    <div className="w-full mx-auto max-w-3xl py-8 px-8 bg-card border animate-in fade-in duration-300">
+    <div className="w-full mx-auto max-w-3xl py-6 px-4 sm:py-8 sm:px-6 md:px-8 bg-card border animate-in fade-in duration-300">
       <div className="flex flex-col gap-2">
         {/* The Content - A pulsing placeholder */}
         <div className="space-y-3 pl-5">

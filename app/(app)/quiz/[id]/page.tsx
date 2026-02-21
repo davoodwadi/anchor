@@ -40,12 +40,14 @@ async function QuizDashboard({ params }: { params: Promise<{ id: string }> }) {
   return (
     <>
       {/* --- SECTION 1: QUIZ META DATA (Alan Wake Style) --- */}
-      <div className="flex flex-row items-center justify-between">
-        <div className="flex flex-col gap-2 border-l-4 border-primary pl-6">
-          <BackButton />
-          <h1 className="text-5xl font-heading font-bold uppercase tracking-tighter text-foreground">
-            {quiz.title}
-          </h1>
+      <div className="flex flex-row gap-4 md:flex-row items-center md:justify-between">
+        <div className="flex flex-col gap-2 border-l-4 border-primary pl-4 md:pl-6">
+          <div className="flex flex-row">
+            <BackButton />
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold uppercase tracking-tighter text-foreground">
+              {quiz.title}
+            </h1>
+          </div>
 
           <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-6 py-2 text-muted-foreground font-mono text-sm uppercase tracking-widest font-bold">
             <span className="flex items-center gap-2">
@@ -56,14 +58,10 @@ async function QuizDashboard({ params }: { params: Promise<{ id: string }> }) {
               <FileText className="w-4 h-4" />
               {quiz.questions.length} Questions
             </span>
-            <span className="text-primary hidden md:flex items-center gap-2">
-              <Users className="w-4 h-4" />
-              Active
-            </span>
           </div>
         </div>
         {/* Action Bar */}
-        <div className="items-center justify-center">
+        <div className="flex w-full md:w-auto justify-end md:justify-center">
           <ShareButton quizId={quiz.id} />
         </div>
       </div>

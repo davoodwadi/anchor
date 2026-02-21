@@ -28,14 +28,14 @@ export function AttemptItem({ attempt }: AttemptItemProps) {
         className="border-2 border-foreground bg-background mb-2"
       >
         <AccordionTrigger className="hover:no-underline px-4 py-3 hover:bg-muted/50 transition-colors data-[state=open]:bg-foreground data-[state=open]:text-background group">
-          <div className="flex items-center justify-between w-full pr-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 w-full pr-2 sm:pr-4">
             {/* Left Side: Identity */}
-            <div className="flex items-center gap-4">
-              <div className="p-2 bg-primary/10 border border-primary group-data-[state=open]:border-background group-data-[state=open]:bg-background/20">
+            <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+              <div className="p-2 flex-shrink-0 bg-primary/10 border border-primary group-data-[state=open]:border-background group-data-[state=open]:bg-background/20">
                 <User className="w-4 h-4 text-primary group-data-[state=open]:text-background" />
               </div>
-              <div className="text-left">
-                <div className="font-heading font-bold uppercase text-lg leading-none">
+              <div className="text-left min-w-0">
+                <div className="font-heading font-bold uppercase text-base sm:text-lg leading-none truncate">
                   {attempt.student_number}
                 </div>
                 <div className="font-mono text-xs opacity-70 mt-1 uppercase">
@@ -45,7 +45,7 @@ export function AttemptItem({ attempt }: AttemptItemProps) {
             </div>
 
             {/* Right Side: Score */}
-            <div className="font-heading font-bold text-2xl">
+            <div className="font-heading font-bold text-xl sm:text-2xl flex-shrink-0">
               {attempt.score} / {attempt.total}{" "}
               <span className="text-sm font-body font-normal opacity-70">
                 pts

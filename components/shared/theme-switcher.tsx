@@ -19,7 +19,7 @@ const ThemeSwitcher = () => {
     return (
       <button
         type="button"
-        className="inline-flex items-center justify-center h-9 w-9 border-2 border-border bg-background rounded-none"
+        className="inline-flex items-center justify-center h-10 w-10 border-2 border-border bg-background rounded-none"
         aria-hidden
         disabled
       >
@@ -39,11 +39,11 @@ const ThemeSwitcher = () => {
       type="button"
       onClick={toggle}
       className={cn(
-        "inline-flex items-center justify-center h-9 w-9 rounded-none",
-        "border-2 border-border bg-background",
+        "inline-flex items-center justify-center h-10 w-10 rounded-none",
+        "border-0 border-border ",
         "uppercase tracking-wider font-bold",
         "text-muted-foreground hover:text-foreground hover:bg-muted",
-        "transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0"
+        "transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0",
       )}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       title={isDark ? "Light mode" : "Dark mode"}

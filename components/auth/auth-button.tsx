@@ -13,17 +13,17 @@ export async function AuthButton() {
   const user = data?.claims;
 
   return (
-    <div className="flex items-center justify-between w-full px-2">
+    <div className="flex items-center justify-between w-full min-w-0 px-2">
       {/* LEFT SIDE */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 min-w-0">
         <ThemeSwitcher />
 
         {user && (
-          <div className="hidden md:flex md:flex-col leading-tight">
-            <span className="text-sm font-semibold text-foreground">
+          <div className="hidden sm:flex flex-col leading-tight min-w-0 max-w-[240px]">
+            <span className="text-xs md:text-sm font-semibold text-foreground">
               Welcome back
             </span>
-            <span className="text-sm font-semibold text-foreground truncate max-w-[240px]">
+            <span className="text-xs md:text-sm font-semibold text-foreground truncate" title={user.email}>
               {user.email}
             </span>
           </div>
@@ -31,7 +31,7 @@ export async function AuthButton() {
       </div>
 
       {/* RIGHT SIDE */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-shrink-0">
         {user ? (
           <>
             <DashboardButton />

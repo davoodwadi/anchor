@@ -6,7 +6,7 @@ import { optionVariants, checkboxVariants } from "@/components/shared/wake-varia
 
 export function QuizReview({ responses }: { responses: any[] }) {
   return (
-    <div className="px-16  space-y-16">
+    <div className="px-4 sm:px-8 md:px-12 lg:px-16 space-y-8 md:space-y-16">
       <h2 className="text-2xl font-black uppercase border-b-4 border-foreground pb-2 flex items-center justify-center gap-2">
         Evidence Review
       </h2>

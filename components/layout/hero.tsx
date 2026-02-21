@@ -25,7 +25,7 @@ export function Hero() {
 
       {/* Visual Metaphor - Responsive Scaling Added */}
       {/* 1. Gap reduced from gap-6 to gap-2 on mobile */}
-      <div className="flex gap-2 md:gap-12 justify-center items-center mt-8 w-full max-w-4xl">
+      <div className="flex flex-wrap justify-center items-center gap-2 md:gap-12 mt-8 w-full max-w-4xl px-2">
         {/* Source */}
         <div className="flex flex-col items-center gap-2 md:gap-3 group">
           {/* 2. Padding reduced (p-2 vs p-4) */}

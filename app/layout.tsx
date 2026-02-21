@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 // import { Geist } from "next/font/google";
 import { Oswald, Inter, Lora } from "next/font/google";
 
@@ -7,11 +6,6 @@ const oswald = Oswald({
   variable: "--font-heading",
   weight: "700",
 });
-
-// const inter = Inter({
-//   subsets: ["latin"],
-//   variable: "--font-body",
-// });
 
 const heading = Oswald({
   subsets: ["latin"],
@@ -34,11 +28,11 @@ const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
 
-export const metadata: Metadata = {
+export const metadata = {
   metadataBase: new URL(defaultUrl),
   title: "Anchor: Quiz generation with grounded LLMs",
   description:
-    "Build interactive quizzes using Large Language Model grounded on your data",
+    "Build interactive quizzes using a Large Language Model grounded on your data",
 };
 
 export default function RootLayout({
