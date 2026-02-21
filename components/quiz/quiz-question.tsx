@@ -4,7 +4,7 @@ import { useState } from "react";
 import { CheckCircle2, XCircle, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { optionVariants } from "@/components/shared/wake-variants";
-import { type Question } from "@/actions/generate-actions";
+import { type Question } from "@/types/QuizTypes";
 import { Button } from "@/components/ui/button";
 
 interface QuizQuestionProps {

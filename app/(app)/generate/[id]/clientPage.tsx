@@ -1,10 +1,7 @@
 "use client";
 
-import {
-  generateQuizAction,
-  ActionState,
-  GeneratedContent,
-} from "@/actions/generate-actions";
+import { generateQuizAction } from "@/actions/generate-actions";
+import { ActionState, GeneratedContent } from "@/types/QuizTypes";
 import { User } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 

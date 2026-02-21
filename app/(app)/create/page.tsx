@@ -3,12 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import {
-  generateQuizAction,
-  ActionState,
-  GeneratedContent,
-} from "@/actions/generate-actions";
-
+import { generateQuizAction } from "@/actions/generate-actions";
+import { ActionState, GeneratedContent } from "@/types/QuizTypes";
 import {
   Card,
   CardContent,

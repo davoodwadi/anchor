@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { QuizData } from "@/actions/generate-actions";
+import { QuizData } from "@/types/QuizTypes";
 import { QuizQuestion } from "./quiz-question";
 
 interface QuizDisplayProps {

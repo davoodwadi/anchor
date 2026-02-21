@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { AlertCircle } from "lucide-react";
-import { type Question as BaseQuestion } from "@/actions/generate-actions";
+import { type Question as BaseQuestion } from "@/types/QuizTypes";
 import { BackButton } from "@/components/shared/back-button";
 import { QuizQuestion } from "@/components/quiz/quiz-question";
 
