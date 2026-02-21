@@ -54,6 +54,10 @@ export const optionVariants = cva(
         default:
           "border-border bg-background text-foreground hover:border-foreground hover:text-foreground",
         selected: "border-primary bg-primary/10 text-foreground",
+        correct: "border-green-600 bg-green-900/10 text-foreground",
+        incorrect: "border-red-600 bg-red-900/10 text-foreground",
+        disabled: "opacity-60 grayscale-[0.5] border-border bg-background text-foreground",
+        dimmed: "opacity-70 border-border bg-background text-foreground",
       },
     },
     defaultVariants: { state: "default" },
@@ -67,6 +71,10 @@ export const checkboxVariants = cva(
       state: {
         default: "border-muted-foreground",
         selected: "bg-primary border-primary",
+        correct: "bg-green-600 border-green-600",
+        incorrect: "bg-red-600 border-red-600",
+        disabled: "border-muted-foreground/50 opacity-50",
+        dimmed: "border-muted-foreground/50 opacity-50",
       },
     },
     defaultVariants: { state: "default" },

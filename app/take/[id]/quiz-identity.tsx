@@ -6,14 +6,14 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/card-wake";
+} from "@/components/shared/card-wake";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { User } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { cardVariants, buttonVariants } from "@/components/wake-variants";
-import { FormField } from "@/components/form-field";
+import { cardVariants, buttonVariants } from "@/components/shared/wake-variants";
+import { FormField } from "@/components/shared/form-field";
 
 export function QuizIdentity({ onStart }: { onStart: (id: string) => void }) {
   const [localId, setLocalId] = useState("");

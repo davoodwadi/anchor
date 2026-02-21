@@ -1,4 +1,4 @@
-import { formField } from "./ui/form-field.styles";
+import { formField } from "@/components/ui/form-field.styles";
 
 type Props = {
   label: string;

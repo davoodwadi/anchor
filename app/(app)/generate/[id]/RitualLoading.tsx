@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import ProgressBar from "@/components/ProgressBar";
+import ProgressBar from "@/components/shared/ProgressBar";
 export function RitualLoading() {
   return (
     <div className="w-full mx-auto max-w-3xl py-8 px-8 bg-card border animate-in fade-in duration-300">

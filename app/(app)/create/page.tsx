@@ -15,13 +15,13 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/card-wake";
+} from "@/components/shared/card-wake";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { buttonVariants } from "@/components/wake-variants";
-import { UploadBox } from "@/components/upload-box";
-import ProgressBar from "@/components/ProgressBar";
+import { buttonVariants } from "@/components/shared/wake-variants";
+import { UploadBox } from "@/components/shared/upload-box";
+import ProgressBar from "@/components/shared/ProgressBar";
 const noRefDoc = "Do not mention the document. ";
 // const noBullet = "Do not use bullet points in your response. ";
 const addedConstraints = noRefDoc;

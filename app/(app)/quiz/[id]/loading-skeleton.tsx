@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardHeader } from "@/components/card-wake";
+import { Card, CardContent, CardHeader } from "@/components/shared/card-wake";
 
 export function QuizDetailsSkeleton() {
   return (

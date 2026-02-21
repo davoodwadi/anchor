@@ -2,7 +2,7 @@
 
 import { CheckCircle2, XCircle, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { optionVariants, checkboxVariants } from "@/components/wake-variants";
+import { optionVariants, checkboxVariants } from "@/components/shared/wake-variants";
 
 export function QuizReview({ responses }: { responses: any[] }) {
   return (
@@ -41,32 +41,19 @@ export function QuizReview({ responses }: { responses: any[] }) {
                 const isCorrect = opt.is_correct;
 
                 // Set the variant state
-                let state: "default" | "selected" =
-                  isSelected || isCorrect ? "selected" : "default";
+                let state: "default" | "selected" | "correct" | "incorrect" | "disabled" | "dimmed" = "default";
+                if (isCorrect) {
+                  state = "correct";
+                } else if (isSelected && !isCorrect) {
+                  state = "incorrect";
+                } else {
+                  state = "disabled";
+                }
 
                 return (
                   <div key={opt.id} className="relative">
-                    <div
-                      className={cn(
-                        optionVariants({ state }),
-                        isCorrect && "border-green-600 bg-green-900/10 ",
-                        isSelected &&
-                          !isCorrect &&
-                          "border-red-600 bg-red-900/10 ",
-                        !isCorrect &&
-                          !isSelected &&
-                          "opacity-60 grayscale-[0.5]",
-                      )}
-                    >
-                      <div
-                        className={checkboxVariants({
-                          state: isCorrect
-                            ? "selected"
-                            : isSelected
-                              ? "selected"
-                              : "default",
-                        })}
-                      />
+                    <div className={optionVariants({ state })}>
+                      <div className={checkboxVariants({ state })} />
                       <span className="flex-1 font-bold">
                         {opt.option_text}
                       </span>

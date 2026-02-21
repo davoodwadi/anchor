@@ -10,7 +10,7 @@ import {
   optionVariants,
   checkboxVariants,
   buttonVariants,
-} from "@/components/wake-variants";
+} from "@/components/shared/wake-variants";
 import type { Question } from "./quiz-taker";
 
 interface QuizInvestigationProps {
@@ -110,12 +110,12 @@ export function QuizInvestigation({
           )}
         </Button>
 
-        {!isComplete && (
+        {!isComplete ? (
           <div className="mt-4 flex items-center justify-center text-destructive font-bold uppercase tracking-wider gap-2">
             <AlertCircle className="w-5 h-5" />
             <span>Complete all fields before submission</span>
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );

@@ -1,21 +1,20 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server"; // Updated path per instructions
-import { revalidatePath } from "next/cache";
+import { createClient } from "@/lib/supabase/server";
 
 export async function submitQuiz(
   quizId: string,
   studentId: string,
   submittedAnswers: Record<string, string>, // { question_id: option_id }
 ) {
-  console.log("submittedAnswers", submittedAnswers);
   const supabase = await createClient();
 
-  if (!quizId || !studentId) {
+  // Anonymous submission: no auth. We validate inputs and that the quiz exists (via questions fetch below).
+  if (!quizId?.trim() || !studentId?.trim()) {
     return { success: false, error: "Missing required fields." };
   }
 
-  // 1. Fetch the CORRECT answers
+  // 1. Fetch the CORRECT answers (also validates that the quiz exists and has questions)
   const { data: questions, error } = await supabase
     .from("questions")
     .select(
@@ -26,7 +25,9 @@ export async function submitQuiz(
     )
     .eq("quiz_id", quizId);
 
-  if (error || !questions) return { error: "Failed to grade quiz." };
+  if (error || !questions?.length) {
+    return { success: false, error: "Quiz not found or has no questions." };
+  }
 
   // 2. Calculate Score
   let score = 0;
@@ -50,7 +51,7 @@ export async function submitQuiz(
 
   if (saveError || !attempt) {
     console.error(saveError);
-    return { error: "Failed to save results." };
+    return { success: false, error: "Failed to save results." };
   }
 
   // 4. Save individual responses for the Review Page

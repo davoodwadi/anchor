@@ -3,9 +3,8 @@
 import { useState } from "react";
 import { CheckCircle2, XCircle, BookOpen } from "lucide-react"; // Assuming you have lucide-react or similar icons
 import { cn } from "@/lib/utils"; // Assuming standard shadcn/tailwind utility
-import { Button } from "./ui/button";
-import { QuizData, Question } from "@/actions/generate-actions";
-// 1. Define the Types based on your Zod Schema
+import { QuizData } from "@/actions/generate-actions";
+import { optionVariants } from "@/components/shared/wake-variants";
 
 interface QuizDisplayProps {
   data: QuizData;
@@ -102,31 +101,28 @@ export function QuizDisplay({ data }: QuizDisplayProps) {
                   question.correct_answer_index === oIndex;
 
                 // Determine styling based on state
-                let optionStyle =
-                  "border-input hover:bg-accent hover:text-accent-foreground normal-case ";
+                let state: "default" | "selected" | "correct" | "incorrect" | "dimmed" = "default";
 
                 if (isAnswered) {
                   if (isCorrectOption) {
-                    optionStyle =
-                      "border-green-500 bg-green-900/10 text-foreground  normal-case";
+                    state = "correct";
                   } else if (isSelected && !isCorrectOption) {
-                    optionStyle =
-                      "border-red-500 bg-red-900/10 text-foreground  normal-case";
+                    state = "incorrect";
                   } else {
-                    optionStyle = "opacity-70 normal-case"; // Dim other options
+                    state = "dimmed"; // Dim other options
                   }
                 } else if (isSelected) {
-                  optionStyle = "border-primary bg-primary/10  normal-case";
+                  state = "selected";
                 }
 
                 return (
-                  <Button
+                  <button
                     key={oIndex}
                     disabled={isAnswered}
                     onClick={() => handleSelect(qIndex, oIndex)}
                     className={cn(
-                      "flex items-center justify-between w-full p-4 text-left border rounded-md transition-all text-sm text-wrap h-auto border-card bg-transparent shadow-none",
-                      optionStyle,
+                      optionVariants({ state }),
+                      "justify-between"
                     )}
                   >
                     <span>{option.option_text}</span>
@@ -138,7 +134,7 @@ export function QuizDisplay({ data }: QuizDisplayProps) {
                     {isAnswered && isSelected && !isCorrectOption && (
                       <XCircle className="h-5 w-5 text-red-600" />
                     )}
-                  </Button>
+                  </button>
                 );
               })}
             </div>

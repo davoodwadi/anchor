@@ -3,8 +3,8 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/card-wake";
-import { cardVariants } from "@/components/wake-variants";
+} from "@/components/shared/card-wake";
+import { cardVariants } from "@/components/shared/wake-variants";
 
 interface QuizVerdictProps {
   score: number;

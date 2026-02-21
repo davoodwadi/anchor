@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Plus, Book } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
-import { QuizList } from "@/components/quiz-list";
-import { QuizListSkeleton } from "@/components/quiz-list-skeleton";
+import { QuizList } from "@/components/quiz/quiz-list";
+import { QuizListSkeleton } from "@/components/quiz/quiz-list-skeleton";
 
 export default function DashboardPage() {
   return (

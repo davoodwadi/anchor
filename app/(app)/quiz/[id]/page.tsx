@@ -5,7 +5,7 @@ import AttemptsList from "@/components/dashboard/AttemptsList";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FileText, Calendar, Users, Link } from "lucide-react";
 import { format } from "date-fns";
-import { BackButton } from "@/components/back-button";
+import { BackButton } from "@/components/shared/back-button";
 import { ShareButton } from "./share-button";
 // 1. The Page Component is now SYNCHRONOUS.
 // It sets up the boundary and passes the Promise.

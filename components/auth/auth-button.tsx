@@ -5,7 +5,7 @@ import { LogoutButton } from "./logout-button";
 import { DashboardButton } from "./dashboard-button";
 import { SignupButton } from "./signup-button";
 import { LoginButton } from "./signin-button";
-import { ThemeSwitcher } from "@/components/theme-switcher";
+import { ThemeSwitcher } from "@/components/shared/theme-switcher";
 import { Suspense } from "react";
 export async function AuthButton() {
   const supabase = await createClient();

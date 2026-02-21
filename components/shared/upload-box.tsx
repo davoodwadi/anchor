@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckCircle2, UploadCloud } from "lucide-react";
-import { uploadBox } from "./ui/upload-box.styles";
+import { uploadBox } from "@/components/ui/upload-box.styles";
 
 type UploadBoxProps = {
   fileName: string | null;

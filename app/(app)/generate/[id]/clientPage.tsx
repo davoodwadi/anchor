@@ -14,11 +14,11 @@ import { HistoryItem } from "./history-item";
 import { MarkdownComponent } from "@/components/markdown/markdown-component";
 
 import { Input } from "@/components/ui/input";
-import { UploadBox } from "@/components/upload-box";
+import { UploadBox } from "@/components/shared/upload-box";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { buttonVariants } from "@/components/wake-variants";
+import { buttonVariants } from "@/components/shared/wake-variants";
 import { RitualLoading } from "./RitualLoading";
 
 const noRefDoc = "Do not mention the document. ";
