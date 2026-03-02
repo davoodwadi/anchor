@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { CheckCircle2, UploadCloud } from "lucide-react";
 import { uploadBox } from "@/components/ui/upload-box.styles";
 
@@ -8,6 +9,7 @@ type UploadBoxProps = {
   extractedText?: string | null;
   disabled?: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onFileSelect?: (file: File) => void;
   error?: boolean;
 };
 
@@ -16,9 +18,41 @@ export function UploadBox({
   extractedText,
   disabled,
   onChange,
+  onFileSelect,
   error = false,
 }: UploadBoxProps) {
+  const [isDragging, setIsDragging] = useState(false);
   const state = error ? "error" : fileName ? "selected" : "empty";
+
+  const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    if (disabled) return;
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (disabled) return;
+
+    const droppedFile = e.dataTransfer.files?.[0] || null;
+    if (!droppedFile) return;
+
+    if (onFileSelect) {
+      onFileSelect(droppedFile);
+      return;
+    }
+
+    // Fallback: mimic an input change event for existing consumers.
+    onChange(
+      { target: { files: [droppedFile] } } as unknown as React.ChangeEvent<HTMLInputElement>,
+    );
+  };
 
   return (
     <div className="relative">
@@ -26,14 +60,20 @@ export function UploadBox({
         id="file"
         name="file"
         type="file"
-        accept=".pdf"
+        accept=".pdf,.md,.markdown,text/markdown"
         onChange={onChange}
         className="hidden"
         disabled={disabled}
         // required
       />
 
-      <label htmlFor="file" className={uploadBox({ state })}>
+      <label
+        htmlFor="file"
+        className={`${uploadBox({ state })} ${isDragging ? "ring-2 ring-primary ring-offset-2" : ""}`}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
         {extractedText ? (
           <SelectedState
             fileName={fileName}
@@ -84,7 +124,7 @@ function EmptyState({ extractedText }: { extractedText?: string | null }) {
         <>
           <UploadCloud className="w-10 h-10 mb-3" />
           <p className="text-sm uppercase font-bold tracking-wide">
-            Click to upload PDF
+            Click or drag and drop PDF or Markdown
           </p>
         </>
       )}

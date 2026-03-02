@@ -35,6 +35,8 @@ export default function CreateQuizPage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isPDFLoading, setIsPDFLoading] = useState(false);
+  // console.log("extractedText", extractedText);
+  // console.log("numQuestions", numQuestions);
 
   const handleGenerate = async (mode: "quiz" | "explanation") => {
     setIsLoading(true);
@@ -79,11 +81,36 @@ export default function CreateQuizPage() {
     const selectedFile = e.target.files?.[0] || null;
     if (!selectedFile) return;
 
+    await processSelectedFile(selectedFile);
+  };
+
+  const processSelectedFile = async (selectedFile: File) => {
+    if (!selectedFile) return;
+
     setFileName(selectedFile.name);
     setFile(selectedFile);
-    // console.log("selectedFile", selectedFile);
-    // console.log("extractTextClientSide");
-    const fullText = await extractTextClientSide(selectedFile);
+    setExtractedText(null);
+
+    const isPdf =
+      selectedFile.type === "application/pdf" ||
+      selectedFile.name.toLowerCase().endsWith(".pdf");
+    const isMarkdown =
+      selectedFile.type === "text/markdown" ||
+      selectedFile.name.toLowerCase().endsWith(".md") ||
+      selectedFile.name.toLowerCase().endsWith(".markdown");
+
+    if (isMarkdown) {
+      const rawMarkdown = await selectedFile.text();
+      setExtractedText(rawMarkdown);
+      return;
+    }
+
+    if (isPdf) {
+      await extractTextClientSide(selectedFile);
+      return;
+    }
+
+    alert("Unsupported file type. Please upload a PDF or Markdown file.");
   };
   const extractTextClientSide = async (fileToParse: File) => {
     if (!fileToParse) return;
@@ -129,7 +156,8 @@ export default function CreateQuizPage() {
           <CardTitle>Create Quiz</CardTitle>
 
           <CardDescription>
-            Upload a PDF document. AI will generate questions for you.
+            Upload a PDF or Markdown document. AI will generate questions for
+            you.
           </CardDescription>
         </CardHeader>
 
@@ -152,17 +180,21 @@ export default function CreateQuizPage() {
               min={1}
               max={20}
               value={numQuestions} // Link to state
-              onChange={(e) => setNumQuestions(parseInt(e.target.value))} // Update state
+              onChange={(e) => {
+                const parsedValue = parseInt(e.target.value, 10);
+                setNumQuestions(Number.isNaN(parsedValue) ? 1 : parsedValue);
+              }} // Update state
               className=""
             />
           </div>
 
           <div>
-            <Label htmlFor="file">Source Material (PDF)</Label>
+            <Label htmlFor="file">Source Material (PDF or Markdown)</Label>
             <UploadBox
               fileName={fileName}
               extractedText={extractedText}
               onChange={handleFileChange}
+              onFileSelect={processSelectedFile}
             />
           </div>
           <div className="py-2">
