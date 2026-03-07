@@ -51,22 +51,22 @@ export function QuizInvestigation({
       {/* Questions List */}
       <div className="space-y-16">
         {questions.map((q, i) => (
-          <div key={q.id} className="space-y-6 relative pl-8 md:pl-0">
+          <div
+            key={q.id}
+            className="bg-background/40 backdrop-blur-md p-8 space-y-6 "
+          >
             {/* Mobile Vertical Line */}
             <div className="absolute left-0 top-0 bottom-0 w-1 bg-border md:hidden" />
 
             <div className="flex gap-6">
-              <span className="hidden md:flex flex-shrink-0 w-12 h-12 bg-foreground text-background items-center justify-center font-heading text-2xl font-bold">
-                {String(i + 1).padStart(2, "0")}
-              </span>
               <h3 className="text-xl md:text-2xl font-bold leading-tight pt-1">
-                {q.question_text}
+                {String(i + 1)}. {q.question_text}
               </h3>
             </div>
 
             <RadioGroup
               onValueChange={(val) => handleSelect(q.id, val)}
-              className="pl-4 md:pl-[4.5rem] space-y-4"
+              className="space-y-4"
             >
               {q.options.map((opt) => {
                 const isSelected = answers[q.id] === opt.id;
@@ -80,9 +80,12 @@ export function QuizInvestigation({
                     />
                     <Label
                       htmlFor={opt.id}
-                      className={optionVariants({ state })}
+                      className={cn(
+                        optionVariants({ state }),
+                        "bg-background/50",
+                      )}
                     >
-                      <div className={checkboxVariants({ state })} />
+                      <div className={cn(checkboxVariants({ state }), "")} />
                       {opt.option_text}
                     </Label>
                   </div>

@@ -1,10 +1,6 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/shared/card-wake";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cardVariants } from "@/components/shared/wake-variants";
+import { cn } from "@/lib/utils";
 
 interface QuizVerdictProps {
   score: number;
@@ -20,7 +16,7 @@ export default function QuizVerdict({
   const percentage = Math.round((score / total) * 100);
 
   return (
-    <Card className={cardVariants({ variant: "results" })}>
+    <Card className={(cn(cardVariants({ variant: "results" })), "bg-black")}>
       <CardHeader className="bg-primary text-primary-foreground text-center py-6">
         <CardTitle className="text-5xl uppercase font-black tracking-tighter">
           Report Finalized

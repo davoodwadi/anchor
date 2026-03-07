@@ -5,9 +5,6 @@ import { WakeButton } from "@/components/shared/wake-button";
 export default function Home() {
   return (
     <main className="min-h-screen flex flex-col items-center bg-black text-white selection:bg-red-900 selection:text-white">
-      {/* Background ambient glow effect */}
-      <div className="fixed inset-0 pointer-events-none opacity-20 bg-[radial-gradient(circle_at_50%_0%,#4a0404_0%,transparent_50%)]"></div>
-
       <div className="flex-1 w-full flex flex-col items-center relative z-10">
         <Nav />
 

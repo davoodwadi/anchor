@@ -50,7 +50,7 @@ export default async function ResultPage(props: ResultPageProps) {
   // console.log("attempt", attempt);
 
   return (
-    <div className="container max-w-3xl py-12 space-y-12">
+    <div className="container max-w-3xl py-12 space-y-12 mx-auto">
       {/* 1. Show the Score Header */}
       <QuizVerdict
         score={attempt.score}

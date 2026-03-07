@@ -44,7 +44,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${heading.variable} ${body.variable} antialiased font-body antialiased`}
+        className={`${heading.variable} ${body.variable} antialiased font-body antialiased relative bg-black text-white min-h-screen selection:bg-red-900 selection:text-white`}
       >
         <ThemeProvider
           attribute="class"
@@ -52,6 +52,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          {/* Background ambient glow effect */}
+          <div className="fixed inset-0 pointer-events-none opacity-30 bg-[radial-gradient(ellipse_at_top,#4a0404_0%,transparent_70%)] z-0"></div>
+
           {children}
           <ScrollToTop />
         </ThemeProvider>

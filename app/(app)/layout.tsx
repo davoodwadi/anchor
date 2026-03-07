@@ -7,10 +7,7 @@ export default function ProtectedLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative bg-black text-white min-h-screen selection:bg-red-900 selection:text-white">
-      {/* Background ambient glow effect */}
-      <div className="fixed inset-0 pointer-events-none opacity-30 bg-[radial-gradient(ellipse_at_top,#4a0404_0%,transparent_70%)] z-0"></div>
-
+    <>
       <main className="min-h-screen flex flex-col items-center relative z-10">
         <div className="w-full flex flex-col gap-10 items-center">
           <Nav />
@@ -23,6 +20,6 @@ export default function ProtectedLayout({
         <p className="py-12"></p>
         <Footer />
       </div>
-    </div>
+    </>
   );
 }
