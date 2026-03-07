@@ -7,6 +7,7 @@ import { SignupButton } from "./signup-button";
 import { LoginButton } from "./signin-button";
 import { ThemeSwitcher } from "@/components/shared/theme-switcher";
 import { Suspense } from "react";
+
 export async function AuthButton() {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
@@ -23,7 +24,10 @@ export async function AuthButton() {
             <span className="text-xs md:text-sm font-semibold text-foreground">
               Welcome back
             </span>
-            <span className="text-xs md:text-sm font-semibold text-foreground truncate" title={user.email}>
+            <span
+              className="text-xs md:text-sm font-semibold text-foreground truncate"
+              title={user.email}
+            >
               {user.email}
             </span>
           </div>

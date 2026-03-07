@@ -24,6 +24,15 @@ export const buttonVariants = cva("", {
     color: {
       default: " bg-primary text-primary-foreground hover:bg-primary/90",
       secondary: " bg-card text-card-foreground hover:bg-card/90",
+      900: " bg-neon-red-900 text-card-foreground hover:bg-neon-red-900/90",
+      800: " bg-neon-red-800 text-card-foreground hover:bg-neon-red-800/90",
+      700: " bg-neon-red-700 text-card-foreground hover:bg-neon-red-500/90",
+      600: " bg-neon-red-600 text-card-foreground hover:bg-neon-red-600/90",
+      500: " bg-neon-red-500 text-card-foreground hover:bg-neon-red-500/90",
+      400: " bg-neon-red-400 text-card-foreground hover:bg-neon-red-400/90",
+      300: " bg-neon-red-300 text-card-foreground hover:bg-neon-red-300/90",
+      200: " bg-neon-red-200 text-card-foreground hover:bg-neon-red-200/90",
+      100: " bg-neon-red-100 text-card-foreground hover:bg-neon-red-100/90",
     },
   },
   defaultVariants: {

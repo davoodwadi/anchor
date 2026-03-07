@@ -15,6 +15,19 @@ export default {
         body: ["var(--font-body)", "serif"],
       },
       colors: {
+        "neon-red": {
+          50: "hsl(var(--neon-red-50))",
+          100: "hsl(var(--neon-red-100))",
+          200: "hsl(var(--neon-red-200))",
+          300: "hsl(var(--neon-red-300))",
+          400: "hsl(var(--neon-red-400))",
+          500: "hsl(var(--neon-red-500))",
+          600: "hsl(var(--neon-red-600))",
+          700: "hsl(var(--neon-red-700))",
+          800: "hsl(var(--neon-red-800))",
+          900: "hsl(var(--neon-red-900))",
+          950: "hsl(var(--neon-red-950))",
+        },
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {

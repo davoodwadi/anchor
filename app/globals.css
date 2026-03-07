@@ -4,6 +4,19 @@
 
 @layer base {
   :root {
+    /* --- CUSTOM PALETTES --- */
+    --neon-red-50: 355 90% 95%;
+    --neon-red-100: 355 90% 90%;
+    --neon-red-200: 355 90% 80%;
+    --neon-red-300: 355 90% 70%;
+    --neon-red-400: 355 90% 60%;
+    --neon-red-500: 355 90% 55%;
+    --neon-red-600: 355 90% 45%;
+    --neon-red-700: 355 90% 35%;
+    --neon-red-800: 355 90% 25%;
+    --neon-red-900: 355 90% 15%;
+    --neon-red-950: 355 90% 10%;
+
     /* --- LIGHT MODE: SAGA'S REALITY --- */
     /* Flat, Paper-like, Bureaucratic */
 

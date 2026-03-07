@@ -5,17 +5,17 @@ import { ArrowUpRight } from "lucide-react";
 export function SignUpUserSteps() {
   return (
     <ol className="flex flex-col gap-6">
-      <TutorialStep title="Sign up your first user">
+      <TutorialStep title="Create your first quiz">
         <p>
           Head over to the{" "}
           <Link
-            href="auth/sign-up"
+            href="/dashboard"
             className="font-bold hover:underline text-foreground/80"
           >
-            Sign up
+            Dashboard
           </Link>{" "}
-          page and sign up your first user. It&apos;s okay if this is just you
-          for now. Your awesome idea will have plenty of users later!
+          page and create your first quiz. It&apos;s okay if this is just for
+          you for now. Your awesome quiz will have plenty of users later!
         </p>
       </TutorialStep>
     </ol>

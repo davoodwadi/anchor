@@ -16,7 +16,7 @@ export function TutorialStep({
       />
       <label
         htmlFor={title}
-        className={`relative text-base text-foreground peer-checked:line-through font-medium`}
+        className={`absolute top-[3px] text-base text-foreground peer-checked:line-through font-medium`}
       >
         <span className="ml-8">{title}</span>
         <div
