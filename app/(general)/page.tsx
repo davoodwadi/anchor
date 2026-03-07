@@ -1,5 +1,6 @@
 import Footer from "@/app/Footer";
 import Nav from "@/app/Nav";
+import Image from "next/image";
 import { WakeButton } from "@/components/shared/wake-button";
 
 export default function Home() {
@@ -7,7 +8,6 @@ export default function Home() {
     <main className="min-h-screen flex flex-col items-center bg-black text-white selection:bg-red-900 selection:text-white">
       <div className="flex-1 w-full flex flex-col items-center relative z-10">
         <Nav />
-
         <div className="flex-1 flex flex-col items-center justify-center w-full max-w-5xl px-6 py-24 md:py-32 gap-16">
           {/* Hero Section */}
           <section className="text-center flex flex-col items-center gap-8 w-full">

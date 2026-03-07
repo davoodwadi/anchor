@@ -208,7 +208,7 @@ export default function CreateQuizPage() {
             {isLoading && (
               <div className="fixed inset-0 bg-black/40 backdrop-blur-md z-[100] flex items-center justify-center p-4">
                 {/* Main Container: Hard black border, No rounding, Sharp Shadow */}
-                <div className="bg-primary border-[4px] border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] p-8 max-w-md w-full flex flex-col items-center text-center">
+                <div className="bg-neon-red-700 border-[4px] border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] p-8 max-w-md w-full flex flex-col items-center text-center">
                   {/* Brutalist Loader: Square, Thick Border, Fast Spin */}
                   <div className="h-16 w-16  border-black border-t-white bg-black mb-8 animate-flicker" />
 
