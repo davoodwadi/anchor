@@ -22,6 +22,7 @@ const body = Lora({
 });
 
 import { ThemeProvider } from "next-themes";
+import { ScrollToTop } from "@/components/shared/scroll-to-top";
 import "./globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -52,6 +53,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <ScrollToTop />
         </ThemeProvider>
       </body>
     </html>

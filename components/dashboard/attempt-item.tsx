@@ -24,14 +24,14 @@ export function AttemptItem({ attempt }: AttemptItemProps) {
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem
         value={attempt.id}
-        className="border-2 border-foreground bg-background mb-2"
+        className="border-2 border-foreground bg-background/50 mb-2"
       >
-        <AccordionTrigger className="hover:no-underline px-4 py-3 hover:bg-muted/50 transition-colors data-[state=open]:bg-foreground data-[state=open]:text-background group">
+        <AccordionTrigger className="hover:no-underline px-4 py-3 hover:bg-muted/50 transition-colors data-[state=open]:bg-neon-red-800/50 data-[state=open]:text-foreground group">
           <div className="flex flex-wrap items-center justify-between gap-3 w-full pr-2 sm:pr-4">
             {/* Left Side: Identity */}
             <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-              <div className="p-2 flex-shrink-0 bg-primary/10 border border-primary group-data-[state=open]:border-background group-data-[state=open]:bg-background/20">
-                <User className="w-4 h-4 text-primary group-data-[state=open]:text-background" />
+              <div className="p-2 flex-shrink-0 bg-primary/10 border border-primary group-data-[state=open]:border-foreground group-data-[state=open]:bg-background/20">
+                <User className="w-4 h-4 text-primary group-data-[state=open]:text-foreground" />
               </div>
               <div className="text-left min-w-0">
                 <div className="font-heading font-bold uppercase text-base sm:text-lg leading-none truncate">

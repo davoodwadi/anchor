@@ -56,7 +56,7 @@ export const cardVariants = cva(
 );
 
 export const optionVariants = cva(
-  "flex items-center p-4 border-2 cursor-pointer transition-all duration-200 tracking-wide text-sm md:text-base font-medium relative group w-full normal-case",
+  "flex items-center p-4 border cursor-pointer transition-all duration-200 tracking-wide text-sm md:text-base font-medium relative group w-full normal-case",
   {
     variants: {
       state: {

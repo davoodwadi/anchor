@@ -36,7 +36,7 @@ export function QuizQuestion({
   return (
     <div
       className={cn(
-        "p-6 border bg-card text-card-foreground shadow-sm transition-all",
+        "p-6 border bg-background/50 text-card-foreground shadow-sm transition-all",
         showFeedback && isCorrect ? " " : "",
         showFeedback && !isCorrect ? " " : "",
       )}
@@ -57,7 +57,7 @@ export function QuizQuestion({
               onClick={() => setShowHint(true)}
               className="text-xs text-muted-foreground hover:text-primary underline transition-colors"
             >
-              Need a hint?
+              Show hint
             </button>
           )
         ) : (
@@ -96,7 +96,7 @@ export function QuizQuestion({
               onClick={() => onSelectOption(oIndex)}
               className={cn(
                 optionVariants({ state }),
-                "justify-between group h-auto whitespace-normal text-left",
+                "bg-background/60 hover:bg-neon-red-900 justify-between group h-auto whitespace-normal text-left",
               )}
             >
               <span className="flex-1">{option.option_text}</span>

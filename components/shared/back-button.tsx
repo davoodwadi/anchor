@@ -34,7 +34,7 @@ export function BackButton({ href, label = "", className }: BackButtonProps) {
       )}
     >
       {/* The Icon: slides left on hover */}
-      <ArrowLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-1" />
+      <ArrowLeft className="w-4 h-4 " />
 
       {/* The Label */}
       <span>{label}</span>

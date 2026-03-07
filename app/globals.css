@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  scrollbar-gutter: stable;
+}
+
 @layer base {
   :root {
     /* --- CUSTOM PALETTES --- */
@@ -93,13 +97,15 @@
   * {
     @apply border-border;
   }
-  html {
-    scrollbar-gutter: stable;
-    overflow-y: scroll;
+
+  body {
+    @apply !min-w-full;
   }
   /* DEFAULT BODY: Use Lora (Serif) */
   body {
     @apply font-body text-foreground text-lg leading-relaxed;
+    padding-right: 0 !important;
+    margin-right: 0 !important;
   }
 
   /* LEVEL 1 & 2: The "Brutalist" UI (Oswald) */

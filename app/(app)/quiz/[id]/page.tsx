@@ -39,43 +39,48 @@ async function QuizDashboard({ params }: { params: Promise<{ id: string }> }) {
   if (error || !quiz) notFound();
 
   return (
-    <>
-      {/* --- SECTION 1: QUIZ META DATA (Alan Wake Style) --- */}
-      <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-        <div className="flex flex-col gap-2 border-l-4 border-primary pl-4 md:pl-6">
-          <div className="flex flex-row items-center gap-2">
-            <BackButton href="/dashboard" />
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold uppercase tracking-tighter text-foreground">
-              {quiz.title}
-            </h1>
-          </div>
+    <div className="w-full max-w-5xl mx-auto px-4 sm:px-6">
+      <div className="mb-6">
+        <BackButton href="/dashboard" />
+      </div>
 
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-6 py-2 text-muted-foreground font-mono text-sm uppercase tracking-widest font-bold">
+      {/* --- SECTION 1: QUIZ META DATA (Alan Wake Style) --- */}
+      <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between border border-zinc-800 bg-black p-8 relative overflow-hidden">
+        <div className="absolute inset-y-0 left-0 w-1 bg-neon-red-500/80"></div>
+
+        <div className="flex flex-col gap-4 relative z-10 w-full md:w-2/3">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-zinc-100 break-words leading-none">
+            {quiz.title}
+          </h1>
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8 mt-2 text-zinc-500 font-mono text-xs uppercase tracking-widest">
             <span className="flex items-center gap-2 whitespace-nowrap">
-              <Calendar className="w-4 h-4 shrink-0" />
+              <Calendar className="w-4 h-4 shrink-0 text-neon-red-800" />
               {format(new Date(quiz.created_at), "MMM dd, yyyy")}
             </span>
             <span className="flex items-center gap-2 whitespace-nowrap">
-              <FileText className="w-4 h-4 shrink-0" />
+              <FileText className="w-4 h-4 shrink-0 text-neon-red-800" />
               {quiz.questions.length} Questions
             </span>
           </div>
         </div>
+
         {/* Action Bar */}
-        <div className="flex flex-col gap-2 w-full md:w-auto justify-start md:justify-end">
+        <div className="flex flex-col gap-3 md:w-1/3 z-10">
           <PreviewQuizButton quizId={quiz.id} />
           <ShareButton quizId={quiz.id} />
         </div>
       </div>
 
       {/* --- SECTION 2: ATTEMPT LOGS (Streaming Component) --- */}
-      <div className="pt-12 border-t-2 border-muted">
-        {/* We can nest another Suspense here if we want the title to load before the list */}
-        <Suspense fallback={<ListSkeleton />}>
-          <AttemptsList quizId={id} />
-        </Suspense>
+      <div className="mt-12">
+        <div className="relative">
+          <Suspense fallback={<ListSkeleton />}>
+            <AttemptsList quizId={id} />
+          </Suspense>
+        </div>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -83,17 +88,25 @@ async function QuizDashboard({ params }: { params: Promise<{ id: string }> }) {
 
 function DashboardSkeleton() {
   return (
-    <div className="space-y-12">
-      <div className="space-y-6">
-        <div className="border-l-4 border-muted pl-6 space-y-4">
-          <Skeleton className="h-16 w-3/4 bg-muted rounded-none" />
-          <div className="flex gap-4">
-            <Skeleton className="h-4 w-32 bg-muted rounded-none" />
-            <Skeleton className="h-4 w-32 bg-muted rounded-none" />
+    <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 space-y-12">
+      <Skeleton className="h-6 w-24 bg-zinc-900 rounded-none mb-6" />
+
+      <div className="border border-zinc-900 bg-black p-8 relative flex flex-col md:flex-row gap-8 justify-between">
+        <div className="absolute inset-y-0 left-0 w-1 bg-zinc-900"></div>
+        <div className="space-y-6 w-full md:w-2/3">
+          <Skeleton className="h-4 w-32 bg-zinc-900 rounded-none" />
+          <Skeleton className="h-12 w-3/4 bg-zinc-900/50 rounded-none" />
+          <div className="flex gap-6 pt-2">
+            <Skeleton className="h-4 w-24 bg-zinc-900 rounded-none" />
+            <Skeleton className="h-4 w-24 bg-zinc-900 rounded-none" />
           </div>
         </div>
-        <Skeleton className="h-12 w-48 bg-muted rounded-none" />
+        <div className="flex flex-col gap-3 w-full md:w-auto md:min-w-[200px]">
+          <Skeleton className="h-10 w-full bg-zinc-900 rounded-none" />
+          <Skeleton className="h-10 w-full bg-zinc-900 rounded-none" />
+        </div>
       </div>
+
       <ListSkeleton />
     </div>
   );
@@ -101,16 +114,15 @@ function DashboardSkeleton() {
 
 function ListSkeleton() {
   return (
-    <div className="space-y-4 pt-12">
-      <div className="flex justify-between items-end border-b-4 border-muted pb-2">
-        <Skeleton className="h-8 w-64 bg-muted rounded-none" />
-        <Skeleton className="h-6 w-24 bg-muted rounded-none" />
+    <div className="space-y-4">
+      <div className="flex items-center gap-3 mb-6 border-b border-zinc-900 pb-4">
+        <Skeleton className="h-6 w-48 bg-zinc-900 rounded-none" />
       </div>
-      <div className="space-y-2">
+      <div className="grid gap-4">
         {[1, 2, 3].map((i) => (
           <Skeleton
             key={i}
-            className="h-20 w-full bg-muted/50 rounded-none border-2 border-transparent"
+            className="h-24 w-full bg-zinc-900/30 border border-zinc-900 rounded-none"
           />
         ))}
       </div>

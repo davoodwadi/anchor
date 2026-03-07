@@ -11,7 +11,7 @@ export function AttemptDetails({ answers }: { answers: Answer[] }) {
     return <div className="p-4 text-center">No details available.</div>;
 
   return (
-    <div className="bg-muted/20 p-4 space-y-4 border-t-2 border-foreground">
+    <div className=" p-4 space-y-4 border-t-2 border-foreground">
       {answers.map((ans, i) => {
         const isCorrect = ans.option?.is_correct;
         return (
@@ -26,7 +26,7 @@ export function AttemptDetails({ answers }: { answers: Answer[] }) {
 
             <div className="flex-1 space-y-1 pb-4 border-b border-border/50 last:border-0 last:pb-0">
               {/* Question Text */}
-              <p className="font-heading uppercase text-sm font-bold opacity-60">
+              <p className="font-heading  text-sm font-bold opacity-60">
                 {ans.question?.question_text || "Unknown Question"}
               </p>
 
@@ -40,10 +40,8 @@ export function AttemptDetails({ answers }: { answers: Answer[] }) {
 
                 <span
                   className={cn(
-                    "font-body text-base font-medium",
-                    isCorrect
-                      ? "text-secondary"
-                      : "text-red-600 line-through decoration-2",
+                    "font-body text-sm font-medium",
+                    isCorrect ? "text-secondary" : "text-red-600 line-through ",
                   )}
                 >
                   {ans.option?.option_text || "Unknown Option"}
