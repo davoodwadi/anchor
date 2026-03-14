@@ -5,7 +5,7 @@ import { WakeButton } from "@/components/shared/wake-button";
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col items-center bg-black text-white selection:bg-red-900 selection:text-white">
+    <main className="min-h-screen flex flex-col items-center bg-transparent text-white selection:bg-red-900 selection:text-white">
       <div className="flex-1 w-full flex flex-col items-center relative z-10">
         <Nav />
         <div className="flex-1 flex flex-col items-center justify-center w-full max-w-5xl px-6 py-24 md:py-32 gap-16">
@@ -46,7 +46,7 @@ export default function Home() {
                 <span className="text-red-800 font-mono text-sm">01.</span>
                 Submit The Source
               </h3>
-              <p className="text-justify hyphens-auto font-mono text-sm text-zinc-500 leading-relaxed">
+              <p className="text-justify hyphens-auto font-mono text-sm text-zinc-300 leading-relaxed">
                 Provide the raw material. Upload your study notes, documents, or
                 articles. The system will analyze the text and extract the
                 critical information needed for your test.
@@ -58,7 +58,7 @@ export default function Home() {
                 <span className="text-red-800 font-mono text-sm">02.</span>
                 Face The Trial
               </h3>
-              <p className="text-justify hyphens-auto font-mono text-sm text-zinc-500 leading-relaxed relative z-10">
+              <p className="text-justify hyphens-auto font-mono text-sm text-zinc-300 leading-relaxed relative z-10">
                 Engage with dynamic, challenging quizzes generated instantly
                 from your content. Track your progress, identify blind spots,
                 and master the subject matter.

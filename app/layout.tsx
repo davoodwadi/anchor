@@ -53,7 +53,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {/* Background ambient glow effect */}
-          <div className="fixed inset-0 pointer-events-none opacity-30 bg-[radial-gradient(ellipse_at_top,#4a0404_0%,transparent_70%)] z-0"></div>
+          {/* <div className="fixed inset-0 pointer-events-none opacity-30 bg-[radial-gradient(ellipse_at_top,#4a0404_0%,transparent_70%)] z-0"></div> */}
 
           {children}
           <ScrollToTop />

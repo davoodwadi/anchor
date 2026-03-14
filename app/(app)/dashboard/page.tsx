@@ -4,17 +4,16 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { QuizList } from "@/components/quiz/quiz-list";
 import { QuizListSkeleton } from "@/components/quiz/quiz-list-skeleton";
+import { BackButton } from "@/components/shared/back-button";
 
 export default function DashboardPage() {
   return (
     <div className="container w-full p-6 mx-auto pt-12 pb-24 relative z-10 min-h-screen">
       {/* Header */}
+
       <div className="flex flex-col mb-12 border-b border-zinc-800 pb-6 w-full max-w-4xl mx-auto">
         <div className="inline-flex items-center gap-3 mb-2">
-          <span className="w-2 h-2 bg-neon-red-500 rounded-none animate-pulse"></span>
-          <span className="text-zinc-500 font-mono text-sm uppercase tracking-[0.2em]">
-            Investigation Board
-          </span>
+          <BackButton href="/" />
         </div>
         <h1 className="text-4xl md:text-5xl font-black uppercase text-zinc-100 tracking-tight">
           THE MIND PLACE
