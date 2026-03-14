@@ -18,6 +18,8 @@ import { Button } from "@/components/ui/button";
 import { buttonVariants } from "@/components/shared/wake-variants";
 import { UploadBox } from "@/components/shared/upload-box";
 import ProgressBar from "@/components/shared/ProgressBar";
+import { BackButton } from "@/components/shared/back-button";
+
 const noRefDoc = "Do not mention the document. ";
 // const noBullet = "Do not use bullet points in your response. ";
 const addedConstraints = noRefDoc;
@@ -148,97 +150,99 @@ export default function CreateQuizPage() {
       setIsPDFLoading(false);
     }
   };
-
   return (
-    <div className="min-h-[calc(100vh-10rem)] flex flex-col items-center justify-center p-4 ">
-      <Card>
-        <CardHeader>
-          <CardTitle>Create Quiz</CardTitle>
+    <div className="min-h-[calc(100vh-10rem)] flex flex-col gap-10 p-4 ">
+      <BackButton href="/dashboard" />
 
-          <CardDescription>
-            Upload a PDF or Markdown document. AI will generate questions for
-            you.
-          </CardDescription>
-        </CardHeader>
+      <div className="relative overflow-hidden bg-black/40 backdrop-blur-md border border-white/10 p-8 rounded-none">
+        {/* Subtle glowing red accent to fit the Wake theme */}
+        <div className="absolute top-0 left-0 w-full h-[2px] opacity-50"></div>
 
-        <CardContent>
-          <Label htmlFor="title">Title</Label>
+        <div className="text-center text-2xl font-black uppercase tracking-widest text-white mb-2">
+          Create Quiz
+        </div>
 
+        <div className="text-center text-sm font-medium tracking-wide text-zinc-400">
+          Upload a PDF or Markdown document. AI will generate questions for you.
+        </div>
+      </div>
+      <div>
+        <Label htmlFor="title">Title</Label>
+
+        <Input
+          id={"title"}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className=" "
+        />
+
+        <div>
+          <Label htmlFor="amount">Number of Questions</Label>
           <Input
-            id={"title"}
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className=" "
+            id="amount"
+            name="amount"
+            type="number"
+            min={1}
+            max={20}
+            value={numQuestions} // Link to state
+            onChange={(e) => {
+              const parsedValue = parseInt(e.target.value, 10);
+              setNumQuestions(Number.isNaN(parsedValue) ? 1 : parsedValue);
+            }} // Update state
+            className=""
           />
+        </div>
 
-          <div>
-            <Label htmlFor="amount">Number of Questions</Label>
-            <Input
-              id="amount"
-              name="amount"
-              type="number"
-              min={1}
-              max={20}
-              value={numQuestions} // Link to state
-              onChange={(e) => {
-                const parsedValue = parseInt(e.target.value, 10);
-                setNumQuestions(Number.isNaN(parsedValue) ? 1 : parsedValue);
-              }} // Update state
-              className=""
-            />
-          </div>
+        <div>
+          <Label htmlFor="file">Source Material (PDF or Markdown)</Label>
+          <UploadBox
+            fileName={fileName}
+            extractedText={extractedText}
+            onChange={handleFileChange}
+            onFileSelect={processSelectedFile}
+          />
+        </div>
+        <div className="py-2">
+          <Button
+            onClick={() => handleGenerate("quiz")}
+            disabled={isLoading}
+            className={buttonVariants({ variant: "large" })}
+          >
+            Quiz
+          </Button>
+          {isLoading && (
+            <div className="fixed inset-0 bg-black/40 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+              {/* Main Container: Hard black border, No rounding, Sharp Shadow */}
+              <div className="bg-neon-red-600 border-[4px] border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] p-8 max-w-md w-full flex flex-col items-center text-center">
+                {/* Brutalist Loader: Square, Thick Border, Fast Spin */}
+                <div className="h-16 w-16  border-black border-t-white bg-black mb-8 animate-flicker" />
 
-          <div>
-            <Label htmlFor="file">Source Material (PDF or Markdown)</Label>
-            <UploadBox
-              fileName={fileName}
-              extractedText={extractedText}
-              onChange={handleFileChange}
-              onFileSelect={processSelectedFile}
-            />
-          </div>
-          <div className="py-2">
-            <Button
-              onClick={() => handleGenerate("quiz")}
-              disabled={isLoading}
-              className={buttonVariants({ variant: "large" })}
-            >
-              Quiz
-            </Button>
-            {isLoading && (
-              <div className="fixed inset-0 bg-black/40 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-                {/* Main Container: Hard black border, No rounding, Sharp Shadow */}
-                <div className="bg-neon-red-700 border-[4px] border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] p-8 max-w-md w-full flex flex-col items-center text-center">
-                  {/* Brutalist Loader: Square, Thick Border, Fast Spin */}
-                  <div className="h-16 w-16  border-black border-t-white bg-black mb-8 animate-flicker" />
+                {/* Typography: Bold, Uppercase, High Contrast */}
+                <h2 className="text-3xl font-black italic uppercase tracking-tighter mb-4 border-b-[4px] border-black pb-2 w-full">
+                  GENERATING QUIZ
+                </h2>
 
-                  {/* Typography: Bold, Uppercase, High Contrast */}
-                  <h2 className="text-3xl font-black italic uppercase tracking-tighter mb-4 border-b-[4px] border-black pb-2 w-full">
-                    GENERATING QUIZ
-                  </h2>
-
-                  <div className="space-y-4 text-left font-bold uppercase text-sm tracking-tight">
-                    <p className="bg-white text-black p-2 inline-block">
-                      STEP 01: SCANNING SOURCE MATERIAL...
-                    </p>
-                    <p
-                      className={`${extractedText ? "bg-white text-black" : "text-black"} p-2 block`}
-                    >
-                      STEP 02: EXTRACTING SEMANTIC DATA...
-                    </p>
-                    <p className="bg-black border-border p-2 block italic">
-                      PLEASE WAIT — SYSTEM IS OPERATING AT CAPACITY
-                    </p>
-                  </div>
-
-                  {/* Decorative Brutalist Element */}
-                  <ProgressBar className="bg-black mt-8" />
+                <div className="space-y-4 text-left font-bold uppercase text-sm tracking-tight">
+                  <p className="bg-white text-black p-2 inline-block">
+                    STEP 01: SCANNING SOURCE MATERIAL...
+                  </p>
+                  <p
+                    className={`${extractedText ? "bg-white text-black" : "text-black"} p-2 block`}
+                  >
+                    STEP 02: EXTRACTING SEMANTIC DATA...
+                  </p>
+                  <p className="bg-black border-border p-2 block italic">
+                    PLEASE WAIT — SYSTEM IS OPERATING AT CAPACITY
+                  </p>
                 </div>
+
+                {/* Decorative Brutalist Element */}
+                <ProgressBar className="bg-black mt-8" />
               </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

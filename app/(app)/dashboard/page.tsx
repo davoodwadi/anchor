@@ -12,7 +12,7 @@ export default function DashboardPage() {
       {/* Header */}
 
       <div className="flex flex-col mb-12 border-b border-zinc-800 pb-6 w-full max-w-4xl mx-auto">
-        <div className="inline-flex items-center gap-3 mb-2">
+        <div className="inline-flex items-center gap-3 mb-6 ">
           <BackButton href="/" />
         </div>
         <h1 className="text-4xl md:text-5xl font-black uppercase text-zinc-100 tracking-tight">
