@@ -35,7 +35,7 @@ export function LoginForm({
       });
       console.log("called supabase.auth.signInWithPassword", error);
       if (error) throw error;
-      // Update this route to redirect to an authenticated route. The user already has an active session.
+      router.refresh();
       router.push("/dashboard");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
