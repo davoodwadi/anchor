@@ -19,10 +19,18 @@ import { buttonVariants } from "@/components/shared/wake-variants";
 import { UploadBox } from "@/components/shared/upload-box";
 import ProgressBar from "@/components/shared/ProgressBar";
 import { BackButton } from "@/components/shared/back-button";
+import { TypewriterStream } from "@/components/shared/typewriter-stream";
 
 const noRefDoc = "Do not mention the document. ";
 // const noBullet = "Do not use bullet points in your response. ";
 const addedConstraints = noRefDoc;
+const loadingLines = [
+  "Generating Quiz",
+  "Scanning source material for the ideas that matter.",
+  "Extracting semantic signals and stabilizing the structure.",
+  "Assembling a quiz from the strongest patterns in your notes.",
+  "PLEASE WAIT - SYSTEM IS OPERATING AT CAPACITY",
+];
 
 export default function CreateQuizPage() {
   const router = useRouter();
@@ -214,26 +222,21 @@ export default function CreateQuizPage() {
             <div className="fixed inset-0 bg-black/40 backdrop-blur-md z-[100] flex items-center justify-center p-4">
               {/* Main Container: Hard black border, No rounding, Sharp Shadow */}
               <div className="bg-neon-red-600 border-[4px] border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] p-8 max-w-md w-full flex flex-col items-center text-center">
-                {/* Brutalist Loader: Square, Thick Border, Fast Spin */}
-                <div className="h-16 w-16  border-black border-t-white bg-black mb-8 animate-flicker" />
-
-                {/* Typography: Bold, Uppercase, High Contrast */}
-                <h2 className="text-3xl font-black italic uppercase tracking-tighter mb-4 border-b-[4px] border-black pb-2 w-full">
-                  GENERATING QUIZ
-                </h2>
-
-                <div className="space-y-4 text-left font-bold uppercase text-sm tracking-tight">
-                  <p className="bg-white text-black p-2 inline-block">
-                    STEP 01: SCANNING SOURCE MATERIAL...
-                  </p>
-                  <p
-                    className={`${extractedText ? "bg-white text-black" : "text-black"} p-2 block`}
-                  >
-                    STEP 02: EXTRACTING SEMANTIC DATA...
-                  </p>
-                  <p className="bg-black border-border p-2 block italic">
-                    PLEASE WAIT — SYSTEM IS OPERATING AT CAPACITY
-                  </p>
+                <div className="w-full space-y-4 text-left">
+                  <div className="border-[3px] border-black bg-black px-4 py-4 min-h-[50vh] flex flex-col">
+                    <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-zinc-500">
+                      Live Process
+                    </p>
+                    <TypewriterStream
+                      lines={loadingLines}
+                      speed="slow"
+                      className="mt-4 flex-1 font-mono text-sm leading-7 tracking-[0.04em] text-white md:text-base"
+                      completedLineClassName="text-zinc-400"
+                      activeLineClassName="text-white"
+                      cursorClassName="bg-neon-red-500"
+                      minLines={loadingLines.length}
+                    />
+                  </div>
                 </div>
 
                 {/* Decorative Brutalist Element */}
