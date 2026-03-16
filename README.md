@@ -1,102 +1,115 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+# Anchor
 
-<p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
+An AI-powered quiz creation platform for instructors. Upload course content, refine it into a quiz through a Gemini conversation, then share a link for students to take anonymously.
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+## Stack
 
-## Features
+- **Next.js 15** — App Router, React Server Components, Server Actions
+- **Supabase** — PostgreSQL database + GoTrue cookie-based auth
+- **Google Gemini** (`gemini-3-flash-preview`) — structured quiz generation via `@google/genai`
+- **Zod 4** — runtime validation + Gemini structured output schemas
+- **shadcn/ui** (New York) + **Tailwind CSS** — Alan Wake 2 brutalist theme
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Proxy
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+## Getting Started
 
-## Demo
+### Prerequisites
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+- Node.js 20+
+- pnpm
+- A [Supabase project](https://database.new)
+- A Google AI API key
 
-## Deploy to Vercel
+### Setup
 
-Vercel deployment will guide you through creating a Supabase account and project.
-
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
-
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
-
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
-
-## Clone and run locally
-
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
-
-2. Create a Next.js app using the Supabase Starter template npx command
+1. Clone the repo and install dependencies:
 
    ```bash
-   npx create-next-app --example with-supabase with-supabase-app
+   pnpm install
    ```
+
+2. Copy the environment template and fill in your values:
 
    ```bash
-   yarn create next-app --example with-supabase with-supabase-app
+   cp .env.example .env.local
    ```
+
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your-supabase-project-url
+   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-supabase-publishable-key
+   GEMINI_API_KEY=your-google-ai-api-key
+   ```
+
+   > **Note:** Supabase uses a newer **publishable key** format (`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`). Your dashboard may show `ANON_KEY` — the value is interchangeable during the transition period.
+
+3. Apply the database schema and RLS policies. See [docs/rls-implementation.md](docs/rls-implementation.md) for the full migration SQL.
+
+4. Start the dev server:
 
    ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
+   pnpm dev
    ```
 
-3. Use `cd` to change into the app's directory
+   The app runs at [localhost:3000](http://localhost:3000).
 
-   ```bash
-   cd with-supabase-app
-   ```
+## Commands
 
-4. Rename `.env.example` to `.env.local` and update the following:
+| Command | Description |
+|---|---|
+| `pnpm dev` | Start development server |
+| `pnpm build` | Production build |
+| `pnpm start` | Start production server |
+| `pnpm lint` | Run ESLint |
 
-  ```env
-  NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=[INSERT SUPABASE PROJECT API PUBLISHABLE OR ANON KEY]
-  ```
-  > [!NOTE]
-  > This example uses `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, which refers to Supabase's new **publishable** key format.
-  > Both legacy **anon** keys and new **publishable** keys can be used with this variable name during the transition period. Supabase's dashboard may show `NEXT_PUBLIC_SUPABASE_ANON_KEY`; its value can be used in this example.
-  > See the [full announcement](https://github.com/orgs/supabase/discussions/29260) for more information.
+## Architecture
 
-  Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` can be found in [your Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true)
+### Routes
 
-5. You can now run the Next.js local development server:
+| Route | Access | Description |
+|---|---|---|
+| `/` | Public | Landing page |
+| `/dashboard` | Instructor | Quiz list and attempt overview |
+| `/create` | Instructor | Upload content to start a quiz session |
+| `/generate/[id]` | Instructor | Gemini conversation to refine the quiz |
+| `/quiz/[id]` | Instructor | View quiz, copy share link |
+| `/take/[id]` | Public | Anonymous student quiz-taking |
+| `/auth/*` | Public | Login, sign-up, password reset |
 
-   ```bash
-   npm run dev
-   ```
+### Key Directories
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+```
+actions/          # Server Actions ("use server") — quiz submission, AI generation
+app/              # Next.js App Router pages and layouts
+components/
+  ui/             # shadcn/ui primitives (do not modify directly)
+  shared/         # Design-system components (WakeButton, ProgressBar, etc.)
+  quiz/           # Quiz feature components
+  dashboard/      # Dashboard feature components
+  auth/           # Auth form components
+docs/             # RLS policy documentation
+lib/supabase/     # Supabase client helpers (server + browser)
+types/            # Zod schemas and inferred TypeScript types
+```
 
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+### Database Schema
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+```
+quizzes          — id, title, instructor_id, is_active
+questions        — id, quiz_id, question_text
+options          — id, question_id, option_text, is_correct
+attempts         — id, quiz_id, student_number, score, total, submitted_at
+quiz_responses   — id, attempt_id, question_id, selected_option_id
+chat_messages    — id, session_id, user_id, role, type, content, extracted_text
+```
+
+RLS is fully enabled on all tables. See [docs/rls-implementation.md](docs/rls-implementation.md) for policies and [docs/rls-walkthrough.md](docs/rls-walkthrough.md) for rationale.
+
+## Development Notes
+
+- **Params pattern:** Page components never `await params` directly. The `Promise<{id}>` is passed into a `<Suspense>`-wrapped child component that resolves it. See `app/take/[id]/page.tsx`.
+- **Server Actions:** Always call `createClient()` from `lib/supabase/server.ts` fresh per invocation (required for Fluid compute). Auth checks happen inline.
+- **Forms:** Use `useActionState`, not the deprecated `useFormState`.
+- **Gemini schemas:** Strip the `$schema` key from any Zod-derived JSON schema before passing it to the Gemini API — it will reject the request otherwise. Force `mimeType: "application/pdf"` explicitly for PDF uploads.
+- **Buttons:** Use `components/shared/wake-button.tsx` for all styled buttons and link-buttons. It renders `<Link>` or `<button>` based on whether `href` is provided.
 
 ## Feedback and issues
 

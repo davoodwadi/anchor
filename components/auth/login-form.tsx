@@ -121,7 +121,7 @@ export function LoginForm({
             Don&apos;t have an account?{" "}
             <Link
               href="/auth/sign-up"
-              className="font-semibold uppercase tracking-[0.2em] text-white transition-colors hover:text-neon-red-300"
+              className="font-semibold uppercase tracking-[0.05em] text-white transition-colors hover:text-neon-red-300"
             >
               Sign up
             </Link>

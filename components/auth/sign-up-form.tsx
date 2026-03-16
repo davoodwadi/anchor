@@ -139,7 +139,7 @@ export function SignUpForm({
             Already have an account?{" "}
             <Link
               href="/auth/login"
-              className="font-semibold uppercase tracking-[0.2em] text-white transition-colors hover:text-neon-red-300"
+              className="font-semibold uppercase tracking-[0.05em] text-white transition-colors hover:text-neon-red-300"
             >
               Login
             </Link>
