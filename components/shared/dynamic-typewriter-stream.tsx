@@ -17,6 +17,8 @@ type DynamicTypewriterStreamProps = {
   keyPattern?: readonly number[];
   shouldStream?: boolean;
   onComplete?: () => void;
+  isDeleting?: boolean;
+  onDeleteComplete?: () => void;
 };
 
 const speedPresets = {
@@ -29,6 +31,7 @@ const speedPresets = {
     wordPause: 3,
     rhythmPause: 5,
     newlinePause: 4,
+    deletePause: 15,
   },
   fast: {
     keyPattern: [17, 15, 16, 15, 19, 15, 17, 16],
@@ -39,6 +42,7 @@ const speedPresets = {
     wordPause: 35,
     rhythmPause: 85,
     newlinePause: 400,
+    deletePause: 15,
   },
   medium: {
     keyPattern: [30, 27, 31, 28, 34, 27, 30, 29],
@@ -49,6 +53,7 @@ const speedPresets = {
     wordPause: 50,
     rhythmPause: 110,
     newlinePause: 600,
+    deletePause: 25,
   },
   slow: {
     keyPattern: [86, 82, 88, 84, 93, 82, 87, 85],
@@ -59,6 +64,7 @@ const speedPresets = {
     wordPause: 100,
     rhythmPause: 150,
     newlinePause: 800,
+    deletePause: 50,
   },
   xslow: {
     keyPattern: [106, 102, 108, 104, 113, 102, 107, 105],
@@ -69,6 +75,7 @@ const speedPresets = {
     wordPause: 190,
     rhythmPause: 190,
     newlinePause: 1000,
+    deletePause: 70,
   },
 } as const;
 
@@ -127,6 +134,8 @@ export function DynamicTypewriterStream({
   keyPattern,
   shouldStream = true,
   onComplete,
+  isDeleting = false,
+  onDeleteComplete,
 }: DynamicTypewriterStreamProps) {
   const speedPreset = speedPresets[speed];
   const typingPattern = keyPattern ?? speedPreset.keyPattern;
@@ -160,6 +169,11 @@ export function DynamicTypewriterStream({
   useEffect(() => {
     onCompleteRef.current = onComplete;
   }, [onComplete]);
+
+  const onDeleteCompleteRef = useRef(onDeleteComplete);
+  useEffect(() => {
+    onDeleteCompleteRef.current = onDeleteComplete;
+  }, [onDeleteComplete]);
 
   // We use this dummy state to kickstart the typing loop when new text arrives
   const [kickstart, setKickstart] = useState(0);
@@ -198,10 +212,30 @@ export function DynamicTypewriterStream({
       return;
     }
 
+    if (isDeleting) {
+      const deletePause = speedPresets[speed].deletePause;
+      if (visibleTextLength > 0) {
+        const timeoutId = window.setTimeout(() => {
+          setVisibleTextLength((prev) => Math.max(0, prev - 1));
+        }, deletePause);
+        return () => window.clearTimeout(timeoutId);
+      } else {
+        if (!hasCompletedTyping) {
+          setHasCompletedTyping(true);
+        }
+        onDeleteCompleteRef.current?.();
+      }
+      return;
+    }
+
     // If we've typed everything currently available, we wait for text updates
     if (visibleTextLength >= textRef.current.length) {
       isStalledRef.current = true;
-      if (!hasCompletedTyping && visibleTextLength > 0 && onCompleteRef.current) {
+      if (
+        !hasCompletedTyping &&
+        visibleTextLength > 0 &&
+        onCompleteRef.current
+      ) {
         const t = setTimeout(() => {
           // Double check if text grew while we were waiting to complete
           if (visibleTextLength >= textRef.current.length) {
@@ -248,6 +282,7 @@ export function DynamicTypewriterStream({
     streamEnabled,
     typingPattern,
     visibleTextLength,
+    isDeleting,
   ]);
 
   if (!displayText) {

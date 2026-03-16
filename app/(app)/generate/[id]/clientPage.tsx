@@ -9,6 +9,7 @@ import { useState } from "react";
 import { HistoryItem } from "./history-item";
 
 import { Input } from "@/components/ui/input";
+import { DynamicTypewriterStream } from "@/components/shared/dynamic-typewriter-stream";
 import { UploadBox } from "@/components/shared/upload-box";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -44,7 +45,12 @@ export default function GeneratePage({
   );
 
   const [isPDFLoading, setIsPDFLoading] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingTypewriter, setIsLoadingTypewriter] = useState(false);
+  const [isLoadingGenerate, setIsLoadingGenerate] = useState(false);
+  const [isDeletingLoadingMessage, setIsDeletingLoadingMessage] =
+    useState(false);
+  const [pendingHistoryItem, setPendingHistoryItem] =
+    useState<GeneratedContent | null>(null);
   const disabled = history.length > 0;
 
   const lastModelResponse = history.at(-1);
@@ -96,7 +102,8 @@ export default function GeneratePage({
   };
   // 2. THE HANDLER
   const handleGenerate = async (mode: "quiz" | "explanation") => {
-    setIsLoading(true);
+    setIsLoadingTypewriter(true);
+    setIsLoadingGenerate(true);
     let newHistory: GeneratedContent[] = history;
     if (history.length === 0) {
       // first request
@@ -154,15 +161,16 @@ export default function GeneratePage({
     });
 
     if (result.success && result.data) {
-      setHistory((prev) => [...prev, result.data!]);
-      // console.log("result", result);
-    }
-    if (mode === "quiz") {
-      setIsLoading(false);
+      setPendingHistoryItem(result.data);
+      setIsDeletingLoadingMessage(true);
+    } else {
+      setIsLoadingGenerate(false);
     }
   };
 
   //   console.log("history", history);
+  // console.log("", isLoadingGenerate);
+  // console.log("", isLoadingTypewriter);
 
   return (
     <div className="min-h-[calc(100vh-10rem)] flex flex-col gap-10 p-4 ">
@@ -212,19 +220,49 @@ export default function GeneratePage({
                 key={item.id}
                 item={item}
                 isLastItem={isLastItem}
-                isLoading={isLoading}
-                setIsLoading={setIsLoading}
+                isLoadingTypewriter={isLoadingTypewriter}
+                setIsLoadingTypewriter={setIsLoadingTypewriter}
               />
             );
           }
         })}
+        {isLoadingGenerate && (
+          <div className="shadow-sm my-6">
+            <div className="">
+              <DynamicTypewriterStream
+                text="Your message is sent to the server. It is coming back soon."
+                plain={true}
+                speed="medium"
+                className="
+                  max-w-3xl mx-auto
+                  p-8 md:p-12
+                  rounded-none border
+                  bg-card text-card-foreground
+                  shadow-sm transition-all
+                  text-base leading-7 my-5 text-card-foreground
+                "
+                cursorClassName="bg-red-500"
+                shouldStream={true}
+                isDeleting={isDeletingLoadingMessage}
+                onDeleteComplete={() => {
+                  setIsDeletingLoadingMessage(false);
+                  setIsLoadingGenerate(false);
+                  if (pendingHistoryItem) {
+                    setHistory((prev) => [...prev, pendingHistoryItem]);
+                    setPendingHistoryItem(null);
+                  }
+                }}
+              />
+            </div>
+          </div>
+        )}
       </div>
-      {!isLoading && (
+      {!isLoadingTypewriter && !isLoadingGenerate && (
         <div className="flex flex-col">
           <div className="flex flex-row gap-2 my-4">
             <Button
               onClick={() => handleGenerate("explanation")}
-              disabled={isLoading}
+              disabled={isLoadingGenerate}
               className={buttonVariants({ variant: "large" })}
             >
               Explain
@@ -232,7 +270,7 @@ export default function GeneratePage({
 
             <Button
               onClick={() => handleGenerate("quiz")}
-              disabled={isLoading}
+              disabled={isLoadingGenerate}
               className={buttonVariants({ variant: "large" })}
             >
               Quiz
@@ -240,7 +278,7 @@ export default function GeneratePage({
           </div>
           <Button
             onClick={() => redirect("/generate")}
-            disabled={isLoading}
+            disabled={isLoadingGenerate}
             className={buttonVariants({ variant: "large", color: "secondary" })}
           >
             New Session

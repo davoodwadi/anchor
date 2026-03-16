@@ -2,25 +2,36 @@ import { GeneratedContent } from "@/types/QuizTypes";
 import { MarkdownComponent } from "@/components/markdown/markdown-component";
 import { QuizDisplay } from "@/components/quiz/quiz-display";
 import { DynamicTypewriterStream } from "@/components/shared/dynamic-typewriter-stream";
+import { useEffect } from "react";
 import type { Dispatch, SetStateAction } from "react";
 
 export function HistoryItem({
   item,
   isLastItem,
-  isLoading,
-  setIsLoading,
+  isLoadingTypewriter,
+  setIsLoadingTypewriter,
 }: {
   item: GeneratedContent;
   isLastItem: boolean;
-  isLoading: boolean;
-  setIsLoading: Dispatch<SetStateAction<boolean>>;
+  isLoadingTypewriter: boolean;
+  setIsLoadingTypewriter: Dispatch<SetStateAction<boolean>>;
 }) {
   // console.log("item", item);
   // console.log("isLastItem", isLastItem);
   // if (isLastItem) {
   //   console.log("item", item);
   // }
-  const shouldStream = item.type === "explanation" && isLoading && isLastItem;
+
+  useEffect(() => {
+    // If a new item is added and it's not an explanation, there is no typewriter stream
+    // to call onComplete. We must instantly turn off isLoadingTypewriter.
+    if (isLastItem && isLoadingTypewriter && item.type !== "explanation") {
+      setIsLoadingTypewriter(false);
+    }
+  }, [isLastItem, isLoadingTypewriter, item.type, setIsLoadingTypewriter]);
+
+  const shouldStream =
+    item.type === "explanation" && isLoadingTypewriter && isLastItem;
 
   return (
     <div className="shadow-sm my-6">
@@ -41,7 +52,7 @@ export function HistoryItem({
       "
             cursorClassName="bg-red-500"
             shouldStream={shouldStream}
-            onComplete={() => setIsLoading(false)}
+            onComplete={() => setIsLoadingTypewriter(false)}
           />
         ) : (
           <QuizDisplay data={JSON.parse(item.content) as any} />
