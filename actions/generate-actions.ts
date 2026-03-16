@@ -21,7 +21,7 @@ import {
   GenerateInput,
 } from "@/types/QuizTypes";
 
-const dummy = true;
+const dummy = false;
 const model = "gemini-3-flash-preview";
 
 // Initialize the new client
