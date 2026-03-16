@@ -6,7 +6,14 @@ import { cn, stripMarkdown } from "@/lib/utils";
 type DynamicTypewriterStreamProps = {
   text: string;
   plain?: boolean;
-  speed?: "xfast" | "fast" | "medium" | "slow" | "xslow";
+  speed?:
+    | "xfast"
+    | "fast"
+    | "medium"
+    | "slow"
+    | "xslow"
+    | "mediumDummy"
+    | "xslowDummy";
   className?: string;
   completedLineClassName?: string;
   activeLineClassName?: string;
@@ -55,6 +62,17 @@ const speedPresets = {
     newlinePause: 600,
     deletePause: 25,
   },
+  mediumDummy: {
+    keyPattern: [30, 27, 31, 28, 34, 27, 30, 29],
+    initialDelay: 1870,
+    spaceDelay: 52,
+    sentencePause: 300,
+    clausePause: 170,
+    wordPause: 50,
+    rhythmPause: 110,
+    newlinePause: 600,
+    deletePause: 25,
+  },
   slow: {
     keyPattern: [86, 82, 88, 84, 93, 82, 87, 85],
     initialDelay: 230,
@@ -76,6 +94,17 @@ const speedPresets = {
     rhythmPause: 190,
     newlinePause: 1000,
     deletePause: 70,
+  },
+  xslowDummy: {
+    keyPattern: [106, 102, 108, 104, 113, 102, 107, 105],
+    initialDelay: 1230,
+    spaceDelay: 158,
+    sentencePause: 520,
+    clausePause: 380,
+    wordPause: 190,
+    rhythmPause: 190,
+    newlinePause: 1000,
+    deletePause: 50,
   },
 } as const;
 

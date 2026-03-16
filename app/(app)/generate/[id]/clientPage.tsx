@@ -262,7 +262,7 @@ export default function GeneratePage({
               <DynamicTypewriterStream
                 text={loadingMessage}
                 plain={true}
-                speed="medium"
+                speed="xslowDummy"
                 className="
                   max-w-3xl mx-auto
                   p-8 md:p-12
