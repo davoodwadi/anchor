@@ -1,18 +1,15 @@
 "use client";
 
 import { generateQuizAction } from "@/actions/generate-actions";
-import { ActionState, GeneratedContent } from "@/types/QuizTypes";
+import { GeneratedContent } from "@/types/QuizTypes";
 import { User } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 
-import { useActionState, useEffect, useState } from "react";
+import { useState } from "react";
 import { HistoryItem } from "./history-item";
-
-import { MarkdownComponent } from "@/components/markdown/markdown-component";
 
 import { Input } from "@/components/ui/input";
 import { UploadBox } from "@/components/shared/upload-box";
-import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { buttonVariants } from "@/components/shared/wake-variants";
@@ -151,7 +148,7 @@ export default function GeneratePage({
       sessionId,
       mode,
       history,
-      numQuestions, // <--- Passed directly
+      numQuestions,
       title,
       sessionType: "generate",
     });
@@ -160,8 +157,9 @@ export default function GeneratePage({
       setHistory((prev) => [...prev, result.data!]);
       // console.log("result", result);
     }
-
-    setIsLoading(false);
+    if (mode === "quiz") {
+      setIsLoading(false);
+    }
   };
 
   //   console.log("history", history);
@@ -207,8 +205,17 @@ export default function GeneratePage({
       {/* 2. The History Loop */}
       <div className="">
         {history.map((item, index) => {
+          const isLastItem = index === history.length - 1;
           if (item.type !== "user") {
-            return <HistoryItem key={item.id} item={item} />;
+            return (
+              <HistoryItem
+                key={item.id}
+                item={item}
+                isLastItem={isLastItem}
+                isLoading={isLoading}
+                setIsLoading={setIsLoading}
+              />
+            );
           }
         })}
       </div>
@@ -240,7 +247,7 @@ export default function GeneratePage({
           </Button>
         </div>
       )}
-      {isLoading && <RitualLoading />}
+      {/* {isLoading && <RitualLoading />} */}
 
       {/* Invisible div to auto-scroll to bottom */}
       <div id="scroll-anchor" />

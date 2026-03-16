@@ -22,18 +22,18 @@ export function LoginForm({
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("clicked");
+    // console.log("clicked");
     const supabase = createClient();
     setIsLoading(true);
     setError(null);
 
     try {
-      console.log("trying to call supabase.auth.signInWithPassword");
+      // console.log("trying to call supabase.auth.signInWithPassword");
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      console.log("called supabase.auth.signInWithPassword", error);
+      // console.log("called supabase.auth.signInWithPassword", error);
       if (error) throw error;
       router.refresh();
       router.push("/dashboard");
@@ -98,7 +98,7 @@ export function LoginForm({
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="h-12 rounded-none border-white/10 bg-black/40 px-4 text-white shadow-none placeholder:text-zinc-500 focus-visible:border-neon-red-600 focus-visible:ring-0"
+                className="h-12 rounded-none border-white/10 bg-black/40 px-4 text-white shadow-none placeholder:text-zinc-500 focus-visible:border-neon-red-600 focus-visible:ring-0 transition-none"
               />
             </div>
 

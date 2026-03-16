@@ -229,7 +229,7 @@ export default function CreateQuizPage() {
                     </p>
                     <TypewriterStream
                       lines={loadingLines}
-                      speed="slow"
+                      speed="xslow"
                       className="mt-4 flex-1 font-mono text-sm leading-7 tracking-[0.04em] text-white md:text-base"
                       completedLineClassName="text-zinc-400"
                       activeLineClassName="text-white"

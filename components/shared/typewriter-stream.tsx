@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 type TypewriterStreamProps = {
   lines: string[];
-  speed?: "fast" | "medium" | "slow";
+  speed?: "fast" | "medium" | "slow" | "xslow";
   className?: string;
   completedLineClassName?: string;
   activeLineClassName?: string;
@@ -49,6 +49,15 @@ const speedPresets = {
     clausePause: 280,
     wordPause: 100,
     rhythmPause: 150,
+  },
+  xslow: {
+    keyPattern: [106, 102, 108, 104, 113, 102, 107, 105],
+    initialDelay: 830,
+    spaceDelay: 158,
+    sentencePause: 520,
+    clausePause: 380,
+    wordPause: 190,
+    rhythmPause: 190,
   },
 } as const;
 
