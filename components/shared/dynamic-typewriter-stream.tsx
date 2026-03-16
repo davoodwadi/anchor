@@ -104,7 +104,7 @@ const speedPresets = {
     wordPause: 190,
     rhythmPause: 190,
     newlinePause: 1000,
-    deletePause: 50,
+    deletePause: 30,
   },
 } as const;
 
