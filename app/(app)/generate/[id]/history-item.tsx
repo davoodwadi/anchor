@@ -41,7 +41,7 @@ export function HistoryItem({
           <DynamicTypewriterStream
             text={item.content as string}
             plain={true}
-            speed="xfast"
+            speed="medium"
             className="
         max-w-3xl mx-auto
         p-8 md:p-12
