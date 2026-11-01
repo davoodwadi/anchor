@@ -13,7 +13,7 @@ const LETTERS = ["a", "b", "c", "d", "e", "f"];
 
 /**
  * Practice questions typed on paper. Circle an answer and it is marked straight
- * away in blue pen with the reason. Nothing is recorded.
+ * away in pen with the reason. Nothing is recorded.
  * Render inside an `aw-paper` sheet; picks are keyed `${keyPrefix}-${index}`.
  */
 export function PracticePaper({
@@ -55,7 +55,7 @@ export function PracticePaper({
                       !answered && "hover:bg-aw-ink/[.07]",
                       chosen &&
                         !right &&
-                        "line-through decoration-[#1e3f94] decoration-[1.5px]",
+                        "line-through decoration-[#141210] decoration-[1.5px]",
                     )}
                   >
                     <span
@@ -64,7 +64,7 @@ export function PracticePaper({
                         chosen
                           ? "aw-circled"
                           : answered && correct
-                            ? "aw-circled aw-blue"
+                            ? "aw-circled aw-pen"
                             : "inline-block",
                       )}
                     >
@@ -72,7 +72,7 @@ export function PracticePaper({
                     </span>
                     ) {o.option_text}
                     {answered && correct && (
-                      <span className="aw-blue font-hand text-[1.3em] ml-[.4em] indent-0 inline-block">
+                      <span className="aw-pen font-hand text-[1.3em] ml-[.4em] indent-0 inline-block">
                         ✓
                       </span>
                     )}
@@ -81,7 +81,7 @@ export function PracticePaper({
               })}
             </div>
             {answered && (
-              <p className="aw-blue font-hand uppercase text-[1.25em] leading-[1.3] mt-[.8em] ml-[2.4em] max-w-[48ch] -rotate-1 origin-left">
+              <p className="aw-pen font-hand uppercase text-[1.25em] leading-[1.3] mt-[.8em] ml-[2.4em] max-w-[48ch] -rotate-1 origin-left">
                 {right ? "Right. " : "Not quite. "}
                 {q.options[q.correct]?.option_explanation}
               </p>

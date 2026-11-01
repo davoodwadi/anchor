@@ -250,12 +250,12 @@ html {
     transform: rotate(-12deg);
   }
 
-  /* Grader's blue pen */
-  .aw-blue {
-    color: #1e3f94;
+  /* Grader's pen (black ink) */
+  .aw-pen {
+    color: #141210;
   }
-  .aw-circled.aw-blue::after {
-    border-color: #1e3f94;
+  .aw-circled.aw-pen::after {
+    border-color: #141210;
   }
 
   /* Hand-drawn circle around a whole phrase (landing demo) */

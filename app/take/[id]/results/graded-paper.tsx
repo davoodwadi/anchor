@@ -28,7 +28,7 @@ interface GradedPaperProps {
 
 /**
  * The student's paper handed back: one long typed sheet with every question,
- * marked by the grader in blue pen. The student's own circles stay in pencil.
+ * marked by the grader in pen.
  */
 export function GradedPaper({
   title,
@@ -70,7 +70,7 @@ export function GradedPaper({
               .
             </>
           )}{" "}
-          Your paper is marked in blue, with the reason and the source for each
+          Your paper is marked, with the reason and the source for each
           answer.
         </p>
         <nav aria-label="Questions">
@@ -120,7 +120,7 @@ export function GradedPaper({
 
             <div
               aria-label={`Score ${score} out of ${total}`}
-              className="aw-blue font-hand md:absolute md:right-[5%] md:top-[2.6em] w-fit ml-auto -mt-[.6em] mb-[.2em] md:m-0 text-[2.4em] leading-none -rotate-[8deg] border-[2px] border-[#1e3f94] rounded-[50%] px-[.45em] py-[.2em]"
+              className="aw-pen font-hand md:absolute md:right-[5%] md:top-[2.6em] w-fit ml-auto -mt-[.6em] mb-[.2em] md:m-0 text-[2.4em] leading-none -rotate-[8deg] border-[2px] border-[#141210] rounded-[50%] px-[.45em] py-[.2em]"
             >
               {score}/{total}
             </div>
@@ -135,7 +135,7 @@ export function GradedPaper({
                 >
                   <span
                     aria-label={right ? "Correct" : "Incorrect"}
-                    className="aw-blue font-hand absolute right-0 md:right-auto md:-left-[2em] top-[.9em] text-[1.9em] leading-none -rotate-[6deg]"
+                    className="aw-pen font-hand absolute right-0 md:right-auto md:-left-[2em] top-[.9em] text-[1.9em] leading-none -rotate-[6deg]"
                   >
                     {right ? "✓" : "✗"}
                   </span>
@@ -153,7 +153,7 @@ export function GradedPaper({
                             "pl-[3.6em] md:pl-[4.6em] -indent-[1.7em] mb-[.2em]",
                             chosen &&
                               !right &&
-                              "line-through decoration-[#1e3f94] decoration-[1.5px]",
+                              "line-through decoration-[#141210] decoration-[1.5px]",
                           )}
                         >
                           <span
@@ -162,7 +162,7 @@ export function GradedPaper({
                               chosen
                                 ? "aw-circled"
                                 : isCorrect && !right
-                                  ? "aw-circled aw-blue"
+                                  ? "aw-circled aw-pen"
                                   : "inline-block",
                             )}
                           >
@@ -170,7 +170,7 @@ export function GradedPaper({
                           </span>
                           ) {opt.option_text}
                           {isCorrect && (
-                            <span className="aw-blue font-hand text-[1.3em] ml-[.4em] indent-0 inline-block">
+                            <span className="aw-pen font-hand text-[1.3em] ml-[.4em] indent-0 inline-block">
                               ✓
                             </span>
                           )}
@@ -179,7 +179,7 @@ export function GradedPaper({
                     })}
                   </ul>
                   {correct?.option_explanation && (
-                    <p className="aw-blue font-hand uppercase text-[1.3em] leading-[1.3] mt-[1em] ml-[2.4em] max-w-[48ch] -rotate-[1deg] origin-left">
+                    <p className="aw-pen font-hand uppercase text-[1.3em] leading-[1.3] mt-[1em] ml-[2.4em] max-w-[48ch] -rotate-[1deg] origin-left">
                       {right ? "Right. " : ""}
                       {correct.option_explanation}
                     </p>
