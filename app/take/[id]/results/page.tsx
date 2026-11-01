@@ -1,21 +1,28 @@
-import QuizVerdict from "./quiz-verdict";
-import { QuizReview } from "./quiz-review";
-import { notFound, redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server"; // Updated path per instructions
-import { Separator } from "@/components/ui/separator";
+import { Suspense } from "react";
+import { notFound } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { AwPage, AwTopBar, aw } from "@/components/aw2/shell";
+import { GradedPaper, type GradedResponse } from "./graded-paper";
+
 interface ResultPageProps {
   params: Promise<{ id: string }>;
   searchParams: Promise<{ attemptId?: string }>;
 }
 
-export default async function ResultPage(props: ResultPageProps) {
-  // Await the searchParams in Next.js 15
-  const searchParams = await props.searchParams;
-  const { attemptId } = searchParams;
-  // console.log("attemptId", attemptId);
-  if (!attemptId) {
-    redirect(notFound());
-  }
+export default function ResultPage(props: ResultPageProps) {
+  return (
+    <AwPage>
+      <Suspense fallback={<ResultsLoading />}>
+        <Results {...props} />
+      </Suspense>
+    </AwPage>
+  );
+}
+
+async function Results({ searchParams }: ResultPageProps) {
+  const { attemptId } = await searchParams;
+  if (!attemptId) notFound();
+
   const supabase = await createClient();
   const { data: attempt, error } = await supabase
     .from("attempts")
@@ -25,6 +32,7 @@ export default async function ResultPage(props: ResultPageProps) {
       score,
       total,
       student_number,
+      quizzes ( title ),
       quiz_responses (
         selected_option_id,
         question_id,
@@ -41,25 +49,40 @@ export default async function ResultPage(props: ResultPageProps) {
       )
     `,
     )
-    .eq("id", searchParams.attemptId)
+    .eq("id", attemptId)
     .single();
 
-  if (error || !attempt) {
-    return notFound();
-  }
-  // console.log("attempt", attempt);
+  if (error || !attempt) notFound();
+
+  const quiz = attempt.quizzes as unknown as { title: string } | null;
+  const title = quiz?.title?.trim() || "Untitled quiz";
 
   return (
-    <div className="container max-w-3xl py-12 space-y-12 mx-auto">
-      {/* 1. Show the Score Header */}
-      <QuizVerdict
+    <>
+      <AwTopBar
+        mid={title}
+        right={<span className={aw.chip}>{attempt.student_number}</span>}
+      />
+      <GradedPaper
+        title={title}
+        studentId={attempt.student_number}
         score={attempt.score}
         total={attempt.total}
-        studentId={attempt.student_number}
+        responses={attempt.quiz_responses as unknown as GradedResponse[]}
       />
-      {/* <Separator /> */}
-      {/* 2. Show the Question-by-Question Review */}
-      <QuizReview responses={attempt.quiz_responses} />
+    </>
+  );
+}
+
+function ResultsLoading() {
+  return (
+    <div
+      role="status"
+      aria-label="Loading results"
+      className="min-h-svh grid content-center justify-items-center gap-6 px-4"
+    >
+      <div className="aw-kicker text-aw-text-3">Marking your paper</div>
+      <div className="aw-paper w-[min(100%,420px)] aspect-[1000/1296] rotate-[1.5deg] opacity-80" />
     </div>
   );
 }

@@ -1,43 +1,53 @@
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
+import { AwPage } from "@/components/aw2/shell";
 import { QuizPreview } from "./quiz-preview";
 
-export default async function PreviewQuizPage({
+export default function PreviewQuizPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   return (
-    <div className="container max-w-5xl py-12 animate-in fade-in duration-500">
-      <Suspense fallback={<div className="font-mono text-center pt-24 uppercase tracking-widest animate-pulse">Loading Evidence...</div>}>
+    <AwPage shade={false}>
+      <Suspense
+        fallback={
+          <div
+            role="status"
+            className="min-h-svh grid content-center justify-items-center aw-kicker text-aw-text-3"
+          >
+            Loading preview
+          </div>
+        }
+      >
         <PreviewQuizLoader params={params} />
       </Suspense>
-    </div>
+    </AwPage>
   );
 }
 
-async function PreviewQuizLoader({ params }: { params: Promise<{ id: string }> }) {
+async function PreviewQuizLoader({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
   const supabase = await createClient();
 
   const { data: quiz, error } = await supabase
     .from("quizzes")
-    .select("title, questions(*, options(*))")
+    .select("id, title, questions(*, options(*))")
     .eq("id", id)
     .single();
 
   if (error || !quiz) notFound();
 
-  // Sort questions to maintain reasonable order
-  const sortedQuestions = quiz.questions.sort((a, b) => 
-    new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-  );
-
   return (
-    <QuizPreview 
-      quizTitle={quiz.title} 
-      questions={sortedQuestions} 
+    <QuizPreview
+      quizId={quiz.id}
+      quizTitle={quiz.title?.trim() || "Untitled quiz"}
+      questions={quiz.questions}
     />
   );
 }

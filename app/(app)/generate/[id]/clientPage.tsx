@@ -1,143 +1,110 @@
 "use client";
 
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import type { User } from "@supabase/supabase-js";
+import Markdown from "react-markdown";
+
 import { generateQuizAction } from "@/actions/generate-actions";
-import { GeneratedContent } from "@/types/QuizTypes";
-import { User } from "@supabase/supabase-js";
-import { redirect } from "next/navigation";
-
-import { useState } from "react";
-import { HistoryItem } from "./history-item";
-
-import { Input } from "@/components/ui/input";
-import { DynamicTypewriterStream } from "@/components/shared/dynamic-typewriter-stream";
-import { UploadBox } from "@/components/shared/upload-box";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { buttonVariants } from "@/components/shared/wake-variants";
-import { RitualLoading } from "./RitualLoading";
-import { BackButton } from "@/components/shared/back-button";
+import { GeneratedContent, QuizData } from "@/types/QuizTypes";
+import { extractText } from "@/lib/extract-text";
+import { cn } from "@/lib/utils";
+import { AwPage, AwTopBar, aw } from "@/components/aw2/shell";
+import { Key } from "@/components/aw2/key";
+import { useHotkeys } from "@/components/aw2/use-hotkeys";
+import { PracticePaper } from "@/components/aw2/practice-paper";
 
 const noRefDoc = "Do not mention the document. ";
-// const noBullet = "Do not use bullet points in your response. ";
 const addedConstraints = noRefDoc;
-
-const LOADING_MESSAGES = [
-  "The writer sits in the dark. The keys strike the paper in a desperate rhythm. The manuscript must be completed before the shadows take hold. He is searching for the right questions, the right answers. The drafts are piling up. The final version is almost complete.",
-  "It's not a loop, it's a spiral. The meaning of this document descends deeper with every read, twisting reality around its core concepts. We are tracing the descent. The end of the spiral is approaching... but the path is getting darker.",
-  "The shadows are bleeding into the text. We must use the light to burn away the darkness and reveal the true narrative underneath. Don't look away from the page. The answers will be illuminated soon.",
-  "This is a story about a document that became reality. The words you submitted are taking shape in the Dark Place, manifesting as concepts we can test. The boundaries of fiction are breaking down. Please wait while the narrative solidifies.",
-  "It's not a lake, it's an ocean. The ideas in this text are sinking beneath the surface, pulled by a current we cannot fight. We are diving into the depths to retrieve the essential truth. Wait for the ripples to settle.",
-  "The Cult of the Tree has marked this text. The symbols are painted on the trees, guiding us to the answers hidden in the forest. We are following the path. The overlap is opening. Do not enter the water until the results manifest.",
-  "Echoes from the past are ringing in the cabin. The words have already been written, we are just waiting for the sound to reach us across the lake. The delay is not technical, it is temporal. The answers are arriving from the future.",
-  "The Clicker has been pressed. Reality is rewriting itself to accommodate the new structural demands of your document. The dark presence is being scrubbed from the margins. Focus on the light. The revised narrative is emerging.",
-  "We are entering the Overlap. The rules of reality do not apply here. The text is shifting, its meaning looping back on itself. We must find the core truth before the loop repeats. Stand by in the dark.",
-  "The manuscript pages are scattered across the floor of the cabin. They tell a story of a quiz generated from darkness. We are gathering the pages, piecing the narrative back together in the correct order. The final chapter is imminent.",
-  "Welcome to Night Springs. The document you submitted is merely a reflection in a broken mirror. We are piecing the glass back together to show you the truth hidden behind the fiction. Stay tuned. The episode is about to resume.",
-  "The dark presence is hungry. It consumes the narrative and leaves only the bones of truth behind. We are sifting through the remains to find the questions you seek. The light is flickering. Hurry.",
-  "The shoebox is open. Inside, we found the answers hidden in plain sight. They were left here by someone else, or perhaps by you in another timeline. We are sorting through the memories now. The truth is fragile.",
-  "The radio is broadcasting static, but there is a message hidden in the noise. The words of your document are being transmitted across the dark frequencies. We are tuning the dial to find a clear signal. The broadcast will begin shortly.",
-  "The theater is empty, but the projector is running. We are watching the events of your document unfold on the silver screen, looking for the critical plot points. The film is degraded, but the meaning is shining through the scratches. The reel is almost finished.",
-  "The words are a weapon against the dark. We are crafting them carefully, ensuring they strike true. Every question must be a flare, every answer a safe haven. The arsenal is being prepared. Stay in the light.",
-  "The cabin on the island is gone, but the typewriter remains. The keys are moving on their own, guided by a force from deep beneath the lake. It is writing the questions you need. Do not disturb the process.",
-  "The shadow entities are trying to obscure the meaning of the text. We are using flares to hold them back while we extract the core concepts. The light is holding... for now. The extraction process is delicate but progressing.",
-  "The story demands a sacrifice. The original text must be dismantled so that the quiz can be born. We are tearing the pages apart and weaving them into something new. The transformation is painful but necessary.",
-  "The manuscript is a map. We are following the words through the Dark Place, trying to find our way back to the surface. The path is treacherous and full of shadows. We will bring the answers back with us.",
-];
+const PLAIN_KEY = "anchor:plain-text";
 
 interface Props {
   user: User;
   sessionId: string;
   initialHistory: GeneratedContent[];
 }
-export default function GeneratePage({
-  user,
-  sessionId,
-  initialHistory,
-}: Props) {
-  const [title, setTitle] = useState("");
-  const [numQuestions, setNumQuestions] = useState(3);
-  const [fileName, setFileName] = useState<string | null>(null);
-  // const [fileBase64, setFileBase64] = useState<string | null>(null);
-  const [file, setFile] = useState<File | null>(null);
+
+type Mode = "quiz" | "explanation";
+
+function readPlainPref() {
+  try {
+    return localStorage.getItem(PLAIN_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+const noSubscribe = () => () => {};
+
+/** Number each explanation and practice quiz in the order they appeared. */
+function labelEntries(history: GeneratedContent[]) {
+  let e = 0;
+  let q = 0;
+  return history
+    .filter((h) => h.type !== "user")
+    .map((h) => ({
+      item: h,
+      label: h.type === "quiz" ? `Practice quiz ${++q}` : `Explanation ${++e}`,
+    }));
+}
+
+export default function GeneratePage({ sessionId, initialHistory }: Props) {
+  const router = useRouter();
   const [history, setHistory] = useState<GeneratedContent[]>(initialHistory);
-
   const [extractedText, setExtractedText] = useState<string | null>(
-    initialHistory.length > 0
-      ? (initialHistory[0]?.extractedText ?? null)
-      : null,
+    initialHistory[0]?.extractedText ?? null,
   );
+  const [fileName, setFileName] = useState<string | null>(null);
+  const [numQuestions, setNumQuestions] = useState(3);
+  const [pending, setPending] = useState<Mode | null>(null);
+  const [startedAt, setStartedAt] = useState(0);
+  const [elapsed, setElapsed] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const [isReading, setIsReading] = useState(false);
+  // Stored preference (read on the client only), overridden once toggled here
+  const storedPlain = useSyncExternalStore(noSubscribe, readPlainPref, () => false);
+  const [plainOverride, setPlainOverride] = useState<boolean | null>(null);
+  const plain = plainOverride ?? storedPlain;
+  const [picks, setPicks] = useState<Record<string, number>>({});
+  const fileInput = useRef<HTMLInputElement>(null);
 
-  const [isPDFLoading, setIsPDFLoading] = useState(false);
-  const [isLoadingTypewriter, setIsLoadingTypewriter] = useState(false);
-  const [isLoadingGenerate, setIsLoadingGenerate] = useState(false);
-  const [isDeletingLoadingMessage, setIsDeletingLoadingMessage] =
-    useState(false);
-  const [pendingHistoryItem, setPendingHistoryItem] =
-    useState<GeneratedContent | null>(null);
-  const [loadingMessage, setLoadingMessage] = useState("");
-  const disabled = history.length > 0;
+  const entries = labelEntries(history);
+  const [selected, setSelected] = useState(entries.length - 1);
+  const started = history.length > 0;
+  const current = entries[selected];
 
-  const lastModelResponse = history.at(-1);
+  useEffect(() => {
+    if (!pending) return;
+    const t = setInterval(
+      () => setElapsed(Math.round((Date.now() - startedAt) / 1000)),
+      1000,
+    );
+    return () => clearInterval(t);
+  }, [pending, startedAt]);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0] || null;
-    if (!selectedFile) return;
-
-    setFileName(selectedFile.name);
-    setFile(selectedFile);
-    const fullText = await extractTextClientSide(selectedFile);
-  };
-
-  const extractTextClientSide = async (fileToParse: File) => {
-    if (!fileToParse) return;
-    setIsPDFLoading(true);
-
+  const handleFile = async (file: File | undefined) => {
+    if (!file) return;
+    setError(null);
+    setFileName(file.name);
+    setExtractedText(null);
+    setIsReading(true);
     try {
-      // Dynamic import to prevent SSR server crash
-      const pdfjsLib = await import("pdfjs-dist");
-
-      // Set worker
-      pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
-
-      // 4. Use the passed argument 'fileToParse', not the state 'file'
-      const arrayBuffer = await fileToParse.arrayBuffer();
-
-      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-
-      let fullText = "";
-      for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i);
-        const textContent = await page.getTextContent();
-        const pageText = textContent.items
-          // @ts-ignore - 'str' exists on TextItem, typescript sometimes complains about TextMarkedContent
-          .map((item) => item.str)
-          .join(" ");
-        fullText += pageText + "\n\n";
-      }
-
-      setExtractedText(fullText);
-      return fullText;
-    } catch (error) {
-      console.error("Error parsing PDF:", error);
-      alert("Failed to parse PDF.");
+      setExtractedText(await extractText(file));
+    } catch (e) {
+      setFileName(null);
+      setError(e instanceof Error ? e.message : "Couldn't read that file.");
     } finally {
-      setIsPDFLoading(false);
+      setIsReading(false);
     }
   };
-  // 2. THE HANDLER
-  const handleGenerate = async (mode: "quiz" | "explanation") => {
-    setIsLoadingTypewriter(true);
-    setIsLoadingGenerate(true);
 
-    // Select a random loading message
-    const randomMessage =
-      LOADING_MESSAGES[Math.floor(Math.random() * LOADING_MESSAGES.length)];
-    setLoadingMessage(randomMessage);
+  const handleGenerate = async (mode: Mode) => {
+    if (pending || !extractedText) return;
+    setError(null);
 
-    let newHistory: GeneratedContent[] = history;
-    if (history.length === 0) {
-      // first request
-      const userMessagePart: GeneratedContent = {
+    let userMessage: GeneratedContent;
+    if (!started) {
+      userMessage = {
         type: "user",
         content:
           mode === "quiz"
@@ -149,176 +116,294 @@ export default function GeneratePage({
               addedConstraints +
               "\n\n" +
               extractedText,
-        extractedText: extractedText,
-        id: "user-quiz1",
+        extractedText,
+        id: `user-${Date.now()}`,
       };
-
-      newHistory.push(userMessagePart);
-      setHistory(newHistory);
+    } else if (mode === "quiz") {
+      userMessage = {
+        type: "user",
+        content: `Generate ${numQuestions} new multiple choice questions.`,
+        id: `user-${Date.now()}`,
+      };
     } else {
-      if (mode === "quiz") {
-        const userMessagePart: GeneratedContent = {
-          type: "user",
-          content: `Generate ${numQuestions} new multiple choice questions.`,
-          id: "user-quiz2",
-        };
-        newHistory.push(userMessagePart);
-        setHistory(newHistory);
-      } else {
-        let instruction = "";
-        if (lastModelResponse?.type === "explanation") {
-          instruction = `Explain the document in more detail. `;
-        } else {
-          instruction = `Explain the questions and why the correct choice is true. `;
-        }
-        const userMessagePart: GeneratedContent = {
-          type: "user",
-          content: instruction + addedConstraints,
-          id: "exp1",
-        };
-        newHistory.push(userMessagePart);
-        setHistory(newHistory);
-      }
+      const last = history.at(-1);
+      const instruction =
+        last?.type === "explanation"
+          ? "Explain the document in more detail. "
+          : "Explain the questions and why the correct choice is true. ";
+      userMessage = {
+        type: "user",
+        content: instruction + addedConstraints,
+        id: `user-${Date.now()}`,
+      };
     }
+
+    const nextHistory = [...history, userMessage];
+    setHistory(nextHistory);
+    setPending(mode);
+    setStartedAt(Date.now());
+    setElapsed(0);
 
     const result = await generateQuizAction({
       sessionId,
       mode,
-      history,
+      history: nextHistory,
       numQuestions,
-      title,
+      title: "",
       sessionType: "generate",
     });
 
     if (result.success && result.data) {
-      setPendingHistoryItem(result.data);
-      setIsDeletingLoadingMessage(true);
+      const withReply = [...nextHistory, result.data];
+      setHistory(withReply);
+      setSelected(labelEntries(withReply).length - 1);
     } else {
-      setIsLoadingGenerate(false);
+      setError(result.error || "That didn't work. Please try again.");
+    }
+    setPending(null);
+  };
+
+  const togglePlain = () => {
+    const next = !plain;
+    setPlainOverride(next);
+    try {
+      localStorage.setItem(PLAIN_KEY, next ? "1" : "0");
+    } catch {
+      // Preference just won't persist
     }
   };
 
-  //   console.log("history", history);
-  // console.log("", isLoadingGenerate);
-  // console.log("", isLoadingTypewriter);
+  useHotkeys({
+    escape: () => router.push("/dashboard"),
+    x: () => handleGenerate("explanation"),
+    q: () => handleGenerate("quiz"),
+    n: () => router.push("/generate"),
+    t: togglePlain,
+    arrowdown: () => setSelected((s) => Math.min(entries.length - 1, s + 1)),
+    arrowup: () => setSelected((s) => Math.max(0, s - 1)),
+  });
+
+  const paperText = plain
+    ? "font-prose text-[16px] md:text-[clamp(16px,1.3vw,18px)] leading-[1.85]"
+    : "aw-typed text-[14px] md:text-[clamp(14.5px,1.2vw,16.5px)] leading-[2.05]";
 
   return (
-    <div className="min-h-[calc(100vh-10rem)] flex flex-col gap-10 p-4 ">
-      <BackButton href="/dashboard" />
-      {/* 1. Initial Input Form (To start the conversation) */}
-      <div>
-        <Label htmlFor="title">Title</Label>
-        <Input
-          id={"title"}
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className=" "
-        />
-      </div>
-
-      <div>
-        <Label htmlFor="amount">Number of Questions</Label>
-        <Input
-          id="amount"
-          name="amount"
-          type="number"
-          min={1}
-          max={20}
-          value={numQuestions}
-          onChange={(e) => setNumQuestions(Number(e.target.value))}
-          className=""
-        />
-      </div>
-
-      <div>
-        <Label htmlFor="file">Source Material (PDF)</Label>
-        <UploadBox
-          fileName={fileName}
-          extractedText={extractedText}
-          disabled={disabled}
-          onChange={handleFileChange}
-        />
-      </div>
-
-      {/* 2. The History Loop */}
-      <div className="">
-        {history.map((item, index) => {
-          const isLastItem = index === history.length - 1;
-          if (item.type !== "user") {
-            return (
-              <HistoryItem
-                key={item.id}
-                item={item}
-                isLastItem={isLastItem}
-                isLoadingTypewriter={isLoadingTypewriter}
-                setIsLoadingTypewriter={setIsLoadingTypewriter}
-              />
-            );
+    <AwPage>
+      <div className="min-h-svh grid grid-rows-[auto_1fr_auto]">
+        <AwTopBar
+          left={
+            <Link href="/dashboard" className={aw.chip}>
+              <Key>Esc</Key>Dashboard
+            </Link>
           }
-        })}
-        {isLoadingGenerate && (
-          <div className="shadow-sm my-6">
-            <div className="">
-              <DynamicTypewriterStream
-                text={loadingMessage}
-                plain={true}
-                speed="xslowDummy"
-                className="
-                  max-w-3xl mx-auto
-                  p-8 md:p-12
-                  rounded-none border
-                  bg-card text-card-foreground
-                  shadow-sm transition-all
-                  text-base leading-7 my-5 text-card-foreground
-                "
-                cursorClassName="bg-red-500"
-                shouldStream={true}
-                isDeleting={isDeletingLoadingMessage}
-                onDeleteComplete={() => {
-                  setIsDeletingLoadingMessage(false);
-                  setIsLoadingGenerate(false);
-                  if (pendingHistoryItem) {
-                    setHistory((prev) => [...prev, pendingHistoryItem]);
-                    setPendingHistoryItem(null);
-                  }
-                }}
-              />
+          mid="Study session"
+          right={
+            <button onClick={togglePlain} aria-pressed={plain} className={aw.chip}>
+              <Key>T</Key>
+              {plain ? "Typewriter" : "Plain text"}
+            </button>
+          }
+        />
+
+        <main className="grid gap-6 md:gap-10 px-4 md:px-10 pt-[1vh] pb-6 items-start grid-cols-1 md:grid-cols-[minmax(200px,260px)_minmax(0,1fr)] xl:grid-cols-[minmax(220px,280px)_minmax(0,1fr)_minmax(0,220px)]">
+          <section>
+            <div className={aw.kicker}>Studying</div>
+            <h1 className={cn(aw.display, "text-[clamp(48px,4.6vw,72px)] mt-1.5 mb-6")}>
+              STUDY
+            </h1>
+            {started && (
+              <>
+                <h2 className={aw.groupTitle}>
+                  Session <span className="tracking-[.04em]">{entries.length}</span>
+                </h2>
+                <ul className="flex md:block gap-1.5 overflow-x-auto">
+                  {entries.map((e, i) => (
+                    <li key={e.item.id}>
+                      <button
+                        onClick={() => setSelected(i)}
+                        aria-current={i === selected && !pending ? "true" : undefined}
+                        className={cn(
+                          aw.item,
+                          "max-md:w-auto max-md:whitespace-nowrap max-md:border max-md:border-aw-line max-md:px-2.5 max-md:py-1.5",
+                          i === selected && !pending ? aw.itemOn : aw.itemIdle,
+                        )}
+                      >
+                        {e.label}
+                      </button>
+                    </li>
+                  ))}
+                  {pending && (
+                    <li className={cn(aw.item, aw.itemOn)}>
+                      {pending === "quiz" ? "Practice quiz" : "Explanation"}
+                      <span className={aw.itemMeta}>Writing…</span>
+                    </li>
+                  )}
+                </ul>
+              </>
+            )}
+          </section>
+
+          {/* The paper is the whole study surface */}
+          <section className="justify-self-center w-full max-w-[760px]">
+            <div className="md:rotate-[.4deg]">
+              <article
+                aria-live="polite"
+                className={cn(
+                  "aw-paper relative md:min-h-[min(70vh,820px)] px-[7%] md:px-[10%] pt-[9%] md:pt-[7%] pb-[8%] md:pb-[6%]",
+                  paperText,
+                )}
+              >
+                {pending ? (
+                  <p role="status">
+                    Writing{" "}
+                    {pending === "quiz"
+                      ? `${numQuestions} practice questions`
+                      : "an explanation"}{" "}
+                    from your file. This usually takes 20 to 40 seconds.{" "}
+                    {elapsed}s so far.
+                  </p>
+                ) : !started ? (
+                  <StartSheet
+                    fileName={fileName}
+                    isReading={isReading}
+                    ready={!!extractedText}
+                    onPick={() => fileInput.current?.click()}
+                    onDrop={handleFile}
+                  />
+                ) : current?.item.type === "quiz" ? (
+                  <PracticePaper
+                    questions={(
+                      JSON.parse(current.item.content) as QuizData
+                    ).questions.map((q) => ({
+                      question_text: q.question_text,
+                      options: q.options,
+                      correct: q.correct_answer_index,
+                    }))}
+                    keyPrefix={current.item.id}
+                    picks={picks}
+                    onPick={(key, i) =>
+                      setPicks((p) => (key in p ? p : { ...p, [key]: i }))
+                    }
+                  />
+                ) : current ? (
+                  <div className="[&_p]:mb-[1.1em] [&_p]:indent-[2.4em] [&_h1]:font-bold [&_h2]:font-bold [&_h3]:font-bold [&_h1]:mb-[.8em] [&_h2]:mb-[.8em] [&_h3]:mb-[.6em] [&_h2]:border-0 [&_h2]:pb-0 [&_h2]:text-[1em] [&_h1]:text-[1.05em] [&_h3]:text-[1em] [&_h1]:normal-case [&_h2]:normal-case [&_h1]:tracking-normal [&_h2]:tracking-normal [&_h1]:font-[inherit] [&_h2]:font-[inherit] [&_h3]:font-[inherit] [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-[2.4em] [&_ol]:pl-[2.4em] [&_ul]:mb-[1.1em] [&_ol]:mb-[1.1em] [&_strong]:font-bold">
+                    <Markdown>{current.item.content}</Markdown>
+                  </div>
+                ) : null}
+                <input
+                  ref={fileInput}
+                  type="file"
+                  accept=".pdf,.md,.markdown,application/pdf,text/markdown"
+                  hidden
+                  onChange={(e) => {
+                    handleFile(e.target.files?.[0]);
+                    e.target.value = "";
+                  }}
+                />
+              </article>
             </div>
-          </div>
-        )}
-      </div>
-      {!isLoadingTypewriter && !isLoadingGenerate && (
-        <div className="flex flex-col">
-          <div className="flex flex-row gap-2 my-4">
-            <Button
+          </section>
+          <div className="hidden xl:block" />
+        </main>
+
+        <div className="sticky bottom-0 md:static bg-[rgba(13,12,11,.94)] md:bg-transparent border-t border-aw-line md:border-0">
+          {error && (
+            <p role="alert" className="text-center font-prose text-[15px] text-[#d58c88] pt-3">
+              {error}
+            </p>
+          )}
+          <nav className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2.5 px-4 py-3 md:pt-6 md:pb-7">
+            <button
               onClick={() => handleGenerate("explanation")}
-              disabled={isLoadingGenerate}
-              className={buttonVariants({ variant: "large" })}
+              disabled={!!pending || !extractedText}
+              className={cn(aw.action, "text-aw-text")}
             >
-              Explain
-            </Button>
-
-            <Button
-              onClick={() => handleGenerate("quiz")}
-              disabled={isLoadingGenerate}
-              className={buttonVariants({ variant: "large" })}
-            >
-              Quiz
-            </Button>
-          </div>
-          <Button
-            onClick={() => redirect("/generate")}
-            disabled={isLoadingGenerate}
-            className={buttonVariants({ variant: "large", color: "secondary" })}
-          >
-            New Session
-          </Button>
+              <Key>X</Key>
+              {started ? "Explain more" : "Explain"}
+            </button>
+            <span className="inline-flex items-center gap-3.5">
+              <button
+                onClick={() => handleGenerate("quiz")}
+                disabled={!!pending || !extractedText}
+                className={cn(aw.action, "text-aw-text")}
+              >
+                <Key>Q</Key>Quiz me
+              </button>
+              <span className="inline-flex items-center gap-1.5 font-ui text-[15px] text-aw-text-3">
+                <button
+                  onClick={() => setNumQuestions((n) => Math.max(1, n - 1))}
+                  aria-label="Fewer questions"
+                  className="size-[26px] bg-white/[.08] text-aw-text"
+                >
+                  −
+                </button>
+                <span className="text-aw-text">{numQuestions}</span> questions
+                <button
+                  onClick={() => setNumQuestions((n) => Math.min(20, n + 1))}
+                  aria-label="More questions"
+                  className="size-[26px] bg-white/[.08] text-aw-text"
+                >
+                  +
+                </button>
+              </span>
+            </span>
+            {started && (
+              <Link href="/generate" className={aw.action}>
+                <Key>N</Key>New session
+              </Link>
+            )}
+          </nav>
         </div>
-      )}
-      {/* {isLoading && <RitualLoading />} */}
+      </div>
+    </AwPage>
+  );
+}
 
-      {/* Invisible div to auto-scroll to bottom */}
-      <div id="scroll-anchor" />
+function StartSheet({
+  fileName,
+  isReading,
+  ready,
+  onPick,
+  onDrop,
+}: {
+  fileName: string | null;
+  isReading: boolean;
+  ready: boolean;
+  onPick: () => void;
+  onDrop: (file: File | undefined) => void;
+}) {
+  return (
+    <div
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={(e) => {
+        e.preventDefault();
+        onDrop(e.dataTransfer.files?.[0]);
+      }}
+    >
+      <p className="font-bold tracking-[.16em] mb-[2em]">STUDY SESSION</p>
+      <p className="mb-[1.2em]">
+        Give Anchor a reading and it will explain it, then quiz you on it.
+        Nothing here is shared with students.
+      </p>
+      {fileName ? (
+        <p className="mb-[1.2em]">
+          Source: {fileName} {isReading ? "(reading…)" : ""}
+        </p>
+      ) : (
+        <button
+          onClick={onPick}
+          className="aw-btn-reset block w-full my-[1.4em] border-[1.5px] border-dashed border-aw-ink/45 px-4 py-[1.6em] text-center leading-[1.8] hover:bg-aw-ink/[.06]"
+        >
+          Drop a PDF or Markdown file on this page
+          <br />
+          or click to choose one
+        </button>
+      )}
+      {ready && (
+        <p className="font-hand uppercase text-[1.35em] leading-tight -rotate-2 mt-[1.6em]">
+          Ready. Press X to explain or Q to quiz yourself.
+        </p>
+      )}
     </div>
   );
 }

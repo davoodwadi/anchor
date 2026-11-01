@@ -1,87 +1,88 @@
 "use client";
 
 import { useState } from "react";
-import { type Question as BaseQuestion } from "@/types/QuizTypes";
-import { BackButton } from "@/components/shared/back-button";
-import { QuizQuestion } from "@/components/quiz/quiz-question";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { AwTopBar, aw } from "@/components/aw2/shell";
+import { Key } from "@/components/aw2/key";
+import { useHotkeys } from "@/components/aw2/use-hotkeys";
+import { PracticePaper } from "@/components/aw2/practice-paper";
 
-type Option = BaseQuestion["options"][number] & {
+type Option = {
   id: string;
+  option_text: string;
   option_explanation?: string | null;
   is_correct: boolean;
 };
 
-type Question = Omit<BaseQuestion, "options" | "correct_answer_index"> & {
+type Question = {
   id: string;
+  question_text: string;
   options: Option[];
-  correct_answer_citation?: string | null;
-  hint?: string | null;
 };
 
 interface QuizPreviewProps {
+  quizId: string;
   quizTitle: string;
   questions: Question[];
 }
 
-export function QuizPreview({ quizTitle, questions }: QuizPreviewProps) {
-  // Store answers as index -> optionIndex
-  const [answers, setAnswers] = useState<Record<number, number>>({});
+/**
+ * Instructor preview: the quiz on paper, marked as you answer.
+ * Nothing is submitted or recorded.
+ */
+export function QuizPreview({ quizId, quizTitle, questions }: QuizPreviewProps) {
+  const router = useRouter();
+  const [picks, setPicks] = useState<Record<string, number>>({});
 
-  const handleSelect = (qIndex: number, optIndex: number) => {
-    // Lock answer once selected
-    if (answers[qIndex] !== undefined) return;
-    setAnswers((prev) => ({ ...prev, [qIndex]: optIndex }));
-  };
+  useHotkeys({
+    escape: () => router.push(`/quiz/${quizId}`),
+    r: () => setPicks({}),
+  });
 
   return (
-    <div className="space-y-8 max-w-3xl mx-auto pb-24">
-      {/* Header */}
-      <div className="flex flex-col gap-4 border-b-4 border-foreground pb-4">
-        <div className="flex items-center gap-4">
-          <BackButton />
-          <h1 className="text-3xl font-heading font-black uppercase text-foreground leading-none">
-            {quizTitle}
-          </h1>
+    <div className="min-h-svh grid grid-rows-[auto_1fr]">
+      <AwTopBar
+        left={
+          <Link href={`/quiz/${quizId}`} className={aw.chip}>
+            <Key>Esc</Key>Back to quiz
+          </Link>
+        }
+        mid="Preview"
+        right={
+          <button onClick={() => setPicks({})} className={aw.action}>
+            <Key>R</Key>Start over
+          </button>
+        }
+      />
+      <main className="px-4 pb-16">
+        <p className="mx-auto max-w-[720px] mb-5 font-prose text-[16px] text-aw-text-2">
+          This is how students see the questions. Answers are marked straight
+          away and nothing is recorded.
+        </p>
+        <div className="mx-auto max-w-[720px] md:rotate-[.4deg]">
+          <article className="aw-paper aw-typed px-[7%] md:px-[10%] pt-[9%] md:pt-[6%] pb-[6%] text-[14px] md:text-[clamp(14.5px,1.2vw,16.5px)] leading-[2.05]">
+            <p className="font-bold tracking-[.14em] mb-[2em] border-b border-dashed border-aw-ink/35 pb-[.3em]">
+              {quizTitle.toUpperCase()}
+            </p>
+            <PracticePaper
+              questions={questions.map((q) => ({
+                question_text: q.question_text,
+                options: q.options,
+                correct: Math.max(
+                  0,
+                  q.options.findIndex((o) => o.is_correct),
+                ),
+              }))}
+              keyPrefix="preview"
+              picks={picks}
+              onPick={(key, i) =>
+                setPicks((p) => (key in p ? p : { ...p, [key]: i }))
+              }
+            />
+          </article>
         </div>
-      </div>
-
-      {/* Questions List */}
-      <div className="space-y-16">
-        {questions.map((q, i) => {
-          // Map DB Question to Component Question
-          const correctIndex = q.options.findIndex((o) => o.is_correct);
-          const questionForDisplay: BaseQuestion = {
-            question_text: q.question_text,
-            hint: q.hint || "",
-            correct_answer_index: correctIndex >= 0 ? correctIndex : 0,
-            correct_answer_citation: q.correct_answer_citation || "",
-            options: q.options.map((o) => ({
-              option_text: o.option_text,
-              option_explanation: o.option_explanation || "",
-            })),
-          };
-
-          const isAnswered = answers[i] !== undefined;
-
-          return (
-            <div key={q.id} className="space-y-6 relative pl-8 md:pl-0">
-              {/* Mobile Vertical Line */}
-              <div className="absolute left-0 top-0 bottom-0 w-1 bg-border md:hidden" />
-
-              <div className="flex-grow">
-                <QuizQuestion
-                  question={questionForDisplay}
-                  index={i}
-                  selectedOptionIndex={answers[i]}
-                  onSelectOption={(optIndex) => handleSelect(i, optIndex)}
-                  isReadOnly={isAnswered}
-                  showFeedback={isAnswered}
-                />
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      </main>
     </div>
   );
 }

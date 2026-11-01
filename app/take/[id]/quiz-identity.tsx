@@ -35,10 +35,11 @@ export function QuizIdentity({
       >
         {quizTitle}
       </h1>
-      <p className="font-ui text-[17px] tracking-[.04em] text-aw-text-3">
-        {questionCount} questions · No account needed · Results shown at the
-        end
-      </p>
+      <ul className="flex flex-wrap justify-center gap-x-6 gap-y-1 font-ui text-[17px] tracking-[.04em] text-aw-text-3">
+        <li>{questionCount} questions</li>
+        <li>No account needed</li>
+        <li>Results shown at the end</li>
+      </ul>
 
       <form
         onSubmit={handleSubmit}
