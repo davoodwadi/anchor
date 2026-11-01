@@ -57,12 +57,12 @@ export function QuizIdentity({
           onChange={(e) => setLocalId(e.target.value)}
           placeholder="e.g. 300184562"
           required
-          className="w-full bg-transparent border-0 border-b border-aw-text-3 focus:border-aw-sage outline-none font-typed text-[28px] text-center tracking-[.08em] text-aw-text placeholder:text-[20px] placeholder:tracking-[.04em] placeholder:text-[#4a504c] pt-1.5 pb-2.5 transition-colors"
+          className="w-full bg-transparent border-0 border-b border-aw-text-3 focus:border-aw-sage outline-none font-typed text-[28px] text-center tracking-[.08em] text-aw-text placeholder:text-[20px] placeholder:tracking-[.04em] placeholder:text-[#4a504c] pt-1.5 pb-2.5"
         />
         <button
           type="submit"
           disabled={!localId.trim()}
-          className="mt-4 inline-flex items-center gap-2.5 font-ui font-medium text-[22px] uppercase tracking-[.06em] text-aw-text-2 hover:text-aw-text disabled:opacity-40 disabled:hover:text-aw-text-2 transition-colors"
+          className="mt-4 inline-flex items-center gap-2.5 font-ui font-medium text-[22px] uppercase tracking-[.06em] text-aw-text-2 hover:text-aw-text disabled:opacity-40 disabled:hover:text-aw-text-2"
         >
           <Key>Enter</Key>Begin
         </button>

@@ -14,7 +14,7 @@ export default function Home() {
         aria-hidden="true"
         className="fixed inset-0 pointer-events-none bg-[linear-gradient(90deg,rgba(8,8,8,.96)_0%,rgba(8,8,8,.86)_30%,rgba(8,8,8,.25)_58%,transparent_75%)] max-xl:bg-[rgba(8,8,8,.7)]"
       />
-      <Atmosphere still />
+      <Atmosphere />
       <MindPlace
         auth={
           <Suspense fallback={<LandingAuthFallback />}>

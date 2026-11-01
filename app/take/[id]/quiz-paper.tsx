@@ -42,9 +42,7 @@ export function QuizPaper({
   const [current, setCurrent] = useState(0);
   const [hintsOpen, setHintsOpen] = useState<Record<string, boolean>>({});
   const [plain, setPlain] = useState(readPlainPref);
-  const [turn, setTurn] = useState<"idle" | "out" | "in">("idle");
   const currentRef = useRef(0);
-  const turning = useRef(false);
 
   const total = questions.length;
   const answered = Object.keys(answers).length;
@@ -53,19 +51,9 @@ export function QuizPaper({
   const hintOpen = !!hintsOpen[q.id];
 
   const go = (i: number) => {
-    if (i < 0 || i >= total || i === currentRef.current || turning.current)
-      return;
-    turning.current = true;
-    setTurn("out");
-    setTimeout(() => {
-      currentRef.current = i;
-      setCurrent(i);
-      setTurn("in");
-      setTimeout(() => {
-        setTurn("idle");
-        turning.current = false;
-      }, 300);
-    }, 220);
+    if (i < 0 || i >= total || i === currentRef.current) return;
+    currentRef.current = i;
+    setCurrent(i);
   };
 
   const pick = (optionIndex: number) => {
@@ -75,14 +63,14 @@ export function QuizPaper({
     if (!option || isPending) return;
     const next = { ...answers, [question.id]: option.id };
     setAnswers(next);
-    // Turn to the next unanswered page once the circle has been drawn
+    // Turn to the next unanswered page after a beat, so the circle is seen
     setTimeout(() => {
       if (currentRef.current !== at) return;
       for (let k = 1; k < total; k++) {
         const j = (at + k) % total;
         if (!next[questions[j].id]) return go(j);
       }
-    }, 650);
+    }, 450);
   };
 
   const toggleHint = () => {
@@ -170,7 +158,7 @@ export function QuizPaper({
                     aria-current={i === current ? "step" : undefined}
                     aria-label={`Question ${i + 1}${chosen >= 0 ? `, answered ${LETTERS[chosen]}` : ", unanswered"}`}
                     className={cn(
-                      "relative flex items-center gap-2 whitespace-nowrap font-ui font-medium text-[19px] leading-snug tracking-[.02em] uppercase transition-colors",
+                      "relative flex items-center gap-2 whitespace-nowrap font-ui font-medium text-[19px] leading-snug tracking-[.02em] uppercase",
                       "px-2.5 py-1.5 border border-aw-line md:w-full md:border-0 md:px-0 md:py-1 md:pl-4 text-left",
                       i === current
                         ? "text-aw-text border-aw-text-2 md:before:absolute md:before:left-0 md:before:top-1.5 md:before:bottom-1.5 md:before:w-0.5 md:before:bg-aw-text"
@@ -218,8 +206,6 @@ export function QuizPaper({
                 plain
                   ? "font-prose text-[16px] md:text-[clamp(16px,1.3vw,18px)] leading-[1.9]"
                   : "aw-typed text-[14px] md:text-[clamp(14.5px,1.25vw,17px)] leading-[2.15]",
-                turn === "out" && "aw-turn-out",
-                turn === "in" && "aw-turn-in",
               )}
             >
               <div className="flex flex-wrap justify-between items-baseline gap-x-4 gap-y-1 border-b border-dashed border-aw-ink/35 pb-1 mb-[2.4em] text-[.88em]">
