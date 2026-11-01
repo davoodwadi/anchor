@@ -4,7 +4,7 @@ export default function Footer() {
       <p>
         Created by{" "}
         <a
-          href="https://www.ucanwest.ca/directory/dr-davood-wadi"
+          href="https://www.davoodwadi.com"
           target="_blank"
           className="font-bold hover:underline"
           rel="noreferrer"
