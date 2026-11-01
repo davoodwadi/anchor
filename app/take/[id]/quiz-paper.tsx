@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Key } from "@/components/aw2/key";
+import { aw } from "@/components/aw2/shell";
 import { useHotkeys } from "@/components/aw2/use-hotkeys";
 import type { Question } from "./quiz-taker";
 
@@ -139,7 +140,7 @@ export function QuizPaper({
 
       <main className="grid gap-3.5 md:gap-10 px-4 md:px-10 pt-[1vh] items-start grid-cols-1 md:grid-cols-[minmax(180px,240px)_minmax(0,1fr)] xl:grid-cols-[minmax(200px,280px)_minmax(0,1fr)_minmax(0,200px)]">
         {/* Question list */}
-        <nav aria-label="Questions">
+        <nav aria-label="Questions" className={aw.side}>
           <h3 className="hidden md:flex gap-3.5 font-ui font-medium text-[17px] tracking-[.16em] uppercase text-aw-text-2 mb-2">
             Questions{" "}
             <span className="tracking-[.04em]">

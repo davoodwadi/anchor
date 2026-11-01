@@ -123,7 +123,7 @@ export default function CreateQuizPage() {
         />
 
         <main className="grid gap-8 xl:gap-12 px-4 md:px-10 pt-[1vh] pb-16 items-start grid-cols-1 md:grid-cols-[minmax(200px,280px)_minmax(0,1fr)] xl:grid-cols-[minmax(220px,300px)_minmax(0,1fr)_minmax(300px,460px)]">
-          <section>
+          <section className={aw.side}>
             <div className={aw.kicker}>From your material</div>
             <h1 className={cn(aw.display, "text-[clamp(54px,5.6vw,84px)] mt-1.5 mb-6")}>
               NEW QUIZ

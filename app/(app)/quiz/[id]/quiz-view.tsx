@@ -72,7 +72,7 @@ export function QuizViewMindPlace({
       />
 
       <main className="grid gap-8 xl:gap-12 px-4 md:px-10 pt-[1vh] pb-16 items-start grid-cols-1 md:grid-cols-[minmax(220px,300px)_minmax(0,1fr)] xl:grid-cols-[minmax(240px,320px)_minmax(0,1fr)_minmax(280px,380px)]">
-        <section>
+        <section className={aw.side}>
           <div className={aw.kicker}>Quiz</div>
           <h1
             className={cn(

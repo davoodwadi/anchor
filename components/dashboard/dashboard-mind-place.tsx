@@ -61,7 +61,7 @@ export function DashboardMindPlace({
       />
 
       <main className="grid gap-8 xl:gap-12 px-4 md:px-10 pt-[1vh] items-start grid-cols-1 md:grid-cols-[minmax(240px,340px)_minmax(0,1fr)] xl:grid-cols-[minmax(260px,360px)_minmax(0,1fr)_minmax(300px,460px)]">
-        <section>
+        <section className={aw.side}>
           <div className={aw.kicker}>Your quizzes</div>
           <h1 className={cn(aw.display, "text-[clamp(54px,5.6vw,84px)] mt-1.5 mb-6")}>
             THE DESK

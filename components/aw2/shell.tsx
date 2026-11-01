@@ -25,6 +25,8 @@ export const aw = {
     "font-ui font-medium text-[14px] tracking-[.16em] uppercase text-aw-text-2",
   display: "font-display font-normal tracking-normal text-aw-sage leading-[.9]",
   stage: "md:border-l md:border-white/20 md:pl-9",
+  /** Left column that stays put while the page (usually a long paper) scrolls. */
+  side: "md:sticky md:top-6 md:self-start md:max-h-[calc(100svh-3rem)] md:overflow-y-auto md:overscroll-contain md:[scrollbar-width:thin] md:pr-2",
 };
 
 /** Full-page wrapper: lamp-lit desk or plain dark, with grain and vignette. */

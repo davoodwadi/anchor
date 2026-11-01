@@ -250,6 +250,108 @@ html {
     transform: rotate(-12deg);
   }
 
+  /* Markdown typed onto paper (study session explanations).
+     Overrides the global h1-h6 rules, which assume a dark page. */
+  .aw-manuscript p {
+    margin: 0 0 1.1em;
+    text-indent: 2.4em;
+  }
+  .aw-manuscript :is(h1, h2, h3, h4, h5, h6) {
+    color: inherit;
+    font: inherit;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    border: 0;
+    padding: 0;
+    margin: 2em 0 0.8em;
+  }
+  .aw-manuscript :is(h1, h2, h3, h4, h5, h6):first-child {
+    margin-top: 0;
+  }
+  .aw-manuscript h1 {
+    font-size: 1.15em;
+  }
+  .aw-manuscript :is(h2, h3, h4, h5, h6) {
+    font-size: 1em;
+  }
+  .aw-manuscript :is(h4, h5, h6) {
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+  .aw-manuscript :is(ul, ol) {
+    margin: 0 0 1.1em;
+    padding-left: 2.4em;
+  }
+  .aw-manuscript ul {
+    list-style: disc;
+  }
+  .aw-manuscript ol {
+    list-style: decimal;
+  }
+  .aw-manuscript li > p {
+    text-indent: 0;
+    margin: 0;
+  }
+  .aw-manuscript li + li {
+    margin-top: 0.15em;
+  }
+  .aw-manuscript :is(strong, b) {
+    font-weight: 700;
+    color: inherit;
+  }
+  .aw-manuscript em {
+    font-style: italic;
+  }
+  .aw-manuscript a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .aw-manuscript blockquote {
+    margin: 0 0 1.1em 1.2em;
+    padding-left: 1em;
+    border-left: 2px solid rgba(26, 24, 21, 0.35);
+    font-style: italic;
+  }
+  .aw-manuscript blockquote p {
+    text-indent: 0;
+  }
+  .aw-manuscript code {
+    font-family: inherit;
+    background: rgba(26, 24, 21, 0.08);
+    padding: 0 0.25em;
+  }
+  .aw-manuscript pre {
+    margin: 0 0 1.1em;
+    padding: 0.8em 1em;
+    background: rgba(26, 24, 21, 0.08);
+    white-space: pre-wrap;
+  }
+  .aw-manuscript pre code {
+    background: none;
+    padding: 0;
+  }
+  .aw-manuscript hr {
+    border: 0;
+    border-top: 1px dashed rgba(26, 24, 21, 0.4);
+    margin: 1.6em 0;
+  }
+  .aw-manuscript table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 0 1.1em;
+  }
+  .aw-manuscript :is(th, td) {
+    text-align: left;
+    vertical-align: top;
+    padding: 0.2em 0.5em;
+    border-bottom: 1px dashed rgba(26, 24, 21, 0.3);
+  }
+  .aw-manuscript th {
+    font-weight: 700;
+  }
+
   /* Grader's pen (black ink) */
   .aw-pen {
     color: #141210;

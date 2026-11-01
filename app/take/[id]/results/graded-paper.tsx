@@ -46,7 +46,7 @@ export function GradedPaper({
   return (
     <main className="grid gap-8 xl:gap-12 px-4 md:px-10 pt-[1vh] pb-16 items-start grid-cols-1 lg:grid-cols-[minmax(220px,290px)_minmax(0,1fr)] xl:grid-cols-[minmax(220px,290px)_minmax(0,1fr)_minmax(0,200px)]">
       {/* Score and question index */}
-      <section className="lg:sticky lg:top-6">
+      <section className="lg:sticky lg:top-6 lg:self-start lg:max-h-[calc(100svh-3rem)] lg:overflow-y-auto lg:overscroll-contain lg:[scrollbar-width:thin] lg:pr-2">
         <div className={aw.kicker}>Your result</div>
         <h1
           className={cn(
@@ -185,8 +185,9 @@ export function GradedPaper({
                     </p>
                   )}
                   {q.correct_answer_citation && (
-                    <blockquote className="mt-[1.2em] ml-[1.4em] max-w-[92%] -rotate-[.6deg] bg-[#c9bea6] shadow-[0_3px_10px_rgba(0,0,0,.25)] px-[1.1em] py-[.8em] text-[.92em] leading-[1.75]">
-                      <span className="block text-[.8em] tracking-[.14em] opacity-65 mb-[.3em]">
+                    // Typed on the same sheet: indented, with a thin ink rule in the margin
+                    <blockquote className="mt-[1.4em] ml-[2.4em] mr-[1em] pl-[1.2em] border-l-[1.5px] border-aw-ink/45 text-[.94em] leading-[1.9]">
+                      <span className="block text-[.82em] tracking-[.16em] opacity-60">
                         FROM THE READING
                       </span>
                       &ldquo;{q.correct_answer_citation}&rdquo;

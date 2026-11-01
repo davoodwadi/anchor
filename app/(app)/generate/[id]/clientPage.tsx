@@ -62,7 +62,11 @@ export default function GeneratePage({ sessionId, initialHistory }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [isReading, setIsReading] = useState(false);
   // Stored preference (read on the client only), overridden once toggled here
-  const storedPlain = useSyncExternalStore(noSubscribe, readPlainPref, () => false);
+  const storedPlain = useSyncExternalStore(
+    noSubscribe,
+    readPlainPref,
+    () => false,
+  );
   const [plainOverride, setPlainOverride] = useState<boolean | null>(null);
   const plain = plainOverride ?? storedPlain;
   const [picks, setPicks] = useState<Record<string, number>>({});
@@ -198,7 +202,11 @@ export default function GeneratePage({ sessionId, initialHistory }: Props) {
           }
           mid="Study session"
           right={
-            <button onClick={togglePlain} aria-pressed={plain} className={aw.chip}>
+            <button
+              onClick={togglePlain}
+              aria-pressed={plain}
+              className={aw.chip}
+            >
               <Key>T</Key>
               {plain ? "Typewriter" : "Plain text"}
             </button>
@@ -206,22 +214,30 @@ export default function GeneratePage({ sessionId, initialHistory }: Props) {
         />
 
         <main className="grid gap-6 md:gap-10 px-4 md:px-10 pt-[1vh] pb-6 items-start grid-cols-1 md:grid-cols-[minmax(200px,260px)_minmax(0,1fr)] xl:grid-cols-[minmax(220px,280px)_minmax(0,1fr)_minmax(0,220px)]">
-          <section>
+          <section className={aw.side}>
             <div className={aw.kicker}>Studying</div>
-            <h1 className={cn(aw.display, "text-[clamp(48px,4.6vw,72px)] mt-1.5 mb-6")}>
+            <h1
+              className={cn(
+                aw.display,
+                "text-[clamp(48px,4.6vw,72px)] mt-1.5 mb-6",
+              )}
+            >
               STUDY
             </h1>
             {started && (
               <>
                 <h2 className={aw.groupTitle}>
-                  Session <span className="tracking-[.04em]">{entries.length}</span>
+                  Session{" "}
+                  <span className="tracking-[.04em]">{entries.length}</span>
                 </h2>
                 <ul className="flex md:block gap-1.5 overflow-x-auto">
                   {entries.map((e, i) => (
                     <li key={e.item.id}>
                       <button
                         onClick={() => setSelected(i)}
-                        aria-current={i === selected && !pending ? "true" : undefined}
+                        aria-current={
+                          i === selected && !pending ? "true" : undefined
+                        }
                         className={cn(
                           aw.item,
                           "max-md:w-auto max-md:whitespace-nowrap max-md:border max-md:border-aw-line max-md:px-2.5 max-md:py-1.5",
@@ -286,7 +302,7 @@ export default function GeneratePage({ sessionId, initialHistory }: Props) {
                     }
                   />
                 ) : current ? (
-                  <div className="[&_p]:mb-[1.1em] [&_p]:indent-[2.4em] [&_h1]:font-bold [&_h2]:font-bold [&_h3]:font-bold [&_h1]:mb-[.8em] [&_h2]:mb-[.8em] [&_h3]:mb-[.6em] [&_h2]:border-0 [&_h2]:pb-0 [&_h2]:text-[1em] [&_h1]:text-[1.05em] [&_h3]:text-[1em] [&_h1]:normal-case [&_h2]:normal-case [&_h1]:tracking-normal [&_h2]:tracking-normal [&_h1]:font-[inherit] [&_h2]:font-[inherit] [&_h3]:font-[inherit] [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-[2.4em] [&_ol]:pl-[2.4em] [&_ul]:mb-[1.1em] [&_ol]:mb-[1.1em] [&_strong]:font-bold">
+                  <div className="aw-manuscript">
                     <Markdown>{current.item.content}</Markdown>
                   </div>
                 ) : null}
@@ -308,7 +324,10 @@ export default function GeneratePage({ sessionId, initialHistory }: Props) {
 
         <div className="sticky bottom-0 md:static bg-[rgba(13,12,11,.94)] md:bg-transparent border-t border-aw-line md:border-0">
           {error && (
-            <p role="alert" className="text-center font-prose text-[15px] text-[#d58c88] pt-3">
+            <p
+              role="alert"
+              className="text-center font-prose text-[15px] text-[#d58c88] pt-3"
+            >
               {error}
             </p>
           )}
@@ -383,7 +402,7 @@ function StartSheet({
       <p className="font-bold tracking-[.16em] mb-[2em]">STUDY SESSION</p>
       <p className="mb-[1.2em]">
         Give Anchor a reading and it will explain it, then quiz you on it.
-        Nothing here is shared with students.
+        Nothing here is shared with the others.
       </p>
       {fileName ? (
         <p className="mb-[1.2em]">
