@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Create — A: Mind Place</title>
+<link rel="stylesheet" href="../shared.css?v=4">
+<link rel="stylesheet" href="../app/app.css?v=2">
+<style>
+  main { display: grid; grid-template-columns: minmax(220px, 300px) minmax(0, 1fr) minmax(300px, 460px); gap: clamp(20px, 3vw, 48px); align-items: start; padding: 1vh clamp(16px, 3vw, 40px) 0; }
+  h1 { font-size: clamp(54px, 5.6vw, 84px); margin: 6px 0 24px; }
+  .steps .item .n { color: var(--text-3); width: 22px; }
+  .steps .item.done .meta { color: var(--sage); }
+  .form { border-left: 1px solid rgba(255,255,255,.18); padding: 4px 0 0 clamp(18px, 2.4vw, 36px); max-width: 560px; display: grid; gap: 30px; }
+  .count { display: flex; align-items: center; gap: 16px; }
+  .count button { width: 38px; height: 38px; background: rgba(30,32,31,.7); border: 0; color: var(--text); font: 500 22px var(--f-ui); cursor: pointer; }
+  .count output { font: 400 40px var(--f-display); color: var(--text); min-width: 2ch; text-align: center; }
+  .drop {
+    display: grid; place-items: center; text-align: center; gap: 6px; padding: 30px 16px; cursor: pointer;
+    border: 1.5px dashed rgba(228,232,229,.3); color: var(--text-2); font: 400 17px var(--f-body);
+  }
+  .drop:hover, .drop.over { border-color: var(--sage); color: var(--text); }
+  .drop b { font: 500 18px var(--f-ui); letter-spacing: .08em; text-transform: uppercase; color: var(--text); }
+  .file { display: flex; gap: 12px; align-items: baseline; font: 400 17px var(--f-body); color: var(--text); }
+  .file .meta { color: var(--text-3); font-size: 15px; }
+  .file button { margin-left: auto; background: none; border: 0; color: var(--text-3); cursor: pointer; font: 500 14px var(--f-ui); letter-spacing: .1em; text-transform: uppercase; }
+  .hint { font: 400 14px var(--f-body); color: var(--text-3); margin: -18px 0 0; }
+  .sheet { transform: rotate(1.8deg); font-size: clamp(11px, .95vw, 14px); line-height: 2.1; }
+  .sheet p { margin: 0 0 1.3em; text-indent: 2.4em; }
+  .sheet .cap { position: absolute; left: 10%; bottom: 6%; font-size: 1.35em; transform: rotate(-3deg); }
+  .sheet.blank { display: grid; place-items: center; }
+  .sheet.blank .hand { font-size: 1.6em; opacity: .7; text-align: center; transform: rotate(-3deg); }
+  .working { display: grid; gap: 12px; font: 400 18px/1.6 var(--f-body); color: var(--text); }
+  .working .label { margin-bottom: 4px; }
+  @media (max-width: 1180px) { main { grid-template-columns: minmax(200px, 250px) minmax(0, 1fr); } .desk { grid-column: 1 / -1; max-width: 480px; justify-self: center; width: 100%; } }
+  @media (max-width: 760px) { main { grid-template-columns: 1fr; } .form { border-left: 0; padding-left: 0; } .steps { display: none; } }
+</style>
+</head>
+<body class="desk-bg">
+<div class="shade-l"></div><div class="grain"></div><div class="vignette"></div>
+<div class="wrap">
+  <header class="bar">
+    <a class="chip" href="../dashboard/a-mind-place.html"><span class="key">Esc</span>Dashboard</a>
+    <span class="mid kicker" style="font-size:14px">New quiz</span>
+    <span class="end"></span>
+  </header>
+  <main>
+    <section>
+      <div class="kicker" style="font-size:14px;color:var(--text-3)">From your material</div>
+      <h1 class="h-display">NEW QUIZ</h1>
+      <div class="grp steps"><h3>Steps</h3><div id="steps"></div></div>
+    </section>
+    <section class="form" id="form"></section>
+    <section class="desk"><div class="sheet paper typed blank" id="sheet"><span class="hand">Your file will<br>appear here</span></div></section>
+  </main>
+</div>
+<script src="../app/data.js"></script>
+<script>
+let title = "", n = 6, file = null, phase = "edit", t0 = 0, timer;
+const SAMPLE = { name: "Week 7 notes - Memory.pdf", pages: 12, text: QUIZ.questions.map(q => q.citation) };
+
+function steps() {
+  const s = [
+    ["Source", file ? file.name.slice(0, 16) + "…" : "", !!file],
+    ["Title and length", title ? `${n} questions` : "", !!title],
+    ["Draft", phase === "working" ? "Writing…" : "", false],
+  ];
+  const at = phase === "working" ? 2 : !file ? 0 : 1;
+  document.getElementById("steps").innerHTML = s.map(([l, m, done], i) =>
+    `<div class="item ${i === at ? "on" : ""} ${done ? "done" : ""}"><span class="n">${i + 1}</span>${l}<span class="meta">${done ? "✓" : m}</span></div>`).join("");
+}
+
+function form() {
+  const f = document.getElementById("form");
+  if (phase === "working") {
+    const s = Math.round((Date.now() - t0) / 1000);
+    f.innerHTML = `<div class="working"><span class="label">Drafting</span>
+      <div>Writing ${n} questions from <strong>${file.name}</strong>.</div>
+      <div class="prose" style="font-size:16px">Each question is grounded in a sentence from your file. This usually takes 20 to 40 seconds. ${s}s so far.</div></div>`;
+    return;
+  }
+  f.innerHTML = `
+    <div class="field"><label>Source material</label>
+      ${file
+        ? `<div class="file">${file.name}<span class="meta">${file.pages} pages</span><button id="rm">Remove</button></div>`
+        : `<label class="drop" id="drop"><b>Drop a PDF or Markdown file</b>or click to choose one<input type="file" accept=".pdf,.md,.markdown" hidden id="pick"></label>`}
+    </div>
+    ${file ? "" : '<p class="hint">Prototype: any file works; the preview uses sample text.</p>'}
+    <div class="field"><label for="title">Title</label><input class="input" id="title" placeholder="e.g. Week 7 · Memory and Retrieval" value="${title}"></div>
+    <div class="field"><label>Number of questions</label><div class="count"><button id="minus" aria-label="Fewer">−</button><output>${n}</output><button id="plus" aria-label="More">+</button></div></div>
+    <div><button class="btn" id="go" ${file && title ? "" : "disabled style=\"opacity:.4;cursor:default\""}><span class="key">Enter</span>Draft the quiz</button></div>`;
+  const pick = f.querySelector("#pick");
+  if (pick) {
+    pick.onchange = () => setFile();
+    const d = f.querySelector("#drop");
+    d.ondragover = (e) => { e.preventDefault(); d.classList.add("over"); };
+    d.ondragleave = () => d.classList.remove("over");
+    d.ondrop = (e) => { e.preventDefault(); setFile(); };
+  }
+  const rm = f.querySelector("#rm"); if (rm) rm.onclick = () => { file = null; render(); };
+  f.querySelector("#title").oninput = (e) => { title = e.target.value; steps(); const g = f.querySelector("#go"); g.disabled = !(file && title); g.style.cssText = file && title ? "" : "opacity:.4;cursor:default"; };
+  f.querySelector("#minus").onclick = () => { n = Math.max(1, n - 1); render(); };
+  f.querySelector("#plus").onclick = () => { n = Math.min(20, n + 1); render(); };
+  f.querySelector("#go").onclick = start;
+}
+
+function sheet() {
+  const s = document.getElementById("sheet");
+  if (!file) { s.className = "sheet paper typed blank"; s.innerHTML = '<span class="hand">Your file will<br>appear here</span>'; return; }
+  s.className = "sheet paper typed";
+  s.innerHTML = file.text.slice(0, 4).map(t => `<p>${t}</p>`).join("") +
+    `<span class="hand cap">${phase === "working" ? `drafting ${n} questions…` : "↑ what Anchor read from your file"}</span>`;
+}
+
+function setFile() { file = SAMPLE; if (!title) title = "Week 7 · Memory and Retrieval"; render(); }
+function start() {
+  if (!(file && title)) return;
+  phase = "working"; t0 = Date.now(); render();
+  timer = setInterval(form, 1000);
+  setTimeout(() => { clearInterval(timer); location.href = "../quiz/a-mind-place.html"; }, 6000);
+}
+function render() { steps(); form(); sheet(); }
+addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target.tagName !== "BUTTON") start(); });
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anchor — Design candidates</title>
+<link rel="stylesheet" href="shared.css?v=4">
+<style>
+  main { max-width: 1100px; margin: 0 auto; padding: 56px 16px 90px; }
+  h1 { font-family: var(--f-display); font-weight: 400; color: var(--sage); font-size: clamp(56px, 9vw, 112px); line-height: .9; margin: 8px 0 12px; }
+  .lede { font-family: var(--f-body); color: var(--text-2); max-width: 64ch; margin: 0 0 40px; line-height: 1.6; }
+  section { margin-bottom: 42px; }
+  h2 { font: 500 16px var(--f-ui); letter-spacing: .2em; text-transform: uppercase; color: var(--text-2); margin: 0 0 4px; display: flex; gap: 14px; align-items: baseline; }
+  h2 .r { color: var(--text-3); letter-spacing: .06em; font-size: 14px; }
+  h2 .done { color: var(--sage); letter-spacing: .06em; font-size: 14px; }
+  .q { font-family: var(--f-body); color: var(--text-3); font-size: 15px; margin: 0 0 12px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  a.card { background: var(--bg); padding: 20px 22px 22px; display: block; }
+  a.card:hover { background: var(--bg-2); }
+  .card .kicker { font-size: 13px; color: var(--text-3); }
+  .card h3 { font-family: var(--f-display); font-weight: 400; font-size: 32px; line-height: 1; margin: 6px 0 10px; color: var(--text); }
+  .card:hover h3 { color: var(--sage); }
+  .card p { font-family: var(--f-body); font-size: 15px; color: var(--text-2); margin: 0; line-height: 1.55; }
+  .chosen { box-shadow: inset 3px 0 0 var(--sage); }
+  .decide { border: 1px solid var(--line); padding: 20px 22px; background: rgba(20,23,22,.6); }
+  .decide ol { margin: 8px 0 0; padding-left: 20px; font-family: var(--f-body); color: var(--text-2); line-height: 1.6; }
+  .decide li { margin-bottom: 10px; }
+  .decide strong { color: var(--text); font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<main>
+  <div class="kicker">Anchor · Alan Wake 2 redesign</div>
+  <h1>CANDIDATES</h1>
+  <p class="lede">Everything is static (no animation) and uses the same sample course: Week 7, Memory and Retrieval. Pick one candidate per page, or ask for a mix. Landing and Quiz taking are already chosen and built.</p>
+
+  <section>
+    <h2>Landing <span class="done">Chosen: B Mind Place · built</span></h2>
+    <p class="q"><a href="landing/index.html" style="color:var(--text-2)">See the original four</a></p>
+  </section>
+  <section>
+    <h2>Taking a quiz <span class="done">Chosen: E Mind Place + Paper · built</span></h2>
+    <p class="q"><a href="take/index.html" style="color:var(--text-2)">See all five</a></p>
+  </section>
+
+  <section>
+    <h2>Results <span class="r">/take/[id]/results · students</span></h2>
+    <p class="q">What a student sees right after submitting.</p>
+    <div class="grid">
+      <a class="card" href="results/a-graded-paper.html"><div class="kicker">A</div><h3>GRADED PAPER</h3><p>Your own sheets come back marked in red pen: a tick or cross, the right answer circled, the reason in the margin, and the source sentence pinned on a slip. Opens on the first mistake.</p></a>
+      <a class="card" href="results/b-review-source.html"><div class="kicker">B</div><h3>REVIEW + SOURCE</h3><p>Readable feedback in the middle (your answer, the correct one, why), with the reading on the desk and the sentence that answers it highlighted.</p></a>
+      <a class="card" href="results/c-report.html"><div class="kicker">C</div><h3>REPORT</h3><p>One scrolling page: a big score card, then mistakes in full and correct answers folded away. The most phone-friendly.</p></a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Sign in / Sign up <span class="r">/auth/* · instructors</span></h2>
+    <p class="q">Each covers sign in, create account and reset password (switch inside the page).</p>
+    <div class="grid">
+      <a class="card" href="auth/a-title-card.html"><div class="kicker">A</div><h3>TITLE CARD</h3><p>Centred, matching the student-number screen: a big title and underline fields. Quiet and consistent.</p></a>
+      <a class="card" href="auth/b-desk-split.html"><div class="kicker">B</div><h3>DESK SPLIT</h3><p>A typed note to instructors on the desk at left (and a reminder that students don't need accounts), with the form on the right.</p></a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Dashboard <span class="r">/dashboard · instructors</span></h2>
+    <div class="grid">
+      <a class="card" href="dashboard/a-mind-place.html"><div class="kicker">A</div><h3>MIND PLACE</h3><p>Quizzes as a chapter list. The selected quiz shows attempts, median, most-missed question and its share link, with its first page on the desk.</p></a>
+      <a class="card" href="dashboard/b-papers.html"><div class="kicker">B</div><h3>PAPERS ON THE DESK</h3><p>Each quiz is a typed sheet on the desk with handwritten attempt counts. A blank sheet starts a new quiz. The most visual.</p></a>
+      <a class="card" href="dashboard/c-ledger.html"><div class="kicker">C</div><h3>LEDGER</h3><p>A clean table with totals on top. Best once there are dozens of quizzes.</p></a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Create a quiz <span class="r">/create · instructors</span></h2>
+    <p class="q">Drop any file to see the filled state. Drafting shows plain status text and an elapsed-seconds count, with no animation.</p>
+    <div class="grid">
+      <a class="card" href="create/a-mind-place.html"><div class="kicker">A</div><h3>MIND PLACE</h3><p>Steps on the left, a clean form in the middle, and on the desk the text Anchor actually read from your file, so you can catch a bad PDF before drafting.</p></a>
+      <a class="card" href="create/b-typed-form.html"><div class="kicker">B</div><h3>TYPED FORM</h3><p>The form is a typed sheet you fill in: Title ____, Questions [6], and the file pinned on as a clipping.</p></a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Study session <span class="r">/generate · instructors</span></h2>
+    <p class="q">Explain the material and practise on it. Try Explain more (X) and Quiz me (Q).</p>
+    <div class="grid">
+      <a class="card" href="generate/a-manuscript-stream.html"><div class="kicker">A</div><h3>MANUSCRIPT STREAM</h3><p>One column of typed pages. Practice questions are answered on the paper and marked in red pen straight away. A dock holds the actions.</p></a>
+      <a class="card" href="generate/b-mind-place.html"><div class="kicker">B</div><h3>MIND PLACE</h3><p>Session entries on the left, readable explanation or practice quiz in the middle, and the source document on the desk.</p></a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Quiz view <span class="r">/quiz/[id] · instructors</span></h2>
+    <div class="grid">
+      <a class="card" href="quiz/a-mind-place.html"><div class="kicker">A</div><h3>MIND PLACE</h3><p>Overview with per-question miss rates, or pick a student to see their answers. The QR code and link sit on a share sheet on the desk.</p></a>
+      <a class="card" href="quiz/b-report.html"><div class="kicker">B</div><h3>REPORT</h3><p>A typed report: totals, miss-rate bars, a red-pen note on the hardest question, and a ✓✗ grid for every student.</p></a>
+      <a class="card" href="quiz/c-share-first.html"><div class="kicker">C</div><h3>SHARE FIRST</h3><p>A big QR code and link up top, with a Present-to-class mode (P) for the projector. Results are below.</p></a>
+    </div>
+  </section>
+
+  <section class="decide">
+    <h2>Also needs your call</h2>
+    <ol>
+      <li><strong>The landing page promises a feature that doesn't exist yet.</strong> Its "The draft" step says instructors revise the quiz in conversation, but /create drafts the quiz in one shot. The conversation lives in the study session, which doesn't produce shareable quizzes. The "The link" step also mentions class-wide stats ("most missed") that the quiz view doesn't have yet. Change the copy, or build those features (quiz view A, B and C all include the stats)?</li>
+      <li><strong>The study session's loading messages</strong> are full of game references ("The Cult of the Tree has marked this text…"), which goes against the agreed tone. Both candidates replace them with plain status text. OK to drop them?</li>
+      <li><strong>The quiz view's Preview button</strong> links to /quiz/[id]/preview, which doesn't exist. The candidates point Preview at the student page instead.</li>
+    </ol>
+  </section>
+</main>
+</body>
+</html>

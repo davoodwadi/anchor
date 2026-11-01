@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Results — A: Graded Paper</title>
+<link rel="stylesheet" href="../shared.css?v=4">
+<link rel="stylesheet" href="../app/app.css?v=2">
+<style>
+  main { display: grid; grid-template-columns: minmax(220px, 290px) minmax(0, 1fr) minmax(0, 200px); gap: clamp(20px, 3vw, 48px); align-items: start; padding: 1vh clamp(16px, 3vw, 40px) 0; }
+  .score { font-size: clamp(76px, 8vw, 120px); }
+  .sub { margin: 10px 0 26px; font-size: 16px; }
+  .filter { display: flex; gap: 18px; font: 500 18px var(--f-ui); text-transform: uppercase; margin-bottom: 14px; }
+  .filter button { background: none; border: 0; padding: 0 0 4px; cursor: pointer; font: inherit; text-transform: inherit; color: var(--text-2); letter-spacing: .06em; }
+  .filter button.on { color: var(--text); box-shadow: inset 0 -2px 0 var(--text); }
+
+  .stack { position: relative; justify-self: center; width: min(100%, 700px); }
+  .under { position: absolute; inset: 0; background: #8f8170; box-shadow: 0 20px 50px rgba(0,0,0,.5); }
+  .u1 { transform: rotate(-1.6deg) translate(-6px, 6px); filter: brightness(.7); }
+  .u2 { transform: rotate(1.2deg) translate(8px, 10px); filter: brightness(.55); }
+  .page { position: relative; transform: rotate(.5deg); min-height: min(74vh, 860px); padding: 8% 10% 5%; font-size: clamp(14.5px, 1.2vw, 16.5px); line-height: 2.1; display: flex; flex-direction: column; }
+  .head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .2em 1em; border-bottom: 1px dashed rgba(26,24,21,.35); padding-bottom: .3em; margin-bottom: 2em; font-size: .88em; }
+  .head .hand { font-size: 1.5em; line-height: 1; }
+  .mark { position: absolute; right: 6%; top: 15%; font-size: 2.6em; transform: rotate(-8deg); }
+  .stem { font-weight: 700; margin: 0 0 1em; padding: 0 2.2em 0 2.2em; text-indent: -2.2em; }
+  .o { position: relative; margin: 0 0 .25em; padding-left: 4.6em; text-indent: -1.7em; }
+  .o .l { display: inline-block; text-indent: 0; }
+  .o .tick { position: absolute; left: 1.2em; top: -.1em; text-indent: 0; font-size: 1.5em; }
+  .o.chosen.wrong { text-decoration: line-through; text-decoration-color: #9b1f1b; text-decoration-thickness: 1.5px; }
+  .note { margin: 1.6em 0 0 2.4em; font-size: 1.32em; transform: rotate(-1.2deg); transform-origin: left; max-width: 48ch; }
+  .slip {
+    margin: 1.8em 0 0 1.4em; padding: .9em 1.1em; max-width: 92%; transform: rotate(-.8deg);
+    background: #c9bea6; box-shadow: 0 3px 10px rgba(0,0,0,.25); font-size: .92em; line-height: 1.75;
+  }
+  .slip .k { display: block; font-size: .8em; letter-spacing: .14em; opacity: .65; margin-bottom: .3em; }
+  .folio { margin-top: auto; padding-top: 2.4em; display: flex; justify-content: space-between; font-size: .85em; opacity: .6; }
+
+  @media (max-width: 1180px) { main { grid-template-columns: minmax(200px, 250px) minmax(0, 1fr); } .spacer { display: none; } }
+  @media (max-width: 760px) {
+    main { grid-template-columns: 1fr; }
+    .under { display: none; }
+    .page { transform: none; min-height: 0; padding: 10% 7% 8%; font-size: 14px; }
+    .o { padding-left: 3.6em; }
+    #list { display: flex; gap: 6px; overflow-x: auto; }
+    #list .item { width: auto; border: 1px solid var(--line); padding: 6px 10px; white-space: nowrap; }
+    #list .item.on::before { display: none; }
+    #list .qword { display: none; }
+    .grp h3 { display: none; }
+  }
+</style>
+</head>
+<body class="desk-bg">
+<div class="shade-l"></div><div class="grain"></div><div class="vignette"></div>
+<div class="wrap">
+  <header class="bar">
+    <span class="wordmark">ANCHOR</span>
+    <span class="mid kicker" style="font-size:14px"></span>
+    <span class="end"><span class="chip" id="sid"></span></span>
+  </header>
+  <main>
+    <section>
+      <div class="kicker" style="font-size:14px;color:var(--text-3)">Your result</div>
+      <h1 class="h-display score" id="score"></h1>
+      <p class="prose sub" id="sub"></p>
+      <div class="filter"><button data-f="all" class="on">All</button><button data-f="missed">Missed</button></div>
+      <div class="grp"><h3>Questions <span id="count"></span></h3><div id="list"></div></div>
+    </section>
+    <section class="stack">
+      <div class="under u2"></div><div class="under u1"></div>
+      <article class="page sheet paper typed" id="page" style="aspect-ratio:auto"></article>
+    </section>
+    <div class="spacer"></div>
+  </main>
+  <nav class="actions">
+    <button id="prev"><span class="key">Q</span>Previous</button>
+    <button id="next"><span class="key">E</span>Next</button>
+  </nav>
+</div>
+<script src="../app/data.js"></script>
+<script>
+const A = MY_ATTEMPT, Qs = QUIZ.questions;
+const right = (i) => A.picks[i] === Qs[i].correct;
+let filter = "all", cur = Qs.findIndex((_, i) => !right(i));
+if (cur < 0) cur = 0;
+
+document.querySelector(".mid").textContent = QUIZ.title;
+document.getElementById("sid").textContent = A.student;
+document.getElementById("score").textContent = `${A.score} / ${A.total}`;
+const missed = A.total - A.score;
+document.getElementById("sub").innerHTML = missed
+  ? `You missed <strong>${missed} question${missed > 1 ? "s" : ""}</strong>. Each page shows the right answer and where it comes from in the reading.`
+  : `<strong>Every answer correct.</strong> Each page still shows where the answer comes from.`;
+
+function visible() { return Qs.map((_, i) => i).filter(i => filter === "all" || !right(i)); }
+function list() {
+  const ids = visible();
+  document.getElementById("count").textContent = `${A.score}/${A.total} correct`;
+  document.getElementById("list").innerHTML = ids.map(i => `
+    <button class="item ${i === cur ? "on" : ""}" data-i="${i}"><span class="qword">Question</span> ${i + 1}
+      <span class="meta ${right(i) ? "ok" : "no"}">${right(i) ? "✓" : "✗"}</span></button>`).join("");
+  document.querySelectorAll("#list .item").forEach(b => b.onclick = () => { cur = +b.dataset.i; render(); });
+}
+function page() {
+  const q = Qs[cur], pick = A.picks[cur], ok = right(cur);
+  document.getElementById("page").innerHTML = `
+    <div class="head"><span>${QUIZ.title}</span><span class="hand">${A.student}</span></div>
+    <span class="redpen mark">${ok ? "✓" : "✗"}</span>
+    <p class="stem">${cur + 1}.&nbsp; ${q.text}</p>
+    ${q.options.map((o, i) => {
+      const chosen = i === pick, correct = i === q.correct;
+      return `<p class="o ${chosen ? "chosen" : ""} ${chosen && !ok ? "wrong" : ""}">
+        ${correct ? '<span class="redpen tick">✓</span>' : ""}
+        <span class="l ${chosen ? "circ" : ""} ${correct && !chosen ? "circ red" : ""}">${L[i]}</span>) ${o}</p>`;
+    }).join("")}
+    <div class="redpen note">${ok ? "Right. " : ""}${q.explanation}</div>
+    <div class="slip"><span class="k">FROM THE READING</span>“${q.citation}”</div>
+    <div class="folio"><span>${ok ? "Correct" : "Missed"}</span><span>${cur + 1} / ${Qs.length}</span></div>`;
+}
+function render() { list(); page(); }
+function step(d) { const ids = visible(), k = ids.indexOf(cur); const n = ids[k + d]; if (n !== undefined) { cur = n; render(); } }
+document.querySelectorAll(".filter button").forEach(b => b.onclick = () => {
+  filter = b.dataset.f; document.querySelectorAll(".filter button").forEach(x => x.classList.toggle("on", x === b));
+  if (!visible().includes(cur)) cur = visible()[0] ?? 0; render();
+});
+document.getElementById("prev").onclick = () => step(-1);
+document.getElementById("next").onclick = () => step(1);
+addEventListener("keydown", e => { const k = e.key.toLowerCase(); if (k === "q" || k === "arrowleft") step(-1); if (k === "e" || k === "arrowright") step(1); });
+render();
+</script>
+</body>
+</html>

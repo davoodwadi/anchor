@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auth — A: Title Card</title>
+<link rel="stylesheet" href="../shared.css?v=4">
+<link rel="stylesheet" href="../app/app.css?v=2">
+<style>
+  .center { min-height: calc(100svh - 90px); display: grid; place-items: center; padding: 0 16px 8vh; }
+  #auth { width: min(100%, 440px); text-align: center; }
+  .auth-title { font-size: clamp(64px, 11vw, 132px); margin: 10px 0 14px; }
+  .auth-lede { margin: 0 auto 36px; max-width: 36ch; font-size: 17px; }
+  .auth-form { display: grid; gap: 26px; text-align: left; }
+  .auth-form .btn { justify-self: center; margin-top: 8px; }
+  .auth-alt { margin-top: 28px; font-size: 16px; }
+  .auth-alt a { color: var(--text); border-bottom: 1px solid var(--text-3); }
+</style>
+</head>
+<body class="dark-bg">
+<div class="grain"></div><div class="vignette"></div>
+<div class="wrap">
+  <header class="bar">
+    <a class="wordmark" href="../landing/b-mind-place.html">ANCHOR</a>
+    <span class="mid kicker" style="font-size:13px;color:var(--text-3)">For instructors</span>
+    <span class="end"><a class="link" href="#">Have a quiz link?</a></span>
+  </header>
+  <div class="center"><div id="auth"></div></div>
+</div>
+<script src="auth.js"></script>
+<script>
+const root = document.getElementById("auth");
+const go = (m) => { renderAuth(root, m, go); history.replaceState(null, "", "#" + m); };
+go(location.hash.slice(1) in AUTH_MODES ? location.hash.slice(1) : "signin");
+</script>
+</body>
+</html>

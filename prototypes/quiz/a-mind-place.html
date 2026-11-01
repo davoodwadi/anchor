@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz view — A: Mind Place</title>
+<link rel="stylesheet" href="../shared.css?v=4">
+<link rel="stylesheet" href="../app/app.css?v=2">
+<style>
+  main { display: grid; grid-template-columns: minmax(240px, 320px) minmax(0, 1fr) minmax(280px, 380px); gap: clamp(20px, 3vw, 48px); align-items: start; padding: 1vh clamp(16px, 3vw, 40px) 0; }
+  h1 { font-size: clamp(44px, 4.4vw, 68px); margin: 6px 0 8px; }
+  .sub { font: 400 15px var(--f-ui); letter-spacing: .06em; color: var(--text-3); margin-bottom: 24px; }
+  .stage { border-left: 1px solid rgba(255,255,255,.18); padding: 4px 0 0 clamp(18px, 2.4vw, 36px); max-width: 64ch; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); margin: 10px 0 26px; }
+  .stats div { background: rgba(14,16,15,.85); padding: 14px 16px; }
+  .stats b { display: block; font: 400 34px var(--f-display); color: var(--text); line-height: 1; margin-top: 6px; }
+  .qrow { display: grid; grid-template-columns: 34px 1fr 64px; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); font: 400 16px/1.4 var(--f-body); color: var(--text-2); }
+  .qrow .n { font: 400 20px var(--f-display); color: var(--text-3); }
+  .qrow .mbar { grid-column: 2; height: 5px; background: #2b2f2d; margin-top: 6px; }
+  .qrow .mbar i { display: block; height: 100%; background: var(--sage-dim); }
+  .qrow.hot .mbar i { background: var(--red); }
+  .qrow .pct { text-align: right; font: 500 16px var(--f-ui); color: var(--text); }
+  .ans { padding: 12px 0; border-top: 1px solid var(--line); }
+  .ans .q { font: 400 16px/1.45 var(--f-body); color: var(--text-2); margin: 0 0 4px; }
+  .ans .a { font: 400 17px/1.45 var(--f-body); }
+  .ans .a.ok { color: var(--sage); } .ans .a.no { color: #d59591; }
+  .ans .a.no::after { content: attr(data-c); display: block; color: var(--text-3); font-size: 15px; margin-top: 2px; }
+  .share { position: sticky; top: 20px; transform: rotate(1.2deg); padding: 9% 10% 8%; font-size: 14px; line-height: 2; aspect-ratio: auto; }
+  .share .t { font-weight: 700; letter-spacing: .14em; margin: 0 0 1em; }
+  .share .qr { width: 62%; margin: .6em auto 1.2em; padding: 8px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.25); transform: rotate(-1deg); }
+  .share .lk { word-break: break-all; border-bottom: 1px dashed rgba(26,24,21,.4); padding-bottom: .3em; }
+  .share .acts { display: flex; gap: 1.4em; margin-top: 1.2em; flex-wrap: wrap; }
+  .share .acts button { background: none; border: 0; padding: 0; font: inherit; color: var(--ink); text-decoration: underline; cursor: pointer; }
+  .share .hand { font-size: 1.35em; margin-top: 1em; transform: rotate(-2deg); }
+  @media (max-width: 1180px) { main { grid-template-columns: minmax(220px, 280px) minmax(0, 1fr); } .desk { grid-column: 1 / -1; max-width: 420px; justify-self: center; width: 100%; } .share { position: static; } }
+  @media (max-width: 760px) { main { grid-template-columns: 1fr; } .stage { border-left: 0; padding-left: 0; } .stats b { font-size: 26px; } }
+</style>
+</head>
+<body class="desk-bg">
+<div class="shade-l"></div><div class="grain"></div><div class="vignette"></div>
+<div class="wrap">
+  <header class="bar">
+    <a class="chip" href="../dashboard/a-mind-place.html"><span class="key">Esc</span>Dashboard</a>
+    <span class="mid"></span>
+    <span class="end"><a class="link" href="../take/e-combo.html">Preview as student</a></span>
+  </header>
+  <main>
+    <section>
+      <div class="kicker" style="font-size:14px;color:var(--text-3)">Quiz</div>
+      <h1 class="h-display" id="title"></h1>
+      <div class="sub" id="sub"></div>
+      <div class="grp"><button class="item on" id="ov">Overview<span class="meta">All students</span></button></div>
+      <div class="grp" style="margin-top:14px"><h3>Attempts <span id="na"></span></h3><div id="list"></div></div>
+    </section>
+    <section class="stage" id="stage" aria-live="polite"></section>
+    <section class="desk"><div class="share paper typed" id="share"></div></section>
+  </main>
+</div>
+<script src="../app/data.js"></script>
+<script src="quiz.js"></script>
+<script>
+const Qs = QUIZ.questions;
+let cur = -1;
+document.getElementById("title").textContent = QUIZ.title.split(" · ")[1].toUpperCase();
+document.getElementById("sub").textContent = `${QUIZ.title.split(" · ")[0]} · ${Qs.length} questions · Created ${QUIZ.created}`;
+document.getElementById("na").textContent = STATS.n;
+document.getElementById("share").innerHTML = `
+  <p class="t">SHARE WITH STUDENTS</p>
+  <div class="qr">${fakeQR()}</div>
+  <div class="lk">${STATS.link}</div>
+  <div class="acts"><button>Copy link</button><button>Full-screen QR</button></div>
+  <div class="hand">Students scan, enter a<br>student number, begin.</div>`;
+
+function render() {
+  document.getElementById("ov").classList.toggle("on", cur < 0);
+  document.getElementById("list").innerHTML = ATTEMPTS.map((a, i) => `<button class="item ${i === cur ? "on" : ""}" data-i="${i}">${a.student}<span class="meta">${a.score}/${a.total}</span></button>`).join("");
+  document.querySelectorAll("#list .item").forEach(b => b.onclick = () => { cur = +b.dataset.i; render(); });
+  const s = document.getElementById("stage");
+  if (cur < 0) {
+    s.innerHTML = `<div class="label">Overview</div>
+      <div class="stats"><div><span class="label">Attempts</span><b>${STATS.n}</b></div><div><span class="label">Median</span><b>${STATS.median}/${Qs.length}</b></div><div><span class="label">Most missed</span><b>Q${STATS.mostMissed + 1}</b></div></div>
+      <div class="label" style="margin-bottom:6px">Missed by</div>
+      ${Qs.map((q, i) => `<div class="qrow ${i === STATS.mostMissed ? "hot" : ""}"><span class="n">${i + 1}</span><span>${q.text}</span><span class="pct">${Math.round(STATS.missRate[i] * 100)}%</span><span class="mbar"><i style="width:${STATS.missRate[i] * 100}%"></i></span></div>`).join("")}`;
+  } else {
+    const a = ATTEMPTS[cur];
+    s.innerHTML = `<div class="label">Student ${a.student} · ${a.when}</div>
+      <div class="stats" style="grid-template-columns:1fr 1fr"><div><span class="label">Score</span><b>${a.score} / ${a.total}</b></div><div><span class="label">Missed</span><b>${a.total - a.score}</b></div></div>
+      ${Qs.map((q, i) => { const ok = a.picks[i] === q.correct; return `<div class="ans"><p class="q">${i + 1}. ${q.text}</p><div class="a ${ok ? "ok" : "no"}" data-c="Correct: ${q.options[q.correct]}">${ok ? "✓" : "✗"} ${q.options[a.picks[i]]}</div></div>`; }).join("")}`;
+  }
+}
+document.getElementById("ov").onclick = () => { cur = -1; render(); };
+addEventListener("keydown", (e) => { const k = e.key.toLowerCase(); if (k === "arrowdown") { cur = Math.min(ATTEMPTS.length - 1, cur + 1); render(); } if (k === "arrowup") { cur = Math.max(-1, cur - 1); render(); } });
+render();
+</script>
+</body>
+</html>

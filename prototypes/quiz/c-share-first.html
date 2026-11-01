@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz view — C: Share First</title>
+<link rel="stylesheet" href="../shared.css?v=4">
+<link rel="stylesheet" href="../app/app.css?v=2">
+<style>
+  main { max-width: 1180px; margin: 0 auto; padding: 1vh 16px 10vh; }
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 340px); gap: clamp(24px, 4vw, 64px); align-items: center; padding: 4vh 0 6vh; border-bottom: 1px solid var(--line); }
+  .hero h1 { font-size: clamp(56px, 7vw, 108px); margin: 8px 0 18px; }
+  .lk { font-family: var(--f-type); font-size: clamp(18px, 2vw, 26px); color: var(--text); word-break: break-all; margin: 0 0 18px; }
+  .hero .actions { justify-content: flex-start; padding: 0; }
+  .qr { background: #fff; padding: 14px; }
+  .live { margin-top: 14px; text-align: center; font: 500 16px var(--f-ui); letter-spacing: .1em; text-transform: uppercase; color: var(--text-2); }
+  .live b { color: var(--text); font-weight: 500; }
+  body.present header, body.present .below, body.present .hero .actions, body.present .hero .k { display: none; }
+  body.present .hero { min-height: 100svh; border: 0; grid-template-columns: 1fr minmax(320px, 46vh); }
+  body.present .exitp { display: inline-flex; }
+  .exitp { display: none; position: fixed; right: 20px; top: 18px; z-index: 5; }
+  .below { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); padding-top: 34px; }
+  h2.sec { font: 500 15px var(--f-ui); letter-spacing: .2em; text-transform: uppercase; color: var(--text-2); margin: 0 0 12px; display: flex; gap: 12px; }
+  h2.sec span { color: var(--text-3); letter-spacing: .06em; }
+  .row { display: grid; grid-template-columns: 1fr auto; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); font: 400 16px/1.4 var(--f-body); color: var(--text-2); }
+  .row b { font: 500 17px var(--f-ui); color: var(--text); font-weight: 500; }
+  .row .t { display: block; height: 4px; background: #2b2f2d; margin-top: 6px; grid-column: 1 / -1; }
+  .row .t i { display: block; height: 100%; background: var(--sage-dim); }
+  .row.hot .t i { background: var(--red); }
+  @media (max-width: 860px) { .hero, .below { grid-template-columns: 1fr; } .qr { max-width: 280px; } }
+</style>
+</head>
+<body class="dark-bg">
+<div class="grain"></div><div class="vignette"></div>
+<div class="wrap">
+  <header class="bar">
+    <a class="chip" href="../dashboard/a-mind-place.html"><span class="key">Esc</span>Dashboard</a>
+    <span class="mid"></span>
+    <span class="end"><a class="link" href="../take/e-combo.html">Preview as student</a></span>
+  </header>
+  <button class="chip exitp" id="exitp"><span class="key">Esc</span>Exit</button>
+  <main>
+    <section class="hero">
+      <div>
+        <div class="kicker k" style="font-size:14px;color:var(--text-3)" id="k"></div>
+        <h1 class="h-display" id="title"></h1>
+        <p class="lk" id="lk"></p>
+        <nav class="actions"><button class="primary" id="present"><span class="key">P</span>Present to class</button><button><span class="key">C</span>Copy link</button></nav>
+      </div>
+      <div><div class="qr" id="qr"></div><div class="live"><b id="cnt"></b> attempts so far</div></div>
+    </section>
+    <section class="below">
+      <div><h2 class="sec">Attempts <span id="na"></span></h2><div id="att"></div></div>
+      <div><h2 class="sec">Missed by <span>per question</span></h2><div id="miss"></div></div>
+    </section>
+  </main>
+</div>
+<script src="../app/data.js"></script>
+<script src="quiz.js"></script>
+<script>
+const Qs = QUIZ.questions;
+document.getElementById("k").textContent = `${Qs.length} questions · Created ${QUIZ.created}`;
+document.getElementById("title").textContent = QUIZ.title.toUpperCase();
+document.getElementById("lk").textContent = STATS.link;
+document.getElementById("qr").innerHTML = fakeQR();
+document.getElementById("cnt").textContent = STATS.n;
+document.getElementById("na").textContent = STATS.n;
+document.getElementById("att").innerHTML = ATTEMPTS.map(a => `<div class="row"><span>${a.student} · ${a.when}</span><b>${a.score}/${a.total}</b></div>`).join("");
+document.getElementById("miss").innerHTML = Qs.map((q, i) => `<div class="row ${i === STATS.mostMissed ? "hot" : ""}"><span>${i + 1}. ${q.text}</span><b>${Math.round(STATS.missRate[i] * 100)}%</b><span class="t"><i style="width:${STATS.missRate[i] * 100}%"></i></span></div>`).join("");
+const present = (on) => document.body.classList.toggle("present", on);
+document.getElementById("present").onclick = () => present(true);
+document.getElementById("exitp").onclick = () => present(false);
+addEventListener("keydown", (e) => { const k = e.key.toLowerCase(); if (k === "p") present(true); if (k === "escape") present(false); });
+</script>
+</body>
+</html>

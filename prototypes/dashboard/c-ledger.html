@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard — C: Ledger</title>
+<link rel="stylesheet" href="../shared.css?v=4">
+<link rel="stylesheet" href="../app/app.css?v=2">
+<style>
+  main { max-width: 1120px; margin: 0 auto; padding: 3vh 16px 10vh; }
+  .head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 16px 32px; margin-bottom: 30px; }
+  .head h1 { font-size: clamp(60px, 8vw, 112px); }
+  .head .actions { padding: 0; }
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); margin-bottom: 30px; }
+  .tiles div { background: rgba(14,16,15,.9); padding: 16px 18px; }
+  .tiles b { display: block; font: 400 40px var(--f-display); color: var(--text); line-height: 1; margin-top: 6px; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font: 500 13px var(--f-ui); letter-spacing: .16em; text-transform: uppercase; color: var(--text-3); padding: 0 12px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th button { all: unset; cursor: pointer; }
+  th button:hover { color: var(--text-2); }
+  th.num, td.num { text-align: right; }
+  td { padding: 16px 12px; border-bottom: 1px solid var(--line); font: 400 17px var(--f-body); color: var(--text-2); vertical-align: baseline; }
+  td.title a { font: 500 21px var(--f-ui); letter-spacing: .02em; text-transform: uppercase; color: var(--text); }
+  tr:hover td { background: rgba(255,255,255,.025); }
+  tr:hover td.title a { color: var(--sage); }
+  td .none { color: var(--text-3); }
+  td.go { text-align: right; white-space: nowrap; }
+  td.go a { font: 500 14px var(--f-ui); letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); }
+  td.go a:hover { color: var(--text); }
+  @media (max-width: 760px) {
+    .tiles b { font-size: 30px; }
+    thead { display: none; }
+    tr { display: grid; grid-template-columns: 1fr auto; padding: 14px 0; border-bottom: 1px solid var(--line); }
+    td { border: 0; padding: 2px 0; font-size: 15px; }
+    td.title { grid-column: 1 / -1; }
+    td.c-date, td.c-q { display: none; }
+    td.num::before { content: attr(data-k) " "; color: var(--text-3); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
+    td.go { display: none; }
+  }
+</style>
+</head>
+<body class="dark-bg">
+<div class="grain"></div><div class="vignette"></div>
+<div class="wrap">
+  <header class="bar">
+    <span class="wordmark">ANCHOR</span>
+    <span class="mid"></span>
+    <span class="end"><span id="me" style="font:15px var(--f-body);color:var(--text-2)"></span><a class="chip" href="#">Sign out</a></span>
+  </header>
+  <main>
+    <div class="head">
+      <div><div class="kicker" style="font-size:14px;color:var(--text-3)">Your quizzes</div><h1 class="h-display">QUIZZES</h1></div>
+      <nav class="actions"><a class="primary" href="#"><span class="key">N</span>New quiz</a><a href="#"><span class="key">S</span>Study session</a></nav>
+    </div>
+    <div class="tiles"><div><span class="label">Quizzes</span><b id="t1"></b></div><div><span class="label">Attempts</span><b id="t2"></b></div><div><span class="label">This week</span><b>8</b></div></div>
+    <table>
+      <thead><tr><th>Title</th><th class="c-date"><button data-s="created">Created</button></th><th class="num c-q">Questions</th><th class="num"><button data-s="attempts">Attempts ↓</button></th><th class="num">Median</th><th></th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </main>
+</div>
+<script src="../app/data.js"></script>
+<script>
+document.getElementById("me").textContent = ME.email;
+document.getElementById("t1").textContent = QUIZZES.length;
+document.getElementById("t2").textContent = QUIZZES.reduce((s, q) => s + q.attempts, 0);
+document.getElementById("rows").innerHTML = QUIZZES.map(q => `
+  <tr>
+    <td class="title"><a href="../quiz/a-mind-place.html">${q.title}</a></td>
+    <td class="c-date">${q.created}</td>
+    <td class="num c-q">${q.questions}</td>
+    <td class="num" data-k="Attempts">${q.attempts || '<span class="none">—</span>'}</td>
+    <td class="num" data-k="Median">${q.attempts ? q.median : '<span class="none">—</span>'}</td>
+    <td class="go"><a href="#">Copy link</a></td>
+  </tr>`).join("");
+</script>
+</body>
+</html>

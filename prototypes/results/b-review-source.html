@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Results — B: Review + Source</title>
+<link rel="stylesheet" href="../shared.css?v=4">
+<link rel="stylesheet" href="../app/app.css?v=2">
+<style>
+  main { display: grid; grid-template-columns: minmax(220px, 290px) minmax(0, 1fr) minmax(300px, 470px); gap: clamp(20px, 3vw, 48px); align-items: start; padding: 1vh clamp(16px, 3vw, 40px) 0; }
+  .score { font-size: clamp(76px, 8vw, 120px); }
+  .sub { margin: 10px 0 26px; font-size: 16px; }
+  .stage { border-left: 1px solid rgba(255,255,255,.18); padding: 6px 0 0 clamp(18px, 2.4vw, 36px); max-width: 60ch; }
+  .qtext { font: 400 clamp(21px, 1.7vw, 24px)/1.45 var(--f-body); color: var(--text); margin: 10px 0 22px; }
+  .row { display: grid; grid-template-columns: 110px 1fr; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); font: 400 18px/1.45 var(--f-body); color: var(--text); }
+  .row .label { padding-top: 3px; }
+  .row.yours.wrong .v { color: #d59591; text-decoration: line-through; text-decoration-color: rgba(213,149,145,.6); }
+  .row.correct .v { color: var(--sage); }
+  .why { margin-top: 18px; font: 400 18px/1.65 var(--f-body); color: var(--text-2); }
+  .jump { margin-top: 18px; display: inline-flex; gap: 10px; align-items: center; font: 500 16px var(--f-ui); letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); }
+
+  .sheet { transform: rotate(1.6deg); font-size: clamp(11px, .95vw, 14px); line-height: 2.2; aspect-ratio: auto; min-height: 560px; overflow: visible; padding-right: 13%; }
+  .sheet p { position: relative; margin: 0 0 1.6em; text-indent: 2.4em; }
+  .sheet .t { text-indent: 0; font-weight: 700; letter-spacing: .1em; margin-bottom: 2em; }
+  .hl { background: linear-gradient(transparent 62%, rgba(155,31,27,.28) 62%, rgba(155,31,27,.28) 92%, transparent 92%); }
+  .arrow { position: absolute; right: -15%; top: 0; text-indent: 0; font-size: 1.4em; transform: rotate(-6deg); }
+
+  @media (max-width: 1180px) { main { grid-template-columns: minmax(200px, 250px) minmax(0, 1fr); } .src { grid-column: 1 / -1; max-width: 520px; justify-self: center; width: 100%; } }
+  @media (max-width: 760px) {
+    main { grid-template-columns: 1fr; }
+    .stage { border-left: 0; padding-left: 0; }
+    .row { grid-template-columns: 1fr; gap: 4px; }
+    .sheet { transform: none; }
+    #list { display: flex; gap: 6px; overflow-x: auto; }
+    #list .item { width: auto; border: 1px solid var(--line); padding: 6px 10px; white-space: nowrap; }
+    #list .item.on::before { display: none; }
+    #list .qword { display: none; }
+    .grp h3 { display: none; }
+  }
+</style>
+</head>
+<body class="desk-bg">
+<div class="shade-l"></div><div class="grain"></div><div class="vignette"></div>
+<div class="wrap">
+  <header class="bar">
+    <span class="wordmark">ANCHOR</span>
+    <span class="mid kicker" style="font-size:14px"></span>
+    <span class="end"><span class="chip" id="sid"></span></span>
+  </header>
+  <main>
+    <section>
+      <div class="kicker" style="font-size:14px;color:var(--text-3)">Your result</div>
+      <h1 class="h-display score" id="score"></h1>
+      <p class="prose sub" id="sub"></p>
+      <div class="grp"><h3>Missed <span id="nm"></span></h3><div id="missed"></div></div>
+      <div class="grp" style="margin-top:14px"><h3>Correct <span id="nc"></span></h3><div id="correct"></div></div>
+    </section>
+    <section class="stage" id="stage" aria-live="polite"></section>
+    <section class="src" aria-label="Source reading"><div class="sheet paper typed" id="sheet"></div></section>
+  </main>
+  <nav class="actions">
+    <button id="prev"><span class="key">Q</span>Previous</button>
+    <button id="next"><span class="key">E</span>Next</button>
+  </nav>
+</div>
+<script src="../app/data.js"></script>
+<script>
+const A = MY_ATTEMPT, Qs = QUIZ.questions;
+const right = (i) => A.picks[i] === Qs[i].correct;
+const order = [...Qs.keys()].sort((a, b) => right(a) - right(b));
+let cur = order[0];
+
+document.querySelector(".mid").textContent = QUIZ.title;
+document.getElementById("sid").textContent = A.student;
+document.getElementById("score").textContent = `${A.score} / ${A.total}`;
+document.getElementById("sub").innerHTML = `Start with what you missed. Every answer links back to <strong>the passage it came from</strong>.`;
+
+function item(i) { return `<button class="item ${i === cur ? "on" : ""}" data-i="${i}"><span class="qword">Question</span> ${i + 1}<span class="meta ${right(i) ? "ok" : "no"}">${right(i) ? "✓" : "✗"}</span></button>`; }
+function render() {
+  const miss = order.filter(i => !right(i)), ok = order.filter(right);
+  document.getElementById("nm").textContent = miss.length;
+  document.getElementById("nc").textContent = ok.length;
+  document.getElementById("missed").innerHTML = miss.map(item).join("") || '<div class="prose" style="padding-left:16px;font-size:15px">None</div>';
+  document.getElementById("correct").innerHTML = ok.map(item).join("");
+  document.querySelectorAll(".item").forEach(b => b.onclick = () => { cur = +b.dataset.i; render(); });
+
+  const q = Qs[cur], ok1 = right(cur);
+  document.getElementById("stage").innerHTML = `
+    <div class="label">Question ${cur + 1} · ${ok1 ? "Correct" : "Missed"}</div>
+    <p class="qtext">${q.text}</p>
+    <div class="row yours ${ok1 ? "" : "wrong"}"><span class="label">Your answer</span><span class="v">${q.options[A.picks[cur]]}</span></div>
+    ${ok1 ? "" : `<div class="row correct"><span class="label">Correct</span><span class="v">${q.options[q.correct]}</span></div>`}
+    <p class="why">${q.explanation}</p>
+    <div class="jump">→ Underlined in the reading</div>`;
+
+  // The reading, with this question's sentence highlighted
+  const paras = Qs.map((x, i) => i === cur ? `<p><span class="hl">${x.citation}</span><span class="redpen arrow">← Q${cur + 1}</span></p>` : `<p>${x.citation}</p>`);
+  document.getElementById("sheet").innerHTML = `<p class="t">WEEK 7 NOTES · MEMORY</p>${paras.join("")}`;
+}
+function step(d) { const k = order.indexOf(cur) + d; if (order[k] !== undefined) { cur = order[k]; render(); } }
+document.getElementById("prev").onclick = () => step(-1);
+document.getElementById("next").onclick = () => step(1);
+addEventListener("keydown", e => { const k = e.key.toLowerCase(); if (k === "q" || k === "arrowleft") step(-1); if (k === "e" || k === "arrowright") step(1); });
+render();
+</script>
+</body>
+</html>

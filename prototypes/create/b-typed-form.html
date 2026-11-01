@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Create — B: Typed Form</title>
+<link rel="stylesheet" href="../shared.css?v=4">
+<link rel="stylesheet" href="../app/app.css?v=2">
+<style>
+  .shade { position: fixed; inset: 0; pointer-events: none; background: rgba(8,8,8,.35); }
+  main { display: grid; justify-items: center; padding: 2vh 16px 6vh; }
+  .sheet { width: min(100%, 680px); aspect-ratio: auto; min-height: 620px; transform: rotate(-.6deg); padding: 9% 10% 7%; font-size: clamp(14.5px, 1.25vw, 17px); line-height: 2.3; display: flex; flex-direction: column; }
+  .sheet h1 { font: 700 1.05em var(--f-type); letter-spacing: .2em; margin: 0 0 2.2em; color: var(--ink); }
+  .line { display: flex; gap: .8em; align-items: baseline; margin-bottom: 1.4em; }
+  .line .k { flex: none; }
+  .line input { flex: 1; min-width: 0; background: transparent; border: 0; border-bottom: 1px solid rgba(26,24,21,.5); font: inherit; color: var(--ink); padding: 0 .2em; outline: none; }
+  .line input:focus { border-bottom-color: var(--ink); background: rgba(26,24,21,.05); }
+  .num { display: inline-flex; gap: .6em; align-items: baseline; }
+  .num button { background: none; border: 1px solid rgba(26,24,21,.45); width: 1.7em; height: 1.7em; font: inherit; line-height: 1; cursor: pointer; color: var(--ink); }
+  .num b { font-family: var(--f-hand); font-size: 1.7em; font-weight: 400; min-width: 1.4em; text-align: center; }
+  .drop { margin: .6em 0 1.6em; border: 1.5px dashed rgba(26,24,21,.45); padding: 1.6em 1em; text-align: center; cursor: pointer; line-height: 1.8; }
+  .drop:hover, .drop.over { background: rgba(26,24,21,.06); }
+  .clip { margin: .6em 0 1.6em; padding: .9em 1.1em; background: #c9bea6; box-shadow: 0 3px 10px rgba(0,0,0,.25); transform: rotate(.8deg); font-size: .92em; line-height: 1.8; }
+  .clip .k { display: flex; justify-content: space-between; font-size: .8em; letter-spacing: .12em; opacity: .7; }
+  .clip button { background: none; border: 0; font: inherit; cursor: pointer; text-decoration: underline; color: var(--ink); }
+  .note { margin-top: auto; font-size: 1.3em; transform: rotate(-2deg); }
+  .status p { margin: 0 0 .4em; }
+  .below { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 14px 30px; justify-content: center; }
+</style>
+</head>
+<body class="desk-bg">
+<div class="shade"></div><div class="grain"></div><div class="vignette"></div>
+<div class="wrap">
+  <header class="bar">
+    <a class="chip" href="../dashboard/a-mind-place.html"><span class="key">Esc</span>Dashboard</a>
+    <span class="mid kicker" style="font-size:14px">New quiz</span>
+    <span class="end"></span>
+  </header>
+  <main>
+    <article class="sheet paper typed" id="sheet"></article>
+    <nav class="below actions" id="below"></nav>
+  </main>
+</div>
+<script src="../app/data.js"></script>
+<script>
+let title = "", n = 6, file = null, working = false, t0 = 0;
+const SAMPLE = { name: "Week 7 notes - Memory.pdf", pages: 12, text: QUIZ.questions[1].citation };
+const sheet = document.getElementById("sheet"), below = document.getElementById("below");
+
+function render() {
+  if (working) {
+    const s = Math.round((Date.now() - t0) / 1000);
+    sheet.innerHTML = `<h1>NEW QUIZ</h1><div class="status">
+      <p>Title ........ ${title}</p><p>Source ....... ${file.name}</p><p>Questions .... ${n}</p><p>&nbsp;</p>
+      <p>Drafting. Each question will be grounded in a sentence from the file.</p>
+      <p>This usually takes 20 to 40 seconds. ${s}s so far.</p></div>
+      <div class="hand note">Don't close this page.</div>`;
+    below.innerHTML = "";
+    return;
+  }
+  sheet.innerHTML = `
+    <h1>NEW QUIZ</h1>
+    <div class="line"><span class="k">Title:</span><input id="title" value="${title}" placeholder="Week 7 · Memory and Retrieval"></div>
+    <div class="line"><span class="k">Questions:</span><span class="num"><button id="minus" aria-label="Fewer">−</button><b>${n}</b><button id="plus" aria-label="More">+</button></span></div>
+    <div class="line" style="margin-bottom:0"><span class="k">Source material:</span></div>
+    ${file
+      ? `<div class="clip"><span class="k"><span>${file.name} · ${file.pages} pp</span><button id="rm">remove</button></span>“${file.text}”</div>`
+      : `<label class="drop" id="drop">Drop a PDF or Markdown file on this page<br>or click to choose one<input type="file" hidden id="pick" accept=".pdf,.md,.markdown"></label>`}
+    <div class="hand note">${file ? "↑ first lines of what Anchor read" : "Questions only come from this file."}</div>`;
+  below.innerHTML = `<button class="primary" id="go" ${file && title ? "" : "disabled style=\"opacity:.4\""}><span class="key">Enter</span>Draft the quiz</button><a href="../dashboard/a-mind-place.html"><span class="key">Esc</span>Cancel</a>`;
+  const pick = sheet.querySelector("#pick");
+  if (pick) {
+    pick.onchange = setFile;
+    const d = sheet.querySelector("#drop");
+    d.ondragover = (e) => { e.preventDefault(); d.classList.add("over"); };
+    d.ondragleave = () => d.classList.remove("over");
+    d.ondrop = (e) => { e.preventDefault(); setFile(); };
+  }
+  const rm = sheet.querySelector("#rm"); if (rm) rm.onclick = () => { file = null; render(); };
+  sheet.querySelector("#title").oninput = (e) => { title = e.target.value; const g = below.querySelector("#go"); g.disabled = !(file && title); g.style.opacity = file && title ? "" : ".4"; };
+  sheet.querySelector("#minus").onclick = () => { n = Math.max(1, n - 1); render(); };
+  sheet.querySelector("#plus").onclick = () => { n = Math.min(20, n + 1); render(); };
+  below.querySelector("#go").onclick = start;
+}
+function setFile() { file = SAMPLE; if (!title) title = "Week 7 · Memory and Retrieval"; render(); }
+function start() {
+  if (!(file && title) || working) return;
+  working = true; t0 = Date.now(); render();
+  const t = setInterval(render, 1000);
+  setTimeout(() => { clearInterval(t); location.href = "../quiz/a-mind-place.html"; }, 6000);
+}
+addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target.tagName !== "BUTTON") start(); });
+render();
+</script>
+</body>
+</html>

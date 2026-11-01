@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard — B: Papers on the Desk</title>
+<link rel="stylesheet" href="../shared.css?v=4">
+<link rel="stylesheet" href="../app/app.css?v=2">
+<style>
+  .desk-bg { background-attachment: fixed; }
+  .shade { position: fixed; inset: 0; pointer-events: none; background: rgba(8,8,8,.35); }
+  main { padding: 2vh clamp(16px, 4vw, 56px) 8vh; }
+  .head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 16px 32px; margin-bottom: 34px; }
+  .head h1 { font-size: clamp(60px, 7vw, 104px); }
+  .head .actions { padding: 0; justify-content: flex-end; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: clamp(22px, 3vw, 40px); }
+  .card { display: block; position: relative; aspect-ratio: 1000 / 1180; padding: 12% 11% 10%; font-size: 14px; line-height: 1.9; color: var(--ink); transition: none; }
+  .card:nth-child(3n+1) { transform: rotate(-1.4deg); }
+  .card:nth-child(3n+2) { transform: rotate(.9deg); }
+  .card:nth-child(3n) { transform: rotate(-.4deg); }
+  .card:hover { outline: 2px solid rgba(228,232,229,.5); outline-offset: 6px; }
+  .card .t { font-weight: 700; font-size: 1.15em; line-height: 1.5; margin: 0 0 1em; }
+  .card .m { margin: 0; opacity: .75; }
+  .card .hand { position: absolute; left: 11%; bottom: 10%; font-size: 1.5em; transform: rotate(-3deg); }
+  .card .q { position: absolute; right: 10%; bottom: 10%; font-size: .9em; opacity: .6; }
+  .new { display: grid; place-items: center; text-align: center; aspect-ratio: 1000 / 1180; border: 1.5px dashed rgba(228,232,229,.35); color: var(--text-2); font: 500 20px var(--f-ui); text-transform: uppercase; letter-spacing: .08em; }
+  .new:hover { color: var(--text); border-color: var(--text-2); }
+  .new .plus { font: 400 64px var(--f-display); line-height: 1; color: var(--sage); }
+</style>
+</head>
+<body class="desk-bg">
+<div class="shade"></div><div class="grain"></div><div class="vignette"></div>
+<div class="wrap">
+  <header class="bar">
+    <span class="wordmark">ANCHOR</span>
+    <span class="mid"></span>
+    <span class="end"><span id="me" style="font:15px var(--f-body);color:var(--text-2)"></span><a class="chip" href="#">Sign out</a></span>
+  </header>
+  <main>
+    <div class="head">
+      <div><div class="kicker" style="font-size:14px;color:var(--text-3)">Your quizzes</div><h1 class="h-display">THE DESK</h1></div>
+      <nav class="actions"><a class="primary" href="#"><span class="key">N</span>New quiz</a><a href="#"><span class="key">S</span>Study session</a></nav>
+    </div>
+    <div class="grid" id="grid"></div>
+  </main>
+</div>
+<script src="../app/data.js"></script>
+<script>
+document.getElementById("me").textContent = ME.email;
+document.getElementById("grid").innerHTML =
+  `<a class="new" href="#"><span><span class="plus">+</span><br>New quiz</span></a>` +
+  QUIZZES.map(q => `
+    <a class="card paper typed" href="../quiz/a-mind-place.html">
+      <p class="t">${q.title}</p>
+      <p class="m">${q.created}</p>
+      <p class="m">${q.questions} questions</p>
+      <span class="hand">${q.attempts ? `${q.attempts} attempts · ${q.median}` : "not shared yet"}</span>
+    </a>`).join("");
+</script>
+</body>
+</html>

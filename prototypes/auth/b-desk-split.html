@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auth — B: Desk Split</title>
+<link rel="stylesheet" href="../shared.css?v=4">
+<link rel="stylesheet" href="../app/app.css?v=2">
+<style>
+  .split { min-height: 100svh; display: grid; grid-template-columns: 1.1fr minmax(380px, .9fr); }
+  .left { position: relative; overflow: hidden; display: grid; place-items: center; padding: 40px; }
+  .left .sheet { width: min(100%, 440px); transform: rotate(-2deg); font-size: clamp(12px, 1vw, 15px); line-height: 2.2; }
+  .left .sheet p { margin: 0 0 1.6em; text-indent: 2.4em; }
+  .left .sheet .t { text-indent: 0; font-weight: 700; letter-spacing: .12em; }
+  .left .hand { position: absolute; right: 9%; bottom: 9%; font-size: 1.35em; transform: rotate(-4deg); text-align: right; }
+  .left .wm { position: absolute; left: 32px; top: 24px; }
+
+  .right { background: rgba(10,11,11,.92); border-left: 1px solid var(--line); display: grid; grid-template-rows: auto 1fr; }
+  .right .top { display: flex; justify-content: flex-end; padding: 22px 32px; }
+  .formwrap { display: grid; align-content: center; padding: 0 clamp(24px, 5vw, 72px) 10vh; }
+  .modes { display: flex; gap: 22px; margin-bottom: 30px; }
+  .modes button { background: none; border: 0; padding: 0 0 5px; cursor: pointer; font: 500 20px var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--text-2); }
+  .modes button.on { color: var(--text); box-shadow: inset 0 -2px 0 var(--text); }
+  .auth-title { font-size: clamp(48px, 5vw, 76px); margin: 0 0 12px; }
+  .auth-lede { margin: 0 0 32px; max-width: 38ch; font-size: 16px; }
+  .auth-form { display: grid; gap: 24px; max-width: 420px; }
+  .auth-form .btn { justify-self: start; margin-top: 6px; }
+  .auth-alt { margin-top: 26px; font-size: 15px; }
+  .auth-alt a { color: var(--text); border-bottom: 1px solid var(--text-3); }
+
+  @media (max-width: 900px) {
+    .split { grid-template-columns: 1fr; }
+    .left { min-height: 0; padding: 70px 16px 24px; }
+    .left .sheet { width: min(100%, 360px); }
+    .right { border-left: 0; border-top: 1px solid var(--line); }
+    .right .top { display: none; }
+    .formwrap { padding: 32px 16px 48px; }
+  }
+</style>
+</head>
+<body class="desk-bg">
+<div class="grain"></div><div class="vignette"></div>
+<div class="wrap split">
+  <section class="left" aria-hidden="true">
+    <a class="wordmark wm" href="../landing/b-mind-place.html">ANCHOR</a>
+    <div class="sheet paper typed">
+      <p class="t">NOTE TO INSTRUCTORS</p>
+      <p>Sign in to upload course material, draft quizzes from it and share them with one link.</p>
+      <p>Students never need an account. They open your link, enter a student number and begin.</p>
+      <p>Every attempt is waiting on your dashboard.</p>
+      <span class="hand">→ STUDENTS: USE THE<br>LINK FROM CLASS</span>
+    </div>
+  </section>
+  <section class="right">
+    <div class="top"><a class="link" href="#">Have a quiz link?</a></div>
+    <div class="formwrap">
+      <div class="modes"><button data-m="signin">Sign in</button><button data-m="signup">Create account</button></div>
+      <div id="auth"></div>
+    </div>
+  </section>
+</div>
+<script src="auth.js"></script>
+<script>
+const root = document.getElementById("auth");
+const go = (m) => {
+  renderAuth(root, m, go); history.replaceState(null, "", "#" + m);
+  document.querySelectorAll(".modes button").forEach(b => b.classList.toggle("on", b.dataset.m === m));
+};
+document.querySelectorAll(".modes button").forEach(b => b.onclick = () => go(b.dataset.m));
+go(location.hash.slice(1) in AUTH_MODES ? location.hash.slice(1) : "signin");
+</script>
+</body>
+</html>

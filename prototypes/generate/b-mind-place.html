@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Study — B: Mind Place Session</title>
+<link rel="stylesheet" href="../shared.css?v=4">
+<link rel="stylesheet" href="../app/app.css?v=2">
+<style>
+  main { display: grid; grid-template-columns: minmax(220px, 290px) minmax(0, 1fr) minmax(300px, 440px); gap: clamp(20px, 3vw, 48px); align-items: start; padding: 1vh clamp(16px, 3vw, 40px) 0; }
+  h1 { font-size: clamp(50px, 5vw, 76px); margin: 6px 0 22px; }
+  .stage { border-left: 1px solid rgba(255,255,255,.18); padding: 4px 0 0 clamp(18px, 2.4vw, 36px); max-width: 62ch; min-height: 420px; }
+  .stage p.body { font: 400 18px/1.7 var(--f-body); color: var(--text); margin: 0 0 16px; }
+  .q { margin: 10px 0 26px; }
+  .q .stem { font: 400 19px/1.5 var(--f-body); color: var(--text); margin: 0 0 10px; }
+  .opt { display: flex; gap: 12px; align-items: baseline; width: 100%; text-align: left; background: none; border: 0; padding: 8px 6px; cursor: pointer; font: 400 17px/1.4 var(--f-body); color: var(--text-2); }
+  .opt:hover:not(:disabled) { background: rgba(255,255,255,.04); color: var(--text); }
+  .opt:disabled { cursor: default; }
+  .opt.sel { background: rgba(149,169,157,.1); color: var(--text); box-shadow: inset 2px 0 0 var(--sage); }
+  .opt.sel.wrong { background: rgba(175,38,38,.12); box-shadow: inset 2px 0 0 var(--red); color: #e0b3b0; }
+  .opt.right { color: var(--sage); }
+  .fb { font: 400 16px/1.6 var(--f-body); color: var(--text-2); margin: 8px 0 0 40px; }
+  .working { font: 400 18px/1.7 var(--f-body); color: var(--text-2); }
+  .sheet { transform: rotate(1.6deg); font-size: clamp(11px, .95vw, 14px); line-height: 2.2; }
+  .sheet p { margin: 0 0 1.4em; text-indent: 2.4em; }
+  .sheet .t { text-indent: 0; font-weight: 700; letter-spacing: .12em; }
+  .count { display: inline-flex; gap: 6px; align-items: center; color: var(--text-3); font-size: 15px; }
+  .count button { width: 26px; height: 26px; padding: 0; justify-content: center; background: rgba(255,255,255,.08); color: var(--text); font-size: 16px; }
+  @media (max-width: 1180px) { main { grid-template-columns: minmax(200px, 250px) minmax(0, 1fr); } .desk { display: none; } }
+  @media (max-width: 760px) { main { grid-template-columns: 1fr; } .stage { border-left: 0; padding-left: 0; } }
+</style>
+</head>
+<body class="desk-bg">
+<div class="shade-l"></div><div class="grain"></div><div class="vignette"></div>
+<div class="wrap">
+  <header class="bar">
+    <a class="chip" href="../dashboard/a-mind-place.html"><span class="key">Esc</span>Dashboard</a>
+    <span class="mid kicker" style="font-size:14px">Study session</span>
+    <span class="end"></span>
+  </header>
+  <main>
+    <section>
+      <div class="kicker" style="font-size:14px;color:var(--text-3)">Studying</div>
+      <h1 class="h-display">WEEK 7 NOTES</h1>
+      <div class="grp"><h3>Session <span id="cnt"></span></h3><div id="list"></div></div>
+    </section>
+    <section class="stage" id="stage" aria-live="polite"></section>
+    <section class="desk" aria-hidden="true"><div class="sheet paper typed" id="sheet"></div></section>
+  </main>
+  <nav class="actions">
+    <button class="primary" id="explain"><span class="key">X</span>Explain more</button>
+    <span style="display:inline-flex;gap:14px;align-items:center"><button class="primary" id="quiz"><span class="key">Q</span>Quiz me</button><span class="count"><button id="m">−</button><span id="n">3</span> questions<button id="p">+</button></span></span>
+    <button id="new"><span class="key">N</span>New session</button>
+  </nav>
+</div>
+<script src="../app/data.js"></script>
+<script src="session.js"></script>
+<script>
+const picks = {};
+let cur = 0, n = 3, busy = null, t0 = 0;
+document.getElementById("sheet").innerHTML = `<p class="t">${SESSION.source.name.toUpperCase()}</p>` + QUIZ.questions.slice(0, 5).map(q => `<p>${q.citation}</p>`).join("");
+
+function render() {
+  const E = SESSION.entries;
+  document.getElementById("cnt").textContent = E.length;
+  document.getElementById("list").innerHTML = E.map((e, i) => {
+    const done = e.type === "quiz" ? e.questions.filter((_, k) => picks[`${i}-${k}`] !== undefined).length : null;
+    return `<button class="item ${i === cur && !busy ? "on" : ""}" data-i="${i}">${e.title}<span class="meta">${e.type === "quiz" ? `${done}/${e.questions.length}` : ""}</span></button>`;
+  }).join("") + (busy ? `<div class="item on">${busy}<span class="meta">Writing…</span></div>` : "");
+  document.querySelectorAll("#list button.item").forEach(b => b.onclick = () => { if (!busy) { cur = +b.dataset.i; render(); } });
+
+  const s = document.getElementById("stage");
+  if (busy) { s.innerHTML = `<div class="label">${busy}</div><p class="working">Writing ${busy.startsWith("Practice") ? `${n} questions` : "an explanation"} from ${SESSION.source.name}. ${Math.round((Date.now() - t0) / 1000)}s so far.</p>`; return; }
+  const e = E[cur];
+  if (e.type === "explanation") {
+    s.innerHTML = `<div class="label" style="margin-bottom:12px">${e.title}</div>` + e.paras.map(p => `<p class="body">${p}</p>`).join("");
+  } else {
+    s.innerHTML = `<div class="label" style="margin-bottom:12px">${e.title}</div>` + e.questions.map((qi, k) => {
+      const q = QUIZ.questions[qi], key = `${cur}-${k}`, p = picks[key];
+      return `<div class="q"><p class="stem">${k + 1}. ${q.text}</p>
+        ${q.options.map((o, i) => `<button class="opt ${p === i ? "sel" : ""} ${p === i && i !== q.correct ? "wrong" : ""} ${p !== undefined && i === q.correct ? "right" : ""}" data-k="${key}" data-i="${i}" ${p !== undefined ? "disabled" : ""}><span class="key">${i + 1}</span>${o}</button>`).join("")}
+        ${p !== undefined ? `<p class="fb">${p === q.correct ? "Right. " : "Not quite. "}${q.explanation}</p>` : ""}</div>`;
+    }).join("");
+    s.querySelectorAll(".opt").forEach(b => b.onclick = () => { picks[b.dataset.k] = +b.dataset.i; render(); });
+  }
+  document.getElementById("n").textContent = n;
+}
+function add(type) {
+  if (busy) return;
+  const k = SESSION.entries.filter(e => e.type === type).length + 1;
+  busy = type === "quiz" ? `Practice quiz ${k}` : `Explanation ${k}`;
+  t0 = Date.now(); render();
+  const tick = setInterval(render, 1000);
+  setTimeout(() => {
+    clearInterval(tick);
+    SESSION.entries.push(type === "quiz" ? { type, title: busy, questions: [3, 4, 5].slice(0, n) } : { type, title: busy, paras: ["Context matters at retrieval as much as at encoding. When the setting at test matches the setting at study, recall improves.", "Levels of processing makes a related point: the more meaningfully you engage with material while studying, the more routes you build back to it."] });
+    busy = null; cur = SESSION.entries.length - 1; render();
+  }, 3000);
+}
+document.getElementById("explain").onclick = () => add("explanation");
+document.getElementById("quiz").onclick = () => add("quiz");
+document.getElementById("m").onclick = () => { n = Math.max(1, n - 1); render(); };
+document.getElementById("p").onclick = () => { n = Math.min(10, n + 1); render(); };
+addEventListener("keydown", (e) => { const k = e.key.toLowerCase(); if (k === "x") add("explanation"); if (k === "q") add("quiz"); if (k === "arrowdown") { cur = Math.min(SESSION.entries.length - 1, cur + 1); render(); } if (k === "arrowup") { cur = Math.max(0, cur - 1); render(); } });
+render();
+</script>
+</body>
+</html>

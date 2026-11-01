@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Study — A: Manuscript Stream</title>
+<link rel="stylesheet" href="../shared.css?v=4">
+<link rel="stylesheet" href="../app/app.css?v=2">
+<style>
+  .shade { position: fixed; inset: 0; pointer-events: none; background: rgba(8,8,8,.45); }
+  main { max-width: 760px; margin: 0 auto; padding: 1vh 16px 160px; }
+  .src { display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap; padding: 14px 16px; border: 1px solid var(--line); background: rgba(14,16,15,.75); margin-bottom: 34px; font: 400 17px var(--f-body); color: var(--text); }
+  .src .label { margin-right: 4px; }
+  .entry { margin-bottom: 40px; }
+  .entry > .label { margin-bottom: 10px; display: flex; justify-content: space-between; }
+  .page { padding: 7% 9% 6%; font-size: clamp(14.5px, 1.2vw, 16.5px); line-height: 2.05; }
+  .page p { margin: 0 0 1.2em; text-indent: 2.4em; }
+  .plain .page { font-family: var(--f-body); font-size: 17px; line-height: 1.8; letter-spacing: 0; text-shadow: none; }
+  .q { margin-bottom: 1.8em; }
+  .q .stem { font-weight: 700; margin: 0 0 .5em; text-indent: 0; padding-left: 2em; text-indent: -2em; }
+  .o { display: block; width: fit-content; max-width: 100%; background: none; border: 0; padding: .05em .4em .05em 4em; text-indent: -1.6em; font: inherit; color: inherit; text-align: left; cursor: pointer; }
+  .o:hover:not(:disabled) { background: rgba(26,24,21,.07); }
+  .o:disabled { cursor: default; }
+  .o .l { display: inline-block; text-indent: 0; position: relative; padding: 0 .1em; }
+  .o .tick { margin-left: .4em; }
+  .fb { margin: .5em 0 0 3em; font-size: 1.25em; transform: rotate(-1deg); transform-origin: left; max-width: 46ch; }
+  .working { padding: 7% 9%; font-size: 16px; line-height: 2; }
+
+  .dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; background: rgba(12,11,10,.95); border-top: 1px solid var(--line); }
+  .dock .actions { padding: 14px 16px 16px; }
+  .dock .count { display: inline-flex; gap: 6px; align-items: center; color: var(--text-3); font-size: 15px; }
+  .dock .count button { width: 26px; height: 26px; padding: 0; justify-content: center; background: rgba(255,255,255,.08); color: var(--text); font-size: 16px; }
+</style>
+</head>
+<body class="desk-bg">
+<div class="shade"></div><div class="grain"></div><div class="vignette"></div>
+<div class="wrap">
+  <header class="bar">
+    <a class="chip" href="../dashboard/a-mind-place.html"><span class="key">Esc</span>Dashboard</a>
+    <span class="mid kicker" style="font-size:14px">Study session</span>
+    <span class="end"><button class="chip" id="type"><span class="key">T</span><span id="tl">Plain text</span></button></span>
+  </header>
+  <main id="stream"></main>
+</div>
+<div class="dock">
+  <nav class="actions">
+    <button class="primary" id="explain"><span class="key">X</span>Explain more</button>
+    <span style="display:inline-flex;gap:14px;align-items:center"><button class="primary" id="quiz"><span class="key">Q</span>Quiz me</button><span class="count"><button id="m">−</button><span id="n">3</span> questions<button id="p">+</button></span></span>
+    <button id="new"><span class="key">N</span>New session</button>
+  </nav>
+</div>
+<script src="../app/data.js"></script>
+<script src="session.js"></script>
+<script>
+const stream = document.getElementById("stream");
+const picks = {};
+let n = 3, busy = null, t0 = 0;
+
+function quizHTML(e, ei) {
+  return e.questions.map((qi, k) => {
+    const q = QUIZ.questions[qi], key = `${ei}-${k}`, p = picks[key];
+    return `<div class="q"><p class="stem">${k + 1}.&nbsp; ${q.text}</p>
+      ${q.options.map((o, i) => `<button class="o" data-k="${key}" data-i="${i}" ${p !== undefined ? "disabled" : ""}>
+        <span class="l ${p === i ? "circ" : ""} ${p !== undefined && p !== i && i === q.correct ? "circ red" : ""}">${L[i]}</span>) ${o}${p !== undefined && i === q.correct ? '<span class="redpen tick">✓</span>' : ""}</button>`).join("")}
+      ${p !== undefined ? `<div class="redpen fb">${p === q.correct ? "Right. " : "Not quite. "}${q.explanation}</div>` : ""}</div>`;
+  }).join("");
+}
+function render() {
+  stream.innerHTML = `<div class="src"><span class="label">Source</span>${SESSION.source.name}<span class="label" style="margin-left:auto">${SESSION.source.pages} pages</span></div>` +
+    SESSION.entries.map((e, ei) => `
+      <section class="entry"><div class="label"><span>${e.title}</span><span>${e.type === "quiz" ? `${e.questions.length} questions` : ""}</span></div>
+        <article class="page paper typed">${e.type === "explanation" ? e.paras.map(p => `<p>${p}</p>`).join("") : quizHTML(e, ei)}</article></section>`).join("") +
+    (busy ? `<section class="entry"><div class="label"><span>${busy}</span></div><article class="working paper typed">Writing ${busy.toLowerCase().startsWith("practice") ? `${n} questions` : "an explanation"} from ${SESSION.source.name}. ${Math.round((Date.now() - t0) / 1000)}s so far.</article></section>` : "");
+  stream.querySelectorAll(".o").forEach(b => b.onclick = () => { picks[b.dataset.k] = +b.dataset.i; render(); });
+  document.getElementById("n").textContent = n;
+}
+function add(type) {
+  if (busy) return;
+  const k = SESSION.entries.filter(e => e.type === type).length + 1;
+  busy = type === "quiz" ? `Practice quiz ${k}` : `Explanation ${k}`;
+  t0 = Date.now(); render(); scrollTo(0, document.body.scrollHeight);
+  const tick = setInterval(render, 1000);
+  setTimeout(() => {
+    clearInterval(tick);
+    SESSION.entries.push(type === "quiz" ? { type, title: busy, questions: [3, 4, 5].slice(0, n) } : { type, title: busy, paras: ["Context matters at retrieval as much as at encoding. When the setting at test matches the setting at study, recall improves, which is why the divers in the reading remembered best in the place they learned.", "Levels of processing makes a related point: the more meaningfully you engage with material while studying, the more routes you build back to it."] });
+    busy = null; render();
+  }, 3000);
+}
+document.getElementById("explain").onclick = () => add("explanation");
+document.getElementById("quiz").onclick = () => add("quiz");
+document.getElementById("m").onclick = () => { n = Math.max(1, n - 1); render(); };
+document.getElementById("p").onclick = () => { n = Math.min(10, n + 1); render(); };
+document.getElementById("type").onclick = () => { document.body.classList.toggle("plain"); document.getElementById("tl").textContent = document.body.classList.contains("plain") ? "Typewriter" : "Plain text"; };
+addEventListener("keydown", (e) => { const k = e.key.toLowerCase(); if (k === "x") add("explanation"); if (k === "q") add("quiz"); if (k === "t") document.getElementById("type").click(); });
+render();
+</script>
+</body>
+</html>

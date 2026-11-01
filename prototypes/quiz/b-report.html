@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz view — B: Report</title>
+<link rel="stylesheet" href="../shared.css?v=4">
+<link rel="stylesheet" href="../app/app.css?v=2">
+<style>
+  main { max-width: 1060px; margin: 0 auto; padding: 2vh 16px 10vh; }
+  .head { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: end; margin-bottom: 28px; }
+  .head h1 { font-size: clamp(54px, 7vw, 100px); margin-top: 6px; }
+  .sharebar { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; padding: 12px 14px; border: 1px solid var(--line); background: rgba(14,16,15,.85); margin-bottom: 34px; }
+  .sharebar .lk { font-family: var(--f-type); font-size: 16px; color: var(--text); }
+  .sharebar .sp { margin-left: auto; display: flex; gap: 22px; }
+  .sharebar a, .sharebar button { background: none; border: 0; cursor: pointer; display: inline-flex; gap: 8px; align-items: center; font: 500 16px var(--f-ui); letter-spacing: .08em; text-transform: uppercase; color: var(--text-2); }
+  .sharebar a:hover, .sharebar button:hover { color: var(--text); }
+  .sheet { aspect-ratio: auto; padding: 6% 7% 6%; font-size: 15px; line-height: 1.9; }
+  .sheet h2 { font: 700 1em var(--f-type); letter-spacing: .18em; margin: 0 0 1.4em; }
+  .sum { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1em; margin-bottom: 2.4em; }
+  .sum div { border-top: 1px solid rgba(26,24,21,.4); padding-top: .4em; }
+  .sum b { display: block; font-family: var(--f-hand); font-weight: 400; font-size: 2.4em; line-height: 1.1; }
+  .bars { margin-bottom: 2.6em; }
+  .mbar { display: grid; grid-template-columns: 2.6em 1fr 4em; gap: .8em; align-items: center; margin: .2em 0; }
+  .mbar .tr { height: .7em; background: rgba(26,24,21,.12); }
+  .mbar .tr i { display: block; height: 100%; background: rgba(26,24,21,.55); }
+  .mbar.hot .tr i { background: #9b1f1b; }
+  .mbar .p { text-align: right; }
+  table { width: 100%; border-collapse: collapse; font: inherit; }
+  th { text-align: left; font-weight: 700; letter-spacing: .08em; border-bottom: 1px solid rgba(26,24,21,.5); padding: .2em .4em; }
+  td { padding: .25em .4em; border-bottom: 1px dashed rgba(26,24,21,.25); vertical-align: top; }
+  td .x { color: #9b1f1b; }
+  .ticks { letter-spacing: .3em; }
+  .ann { font-size: 1.35em; transform: rotate(-2deg); margin: .6em 0 1.6em; }
+  @media (max-width: 760px) { .head { grid-template-columns: 1fr; } .sharebar .sp { margin-left: 0; } .sheet { font-size: 13px; padding: 7% 5%; } .c-when { display: none; } }
+</style>
+</head>
+<body class="desk-bg">
+<div class="grain"></div><div class="vignette"></div>
+<div class="wrap">
+  <header class="bar">
+    <a class="chip" href="../dashboard/a-mind-place.html"><span class="key">Esc</span>Dashboard</a>
+    <span class="mid"></span>
+    <span class="end"></span>
+  </header>
+  <main>
+    <div class="head"><div><div class="kicker" style="font-size:14px;color:var(--text-3)" id="k"></div><h1 class="h-display" id="title"></h1></div></div>
+    <div class="sharebar"><span class="label">Share</span><span class="lk" id="lk"></span>
+      <span class="sp"><button><span class="key">C</span>Copy link</button><button><span class="key">R</span>QR code</button><a href="../take/e-combo.html"><span class="key">P</span>Preview</a></span></div>
+    <article class="sheet paper typed" id="sheet"></article>
+  </main>
+</div>
+<script src="../app/data.js"></script>
+<script src="quiz.js"></script>
+<script>
+const Qs = QUIZ.questions;
+document.getElementById("k").textContent = `${Qs.length} questions · Created ${QUIZ.created}`;
+document.getElementById("title").textContent = QUIZ.title.toUpperCase();
+document.getElementById("lk").textContent = STATS.link;
+document.getElementById("sheet").innerHTML = `
+  <h2>REPORT · ${QUIZ.title.toUpperCase()}</h2>
+  <div class="sum"><div>Attempts<b>${STATS.n}</b></div><div>Median<b>${STATS.median} / ${Qs.length}</b></div><div>Most missed<b>Q${STATS.mostMissed + 1}</b></div></div>
+  <p style="margin:0 0 .6em;font-weight:700">Missed by, per question</p>
+  <div class="bars">${Qs.map((q, i) => `<div class="mbar ${i === STATS.mostMissed ? "hot" : ""}" title="${q.text}"><span>Q${i + 1}</span><span class="tr"><i style="width:${STATS.missRate[i] * 100}%"></i></span><span class="p">${Math.round(STATS.missRate[i] * 100)}%</span></div>`).join("")}</div>
+  <div class="hand ann ink-red">→ Q${STATS.mostMissed + 1}: ${Qs[STATS.mostMissed].text.slice(0, 48)}… worth revisiting in class.</div>
+  <table><thead><tr><th>Student</th><th class="c-when">Submitted</th><th>Answers</th><th style="text-align:right">Score</th></tr></thead><tbody>
+  ${ATTEMPTS.map(a => `<tr><td>${a.student}</td><td class="c-when">${a.when}</td><td class="ticks">${a.picks.map((p, i) => p === Qs[i].correct ? "✓" : '<span class="x">✗</span>').join("")}</td><td style="text-align:right">${a.score}/${a.total}</td></tr>`).join("")}
+  </tbody></table>`;
+</script>
+</body>
+</html>
