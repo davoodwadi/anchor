@@ -138,3 +138,182 @@ html {
     @apply uppercase tracking-wider font-bold;
   }
 }
+
+/* --- ALAN WAKE 2 DESIGN SYSTEM ---
+   Shared pieces for the redesigned pages (landing, /take).
+   Reference: docs/alan-wake-2-reference, prototypes/ */
+@layer components {
+  /* Undo the global button styling for buttons that hold prose */
+  .aw-btn-reset {
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: inherit;
+  }
+
+  /* Film grain over the whole viewport */
+  .aw-grain {
+    position: fixed;
+    inset: -50%;
+    pointer-events: none;
+    z-index: 60;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.07;
+    animation: aw-grain 0.9s steps(6) infinite;
+  }
+  .aw-vignette {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 59;
+    background: radial-gradient(ellipse at center, transparent 45%, rgba(0, 0, 0, 0.65) 100%);
+  }
+
+  /* Lamp-lit desk (Mind Place) */
+  .aw-desk {
+    background:
+      radial-gradient(ellipse 50% 60% at 66% 45%, rgba(214, 170, 98, 0.19), transparent 70%),
+      radial-gradient(ellipse 90% 80% at 60% 50%, rgba(70, 48, 28, 0.5), transparent 75%),
+      repeating-linear-gradient(92deg, rgba(0, 0, 0, 0.18) 0 2px, transparent 2px 9px, rgba(255, 220, 170, 0.025) 9px 10px, transparent 10px 23px),
+      linear-gradient(#1b1510, #0d0b09);
+  }
+
+  /* Keyboard hint chip */
+  .aw-key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 20px;
+    padding: 0 5px;
+    border-radius: 3px;
+    background: #3a3e3c;
+    color: #c9cfcb;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 11px;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    flex: none;
+  }
+
+  /* Small tracked caps */
+  .aw-kicker {
+    font-family: var(--font-ui);
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+  }
+
+  .aw-unread {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 9999px;
+    background: #d4ad4b;
+  }
+
+  /* Typed manuscript paper */
+  .aw-paper {
+    position: relative;
+    background-color: #a8977a;
+    background-image:
+      radial-gradient(ellipse at 20% 15%, rgba(255, 255, 255, 0.08), transparent 55%),
+      radial-gradient(ellipse at 80% 90%, rgba(0, 0, 0, 0.22), transparent 60%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='p' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.007' numOctaves='4'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .35 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
+    background-size: auto, auto, 100% 100%;
+    background-repeat: no-repeat;
+    box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.35), 0 30px 60px rgba(0, 0, 0, 0.55);
+    color: #1a1815;
+  }
+  .aw-typed {
+    font-family: var(--font-typed);
+    text-shadow: 0 0 0.6px rgba(26, 24, 21, 0.8);
+    letter-spacing: 0.02em;
+  }
+
+  /* Hand-drawn circle around a chosen answer letter */
+  .aw-circled {
+    position: relative;
+    display: inline-block;
+  }
+  .aw-circled::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 1.5em;
+    height: 1.5em;
+    margin: -0.76em 0 0 -0.74em;
+    border: 1.8px solid #161412;
+    border-radius: 50% 45% 52% 48%;
+    transform: rotate(-12deg);
+    animation: aw-draw 0.3s ease-out;
+  }
+
+  /* Hand-drawn circle around a whole phrase (landing demo) */
+  .aw-ringed {
+    position: relative;
+  }
+  .aw-ringed::after {
+    content: "";
+    position: absolute;
+    inset: -0.15em -0.5em;
+    border: 1.6px solid #191714;
+    border-radius: 50%;
+    transform: rotate(-3deg);
+  }
+
+  /* Heavy pen scribble over a phrase */
+  .aw-scribble {
+    position: relative;
+    white-space: nowrap;
+  }
+  .aw-scribble::after {
+    content: "";
+    position: absolute;
+    left: -4px;
+    right: -4px;
+    top: 10%;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 20' preserveAspectRatio='none'%3E%3Cpath d='M2 12 C20 4 30 18 48 9 S80 16 96 7 S130 17 150 8 S182 15 198 9 M4 8 C26 15 44 5 66 13 S104 5 124 13 S166 6 196 13 M3 15 C40 9 70 16 110 10 S170 15 197 11' fill='none' stroke='%23141210' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E") center/100% 100% no-repeat;
+  }
+
+  .aw-fade {
+    animation: aw-fade 0.35s both;
+  }
+  .aw-turn-out {
+    animation: aw-turn-out 0.22s ease-in forwards;
+  }
+  .aw-turn-in {
+    animation: aw-turn-in 0.3s ease-out;
+  }
+}
+
+@keyframes aw-grain {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-3%, 2%); }
+  40% { transform: translate(2%, -4%); }
+  60% { transform: translate(-4%, -1%); }
+  80% { transform: translate(3%, 3%); }
+  100% { transform: translate(0, 0); }
+}
+@keyframes aw-draw {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0); }
+}
+@keyframes aw-fade {
+  from { opacity: 0; transform: translateY(6px); }
+}
+@keyframes aw-turn-out {
+  to { opacity: 0; transform: translateX(-24px); }
+}
+@keyframes aw-turn-in {
+  from { opacity: 0; transform: translateX(24px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-grain { animation: none; }
+  .aw-circled::after, .aw-fade, .aw-turn-out, .aw-turn-in { animation-duration: 0.001ms; }
+}

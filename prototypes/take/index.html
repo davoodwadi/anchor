@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anchor — Take-quiz candidates</title>
+<link rel="stylesheet" href="../shared.css?v=3">
+<style>
+  main { max-width: 1100px; margin: 0 auto; padding: 56px 16px 80px; }
+  h1 { font-family: var(--f-display); font-weight: 400; color: var(--sage); font-size: clamp(56px, 9vw, 112px); line-height: .9; margin: 8px 0 12px; }
+  .lede { font-family: var(--f-body); color: var(--text-2); max-width: 60ch; margin: 0 0 32px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  a.card { background: var(--bg); padding: 28px 28px 30px; display: block; transition: background .2s; }
+  a.card:hover { background: var(--bg-2); }
+  .card .kicker { font-size: 13px; color: var(--text-3); }
+  .card h2 { font-family: var(--f-display); font-weight: 400; font-size: 44px; line-height: 1; margin: 6px 0 12px; color: var(--text); }
+  .card:hover h2 { color: var(--sage); }
+  .card p { font-family: var(--f-body); font-size: 16px; color: var(--text-2); margin: 0 0 10px; }
+  .card .ref { font-size: 14px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); }
+  .back { font-size: 14px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-3); }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<main>
+  <a class="back" href="../landing/b-mind-place.html">← Landing (chosen: B Mind Place)</a>
+  <div class="kicker" style="margin-top:28px">Anchor · Taking a quiz (/take/[id])</div>
+  <h1>CANDIDATES</h1>
+  <p class="lede">Every candidate shares the same student-number screen and sample quiz. Enter any number to start. Keys 1–4 answer, H shows the hint, Enter submits.</p>
+  <div class="grid">
+    <a class="card" href="e-combo.html" style="grid-column:1/-1">
+      <div class="kicker">E · Combination of A + B</div><h2>MIND PLACE + PAPER</h2>
+      <p>The Mind Place desk, question list and key chips from A, but the paper is what you use, as in B. Click an answer on the typed page to circle it, tap "?" for a handwritten hint, and the page turns to the next unanswered question. A Plain text switch (T) swaps the typewriter font for a readable one.</p>
+      <div class="ref">One page per question · paper is the interface</div>
+    </a>
+    <a class="card" href="a-mind-place.html">
+      <div class="kicker">A</div><h2>MIND PLACE</h2>
+      <p>Continues the chosen landing page. Question list on the left, readable question in the middle, and the typed page on the desk with your answer circled by hand. The hint appears as a margin note.</p>
+      <div class="ref">One question at a time · free navigation</div>
+    </a>
+    <a class="card" href="b-exam-paper.html">
+      <div class="kicker">B</div><h2>EXAM PAPER</h2>
+      <p>The whole quiz on one long typed sheet. Click an answer and its letter gets circled. A progress rail sits beside the page. Closest to how the app works today.</p>
+      <div class="ref">All questions on one page · scroll</div>
+    </a>
+    <a class="card" href="c-title-card.html">
+      <div class="kicker">C</div><h2>TITLE CARD</h2>
+      <p>Cinematic and focused. Each question opens like a chapter card with a giant number, the question types itself in, and the answers form a menu. Ends on a review screen.</p>
+      <div class="ref">One at a time · immersive</div>
+    </a>
+    <a class="card" href="d-hud.html">
+      <div class="kicker">D</div><h2>HUD</h2>
+      <p>The game's inventory screen over a fogged scene. Questions are tiles in a grid, with a goals checklist, a Questions / Hint tab pair and a progress ring. The most "gamified".</p>
+      <div class="ref">Grid navigation · game UI</div>
+    </a>
+  </div>
+</main>
+</body>
+</html>

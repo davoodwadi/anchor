@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Take — B: Exam Paper</title>
+<link rel="stylesheet" href="../shared.css?v=3">
+<link rel="stylesheet" href="take.css">
+<style>
+  body {
+    background:
+      radial-gradient(ellipse 50% 40% at 45% 0%, rgba(200,170,120,.12), transparent 70%),
+      linear-gradient(#121110, #0a0a09);
+  }
+  #app { position: relative; z-index: 1; }
+
+  .layout {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 760px) minmax(0, 1fr);
+    gap: 32px; padding: 0 clamp(16px, 3vw, 40px);
+  }
+  .top { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; padding: 22px 0; }
+  .top .chip { display: inline-flex; gap: 10px; align-items: center; font-size: 17px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-2); }
+
+  /* One long typed sheet */
+  .sheet {
+    grid-column: 2; padding: 9% 9% 7%;
+    font-size: clamp(14px, 1.3vw, 16.5px); line-height: 2.1;
+    margin-bottom: 14vh;
+    background-size: auto, auto, 100% 1400px; background-repeat: no-repeat, no-repeat, repeat-y;
+  }
+  .sheet header { text-align: center; margin-bottom: 3.2em; }
+  .sheet header .t { font-weight: 700; letter-spacing: .14em; }
+  .sheet header .m { font-size: .9em; }
+  .sheet .name { display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(26,24,21,.35); padding-bottom: .4em; margin-bottom: 3em; font-size: .92em; }
+  .sheet .name .hand { font-size: 1.5em; line-height: 1; }
+
+  .q { position: relative; margin-bottom: 3em; scroll-margin-top: 30vh; }
+  .q .stem { margin: 0 0 .7em; padding-left: 2.2em; text-indent: -2.2em; }
+  .q .o {
+    display: block; position: relative; width: fit-content; max-width: 100%;
+    background: none; border: 0; cursor: pointer; color: inherit; font: inherit; text-align: left;
+    padding: 0 .4em 0 4.6em; text-indent: -1.6em;
+  }
+  .q .o:hover { background: rgba(26,24,21,.06); }
+  .q .o:focus-visible { outline: 1.5px dashed rgba(26,24,21,.6); outline-offset: 2px; }
+  /* Hand-drawn circle around the chosen letter, tick beside it */
+  .q .o .l { position: relative; display: inline-block; text-indent: 0; }
+  .q .o.sel .l::after {
+    content: ""; position: absolute; left: 50%; top: 50%; width: 1.45em; height: 1.45em; margin: -.74em 0 0 -.72em;
+    border: 1.8px solid #161412; border-radius: 50% 45% 52% 48%; transform: rotate(-12deg);
+    animation: draw .3s ease-out;
+  }
+  .q .o.sel { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .3em; text-decoration-color: rgba(22,20,18,.55); }
+  @keyframes draw { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
+
+  .q .hint-toggle {
+    position: absolute; right: -6.5%; top: 0; width: 1.8em; height: 1.8em; border-radius: 50%;
+    border: 1.5px solid rgba(26,24,21,.55); background: none; cursor: pointer;
+    font: 1.2em var(--f-hand); color: #191714; line-height: 1;
+  }
+  .q .hint-toggle[aria-expanded="true"] { background: rgba(26,24,21,.08); }
+  .q .hint { display: none; margin: .6em 0 0 4.6em; font-size: 1.3em; transform: rotate(-1.2deg); transform-origin: left; }
+  .q .hint.on { display: block; }
+
+  .sheet .end { text-align: center; letter-spacing: .3em; margin-top: 2em; }
+
+  /* Side rail: the UI layer */
+  .rail { grid-column: 3; position: sticky; top: 24px; align-self: start; padding-top: 6px; max-width: 260px; }
+  .rail .kicker { font-size: 13px; color: var(--text-3); margin-bottom: 10px; }
+  .dots { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 18px; }
+  .dots a { height: 30px; display: grid; place-items: center; border: 1px solid var(--line); color: var(--text-3); font-size: 15px; }
+  .dots a.is-done { border-color: var(--sage-dim); color: var(--text); background: rgba(149,169,157,.12); }
+  .dots a:hover { border-color: var(--text-2); }
+  .rail .count { font-size: 18px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-2); margin-bottom: 18px; }
+  .rail .bar { height: 4px; background: #2b2f2d; margin-bottom: 26px; }
+  .rail .bar i { display: block; height: 100%; background: var(--sage); transition: width .3s; }
+  .rail button { display: inline-flex; gap: 10px; align-items: center; background: none; border: 1px solid var(--text-3); padding: 10px 16px 10px 12px; cursor: pointer; font: 500 20px var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--text-2); }
+  .rail button:not(:disabled) { color: var(--text); border-color: var(--sage); }
+  .rail button:not(:disabled):hover { background: var(--sage); color: var(--bg); }
+  .rail button:disabled { opacity: .4; cursor: default; }
+  .rail .note { font-family: var(--f-body); font-size: 13px; color: var(--text-3); margin-top: 12px; }
+  .rail .keys { margin-top: 28px; display: grid; gap: 8px; font-size: 14px; color: var(--text-3); letter-spacing: .06em; text-transform: uppercase; }
+
+  @media (max-width: 1100px) {
+    .layout { grid-template-columns: 1fr; }
+    .sheet { grid-column: 1; margin-bottom: 120px; }
+    .rail {
+      grid-column: 1; position: fixed; left: 0; right: 0; bottom: 0; top: auto; max-width: none; z-index: 5;
+      display: flex; align-items: center; gap: 16px; padding: 12px 16px; background: rgba(13,14,14,.94); border-top: 1px solid var(--line);
+    }
+    .rail .kicker, .rail .dots, .rail .note, .rail .keys { display: none; }
+    .rail .count { margin: 0; font-size: 16px; white-space: nowrap; }
+    .rail .bar { flex: 1; margin: 0; }
+  }
+  @media (max-width: 560px) {
+    .sheet { padding: 10% 7% 8%; font-size: 13.5px; }
+    .q .hint-toggle { right: -4%; }
+    .q .o { padding-left: 3.6em; }
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="vignette"></div>
+<div id="app"></div>
+
+<script src="common.js"></script>
+<script>
+const app = document.getElementById("app");
+const Q = QUIZ.questions;
+const answers = {};
+const L = ["a", "b", "c", "d"];
+let sid = "", focusQ = 0;
+
+renderIdentity(app, (id) => { sid = id; paper(); });
+
+function paper() {
+  app.innerHTML = `
+  <div class="layout">
+    <div class="top"><span class="wordmark" style="font-family:var(--f-display);font-size:20px;letter-spacing:.14em">ANCHOR</span><span class="chip">${QUIZ.course}</span></div>
+    <article class="sheet paper typed">
+      <header><div class="t">${QUIZ.title.toUpperCase()}</div><div class="m">${Q.length} questions. Circle one answer for each.</div></header>
+      <div class="name"><span>Student number:</span><span class="hand">${sid}</span></div>
+      ${Q.map((q, qi) => `
+        <section class="q" id="q${qi}">
+          <p class="stem">${qi + 1}.&nbsp; ${q.text}</p>
+          ${q.options.map((o, oi) => `<button class="o" data-q="${qi}" data-o="${oi}" aria-pressed="false"><span class="l">${L[oi]}</span>) ${o}</button>`).join("")}
+          <button class="hint-toggle" data-h="${qi}" aria-expanded="false" title="Hint">?</button>
+          <div class="hint hand" id="h${qi}">${q.hint}</div>
+        </section>`).join("")}
+      <div class="end">END</div>
+    </article>
+    <aside class="rail">
+      <div class="kicker">Progress</div>
+      <div class="dots">${Q.map((_, i) => `<a href="#q${i}" data-d="${i}">${i + 1}</a>`).join("")}</div>
+      <div class="count"></div>
+      <div class="bar"><i></i></div>
+      <button id="submit"><span class="key">Enter</span>Submit</button>
+      <p class="note">You can change answers until you submit.</p>
+      <div class="keys"><span><span class="key">1</span>–<span class="key">4</span> choose</span><span><span class="key">J</span> <span class="key">K</span> next / previous</span><span><span class="key">H</span> hint</span></div>
+    </aside>
+  </div>`;
+  app.querySelectorAll(".o").forEach(b => b.onclick = () => choose(+b.dataset.q, +b.dataset.o));
+  app.querySelectorAll(".hint-toggle").forEach(b => b.onclick = () => hint(+b.dataset.h));
+  app.querySelector("#submit").onclick = submit;
+  update();
+}
+
+function choose(qi, oi) {
+  answers[qi] = oi; focusQ = qi;
+  app.querySelectorAll(`.o[data-q="${qi}"]`).forEach(b => {
+    const on = +b.dataset.o === oi;
+    b.classList.toggle("sel", on); b.setAttribute("aria-pressed", on);
+  });
+  update();
+}
+function hint(qi) {
+  const h = document.getElementById("h" + qi), t = app.querySelector(`[data-h="${qi}"]`);
+  const on = !h.classList.contains("on");
+  h.classList.toggle("on", on); t.setAttribute("aria-expanded", on);
+}
+function update() {
+  const n = Object.keys(answers).length;
+  app.querySelector(".count").textContent = n === Q.length ? "All answered" : `${n} of ${Q.length} answered`;
+  app.querySelector(".bar i").style.width = (n / Q.length * 100) + "%";
+  app.querySelector("#submit").disabled = n !== Q.length;
+  app.querySelectorAll(".dots a").forEach(a => a.classList.toggle("is-done", answers[+a.dataset.d] !== undefined));
+}
+function scrollToQ(i) { focusQ = Math.max(0, Math.min(Q.length - 1, i)); document.getElementById("q" + focusQ).scrollIntoView({ behavior: "smooth", block: "start" }); }
+function submit() {
+  if (Object.keys(answers).length !== Q.length) return;
+  app.innerHTML = `<section class="done"><div class="kicker">${QUIZ.title}</div><h1>SUBMITTED</h1><p>Results are the next prototype round.</p></section>`;
+}
+
+// Track which question is in view for keyboard answering
+addEventListener("scroll", () => {
+  const mid = innerHeight * .4;
+  document.querySelectorAll(".q").forEach((el, i) => { const r = el.getBoundingClientRect(); if (r.top < mid && r.bottom > mid) focusQ = i; });
+}, { passive: true });
+addEventListener("keydown", (e) => {
+  if (isTyping(e) || !app.querySelector(".sheet")) return;
+  const k = e.key.toLowerCase();
+  if (["1", "2", "3", "4"].includes(k)) { choose(focusQ, +k - 1); setTimeout(() => scrollToQ(focusQ + 1), 350); }
+  else if (k === "j") scrollToQ(focusQ + 1);
+  else if (k === "k") scrollToQ(focusQ - 1);
+  else if (k === "h") hint(focusQ);
+  else if (e.key === "Enter") submit();
+});
+</script>
+</body>
+</html>

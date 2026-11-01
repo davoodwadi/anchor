@@ -1,0 +1,141 @@
+/* Shared tokens for Anchor landing prototypes (Alan Wake 2 direction).
+   Display: Anton  ~ Compacta
+   UI:      Barlow Condensed ~ Aktiv Grotesk Condensed
+   Content: Courier Prime (typed manuscript)
+   Hand:    Covered By Your Grace (margin notes, used sparingly) */
+@import url("https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@400;500;600&family=Barlow:wght@400;500&family=Courier+Prime:wght@400;700&family=Covered+By+Your+Grace&display=swap");
+
+:root {
+  --bg: #0d0e0e;
+  --bg-2: #151817;
+  --bg-3: #1c1f1e;
+  --line: #2a2e2c;
+  --text: #e4e8e5;
+  --text-2: #a3aaa5;
+  --text-3: #6d746f;
+  --sage: #95a99d;
+  --sage-dim: #5c6b62;
+  --red: #af2626;
+  --red-dim: #5a1716;
+  --amber: #d4ad4b;
+  --paper: #8b8075;
+  --paper-warm: #a8977a;
+  --ink: #1a1815;
+
+  --f-display: "Anton", "Impact", sans-serif;
+  --f-ui: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --f-body: "Barlow", system-ui, sans-serif;
+  --f-type: "Courier Prime", "Courier New", monospace;
+  --f-hand: "Covered By Your Grace", cursive;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--f-ui);
+  font-size: 18px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+::selection { background: var(--sage); color: var(--bg); }
+
+/* Film grain over everything */
+.grain {
+  position: fixed; inset: -50%;
+  pointer-events: none; z-index: 100;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: .07;
+  animation: grain 0.9s steps(6) infinite;
+}
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-3%, 2%); }
+  40% { transform: translate(2%, -4%); }
+  60% { transform: translate(-4%, -1%); }
+  80% { transform: translate(3%, 3%); }
+  100% { transform: translate(0, 0); }
+}
+.vignette {
+  position: fixed; inset: 0; pointer-events: none; z-index: 99;
+  background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,.65) 100%);
+}
+
+/* Small tracked caps above a title card */
+.kicker {
+  font-family: var(--f-ui);
+  font-weight: 500;
+  font-size: 15px;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+/* Keyboard hint chip, as in the game's menus */
+.key {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 22px; height: 20px; padding: 0 5px;
+  border-radius: 3px;
+  background: #3a3e3c; color: #c9cfcb;
+  font-family: var(--f-ui); font-weight: 600; font-size: 11px;
+  letter-spacing: .04em; text-transform: uppercase;
+  line-height: 1;
+}
+
+/* Menu item: caps, quiet until selected */
+.menu-item {
+  font-family: var(--f-ui); font-weight: 500;
+  text-transform: uppercase; letter-spacing: .06em;
+  color: var(--text-2);
+  transition: color .15s;
+  cursor: pointer;
+}
+.menu-item:hover, .menu-item:focus-visible, .menu-item.is-active { color: var(--text); outline: none; }
+.underline-sel { position: relative; }
+.underline-sel::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px;
+  background: currentColor; transform: scaleX(0); transform-origin: left;
+  transition: transform .2s;
+}
+.underline-sel:hover::after, .underline-sel:focus-visible::after, .underline-sel.is-active::after { transform: scaleX(1); }
+
+.unread { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--amber); vertical-align: middle; }
+
+/* Typed manuscript paper */
+.paper {
+  position: relative;
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(ellipse at 20% 15%, rgba(255,255,255,.08), transparent 55%),
+    radial-gradient(ellipse at 80% 90%, rgba(0,0,0,.22), transparent 60%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='p' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.007' numOctaves='4'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .35 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
+  background-size: auto, auto, 100% 100%;
+  background-repeat: no-repeat;
+  box-shadow: inset 0 0 60px rgba(0,0,0,.35), 0 30px 60px rgba(0,0,0,.55);
+  color: var(--ink);
+  font-family: var(--f-type);
+}
+.typed { text-shadow: 0 0 .6px rgba(26,24,21,.8); letter-spacing: .02em; }
+
+/* Heavy pen scribble over a phrase */
+.scribble { position: relative; white-space: nowrap; }
+.scribble::after {
+  content: ""; position: absolute; left: -4px; right: -4px; top: 10%; bottom: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 20' preserveAspectRatio='none'%3E%3Cpath d='M2 12 C20 4 30 18 48 9 S80 16 96 7 S130 17 150 8 S182 15 198 9 M4 8 C26 15 44 5 66 13 S104 5 124 13 S166 6 196 13 M3 15 C40 9 70 16 110 10 S170 15 197 11' fill='none' stroke='%23141210' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E") center/100% 100% no-repeat;
+}
+.hand {
+  font-family: var(--f-hand);
+  text-transform: uppercase;
+  color: #191714;
+  letter-spacing: .03em;
+  line-height: 1.15;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain { animation: none; }
+  *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}

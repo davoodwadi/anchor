@@ -1,21 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/shared/card-wake";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { User } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { cardVariants, buttonVariants } from "@/components/shared/wake-variants";
-import { FormField } from "@/components/shared/form-field";
+import { Key } from "@/components/aw2/key";
 
-export function QuizIdentity({ onStart }: { onStart: (id: string) => void }) {
+interface QuizIdentityProps {
+  quizTitle: string;
+  questionCount: number;
+  onStart: (id: string) => void;
+}
+
+export function QuizIdentity({
+  quizTitle,
+  questionCount,
+  onStart,
+}: QuizIdentityProps) {
   const [localId, setLocalId] = useState("");
 
   const handleSubmit = (e: React.SyntheticEvent) => {
@@ -24,38 +23,50 @@ export function QuizIdentity({ onStart }: { onStart: (id: string) => void }) {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          <div className="flex flex-row gap-2 items-center">
-            <User className="w-5 h-5" />
-            Subject Identification
-          </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <FormField label="Agent ID / Student Number" htmlFor="student-id">
-            <Input
-              id="student-id"
-              name="title"
-              value={localId}
-              placeholder="ENTER ID..."
-              onChange={(e) => setLocalId(e.target.value)}
-              autoComplete="off"
-              required
-            />
-          </FormField>
+    <section className="min-h-svh grid content-center justify-items-center text-center px-4 py-10">
+      <div className="aw-kicker text-aw-text-2">Quiz</div>
+      <h1
+        className={cn(
+          "font-display font-normal tracking-normal text-aw-sage leading-[.88] mt-3 mb-4 max-w-[16ch] [text-wrap:balance] uppercase",
+          quizTitle.length > 28
+            ? "text-[clamp(44px,7vw,96px)]"
+            : "text-[clamp(56px,11vw,160px)]",
+        )}
+      >
+        {quizTitle}
+      </h1>
+      <p className="font-ui text-[17px] tracking-[.04em] text-aw-text-3">
+        {questionCount} questions · No account needed · Results shown at the
+        end
+      </p>
 
-          <Button
-            type="submit"
-            className={buttonVariants({ variant: "large" })}
-            disabled={!localId}
-          >
-            Initialize Assessment
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+      <form
+        onSubmit={handleSubmit}
+        autoComplete="off"
+        className="mt-12 grid gap-3 justify-items-center w-full max-w-[360px]"
+      >
+        <label htmlFor="student-id" className="aw-kicker text-aw-text-2">
+          Student number
+        </label>
+        <input
+          id="student-id"
+          name="student-id"
+          autoFocus
+          inputMode="numeric"
+          value={localId}
+          onChange={(e) => setLocalId(e.target.value)}
+          placeholder="e.g. 300184562"
+          required
+          className="w-full bg-transparent border-0 border-b border-aw-text-3 focus:border-aw-sage outline-none font-typed text-[28px] text-center tracking-[.08em] text-aw-text placeholder:text-[20px] placeholder:tracking-[.04em] placeholder:text-[#4a504c] pt-1.5 pb-2.5 transition-colors"
+        />
+        <button
+          type="submit"
+          disabled={!localId.trim()}
+          className="mt-4 inline-flex items-center gap-2.5 font-ui font-medium text-[22px] uppercase tracking-[.06em] text-aw-text-2 hover:text-aw-text disabled:opacity-40 disabled:hover:text-aw-text-2 transition-colors"
+        >
+          <Key>Enter</Key>Begin
+        </button>
+      </form>
+    </section>
   );
 }

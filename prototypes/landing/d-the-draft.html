@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anchor — D: The Draft</title>
+<link rel="stylesheet" href="../shared.css?v=3">
+<style>
+  body {
+    background:
+      radial-gradient(ellipse 60% 55% at 50% 40%, rgba(200,170,120,.10), transparent 70%),
+      linear-gradient(#121110, #0a0a09);
+  }
+  header.top {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 22px clamp(16px, 4vw, 48px);
+  }
+  .wordmark { font-family: var(--f-display); font-size: 22px; letter-spacing: .14em; }
+  .top nav { display: flex; gap: 24px; font-size: 16px; }
+
+  .stage {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 680px) minmax(0, 1fr);
+    gap: 32px; align-items: start;
+    padding: 3vh clamp(16px, 4vw, 48px) 10vh;
+  }
+  .side-l { justify-self: end; text-align: right; padding-top: 40px; max-width: 260px; }
+  .side-l .kicker { color: var(--text-3); }
+  .side-l h1 {
+    font-family: var(--f-display); font-weight: 400; color: var(--sage);
+    font-size: clamp(48px, 4.6vw, 72px); line-height: .9; margin: 10px 0 0;
+  }
+
+  .sheet {
+    grid-column: 2;
+    aspect-ratio: 1000 / 1296;
+    padding: 12% 11% 8%;
+    font-size: clamp(12.5px, 1.45vw, 16.5px);
+    line-height: 2.3;
+  }
+  .sheet p { margin: 0 0 2.3em; text-indent: 2.6em; }
+  .caret { display: inline-block; width: .55em; height: 1.05em; background: rgba(26,24,21,.7); vertical-align: -.15em; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* Edits draw in after the typing finishes */
+  .strike { position: relative; display: inline-block; white-space: nowrap; text-indent: 0; line-height: 1.2; }
+  .strike svg { position: absolute; left: -3%; top: 8%; width: 106%; height: 90%; overflow: visible; }
+  .strike path { fill: none; stroke: #141210; stroke-width: 3.2; stroke-linecap: round; stroke-dasharray: 900; stroke-dashoffset: 900; transition: stroke-dashoffset .9s ease-in; }
+  .strike.on path { stroke-dashoffset: 0; }
+  .insert {
+    display: inline-block; margin-left: .5em; font-size: 1.3em; line-height: 1;
+    opacity: 0; transform: rotate(-2deg) translateY(4px); transition: opacity .5s, transform .5s;
+  }
+  .insert.on { opacity: 1; transform: rotate(-2deg); }
+  .margin {
+    font-size: 1.3em; line-height: 1.2; opacity: 0; transition: opacity .6s;
+    text-align: right; margin: -1.6em 0 1.4em; transform: rotate(-3deg);
+  }
+  .margin.on { opacity: 1; }
+
+  .side-r { padding-top: 40px; max-width: 260px; display: flex; flex-direction: column; gap: 14px; }
+  .side-r a { display: inline-flex; gap: 10px; align-items: center; font-size: 22px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-2); }
+  .side-r a:hover, .side-r a.primary { color: var(--text); }
+  .side-r .note { font-family: var(--f-body); font-size: 14px; color: var(--text-3); margin-top: 10px; }
+  .skip { margin-top: 28px; font-size: 13px; letter-spacing: .2em; color: var(--text-3) !important; }
+
+  footer { border-top: 1px solid #23211f; padding: 28px clamp(16px, 4vw, 48px); display: flex; justify-content: space-between; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-3); }
+
+  @media (max-width: 1080px) {
+    .stage { grid-template-columns: 1fr; justify-items: center; }
+    .side-l, .side-r { justify-self: center; text-align: center; padding-top: 0; max-width: 680px; }
+    .sheet { grid-column: 1; width: 100%; max-width: 680px; }
+    .side-r { align-items: center; }
+  }
+  @media (max-width: 560px) {
+    .sheet { aspect-ratio: auto; min-height: 120vw; padding: 12% 8% 10%; font-size: 12px; line-height: 2.1; }
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="vignette"></div>
+
+<header class="top">
+  <a class="wordmark" href="#">ANCHOR</a>
+  <nav>
+    <a class="menu-item underline-sel" href="#">Students</a>
+    <a class="menu-item underline-sel" href="#">Sign in</a>
+  </nav>
+</header>
+
+<main class="stage">
+  <div class="side-l">
+    <div class="kicker">Page 1 of 1</div>
+    <h1>FROM READING<br>TO RECALL</h1>
+  </div>
+
+  <article class="sheet paper typed" id="sheet" aria-label="About Anchor"></article>
+
+  <div class="side-r">
+    <a class="primary" href="#"><span class="key">C</span>Create a quiz</a>
+    <a href="#"><span class="key">L</span>I have a quiz link</a>
+    <p class="note">Instructors sign in to create. Students need only the link and a student number.</p>
+    <a class="skip" href="#" id="skip">Skip typing</a>
+  </div>
+</main>
+
+<footer><span>Anchor</span><span>Created by Davood Wadi</span></footer>
+
+<script>
+/* Paragraphs are typed in. Segments marked {s:} get struck through afterwards,
+   with a handwritten insert above them. */
+const doc = [
+  [ "Students read the chapter twice and ", { s: "call it studying.", ins: "CALL IT LEARNING. IT ISN'T." } ],
+  [ "Anchor takes the material you actually teach, the slides, the readings, your notes, and drafts a quiz from it. You revise the draft in conversation until every question is one you'd ", { s: "write yourself.", ins: "SIGN." } ],
+  [ "Then you share one link. Students enter a student number, answer, and see exactly what they missed and where in the reading it came from." ]
+];
+const margin = { text: "GROUNDED IN YOUR FILES.<br>NOT THE INTERNET.", para: 1 };
+
+const sheet = document.getElementById("sheet");
+const scribblePath = "M0 14 C20 6 32 20 50 10 S82 18 98 8 S132 19 152 9 S184 16 200 10 M2 9 C26 17 44 6 66 14 S104 6 124 14 S166 7 198 14";
+let skip = false;
+
+function build(full) {
+  sheet.innerHTML = "";
+  const queue = [];
+  doc.forEach((para, pi) => {
+    const p = document.createElement("p");
+    p.style.position = "relative";
+    sheet.appendChild(p);
+    para.forEach(seg => {
+      if (typeof seg === "string") {
+        const run = document.createElement("span");
+        p.appendChild(run);
+        queue.push({ el: run, text: seg });
+        return;
+      }
+      const span = document.createElement("span");
+      span.className = "strike";
+      span.innerHTML = `<svg viewBox="0 0 200 22" preserveAspectRatio="none"><path d="${scribblePath}"/></svg>`;
+      const txt = document.createElement("span");
+      span.prepend(txt);
+      const ins = document.createElement("span");
+      ins.className = "insert hand";
+      ins.textContent = seg.ins;
+      span.insertEl = ins;
+      p.append(span, ins);
+      queue.push({ el: txt, text: seg.s, strike: span });
+    });
+    if (pi === margin.para) {
+      const m = document.createElement("div");
+      m.className = "margin hand";
+      m.innerHTML = "↑ " + margin.text;
+      sheet.appendChild(m);
+      queue.push({ margin: m });
+    }
+  });
+  return queue;
+}
+
+const sleep = (ms) => new Promise(r => setTimeout(r, skip ? 0 : ms));
+
+async function run() {
+  const queue = build();
+  const caret = document.createElement("span");
+  caret.className = "caret";
+  const strikes = [], margins = [];
+  for (const item of queue) {
+    if (item.margin) { margins.push(item.margin); continue; }
+    if (item.strike) strikes.push(item.strike);
+    const node = document.createTextNode("");
+    item.el.appendChild(node);
+    item.el.appendChild(caret);
+    for (const ch of item.text) {
+      node.data += ch;
+      if (!skip) await sleep(ch === "." || ch === "," ? 180 : 22 + Math.random() * 30);
+    }
+  }
+  caret.remove();
+  await sleep(700);
+  for (const s of strikes) {
+    s.classList.add("on");
+    await sleep(900);
+    s.insertEl.classList.add("on");
+    await sleep(700);
+  }
+  margins.forEach(m => m.classList.add("on"));
+}
+
+document.getElementById("skip").addEventListener("click", (e) => { e.preventDefault(); skip = true; e.target.remove(); });
+if (matchMedia("(prefers-reduced-motion: reduce)").matches) skip = true;
+run();
+</script>
+</body>
+</html>

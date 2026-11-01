@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Take — D: HUD</title>
+<link rel="stylesheet" href="../shared.css?v=3">
+<link rel="stylesheet" href="take.css">
+<style>
+  /* A fogged forest "scene" sits behind the HUD */
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 30% 40% at 30% 40%, rgba(160,200,180,.20), transparent 70%),
+      radial-gradient(ellipse 50% 50% at 62% 55%, rgba(60,110,95,.22), transparent 70%),
+      linear-gradient(#13201d, #070a09 80%);
+  }
+  body::after {
+    content: ""; position: fixed; inset: -5% -5% 20% -5%; z-index: 0; pointer-events: none;
+    background: repeating-linear-gradient(90deg,
+      transparent 0 6%, rgba(0,0,0,.65) 6% 8.5%, transparent 8.5% 15%, rgba(0,0,0,.45) 15% 16%,
+      transparent 16% 26%, rgba(0,0,0,.7) 26% 29%, transparent 29% 38%);
+    filter: blur(10px); opacity: .8;
+  }
+  #app { position: relative; z-index: 1; }
+
+  .hud { min-height: 100svh; display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 470px); gap: 32px; padding: 24px clamp(16px, 3vw, 44px) 28px; }
+  .left { display: flex; flex-direction: column; gap: 16px; align-items: flex-start; }
+  .chip { display: inline-flex; gap: 10px; align-items: center; background: rgba(20,24,23,.72); padding: 8px 12px; font: 500 18px var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--text); border: 0; cursor: pointer; }
+  .goals { background: rgba(20,24,23,.72); padding: 12px 16px 14px; min-width: 260px; }
+  .goals h3 { margin: 0 0 8px; font: 500 19px var(--f-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--text-2); display: flex; gap: 10px; border-bottom: 1px solid rgba(255,255,255,.08); padding-bottom: 8px; }
+  .goals h3 b { color: var(--text); font-weight: 500; }
+  .goal { display: flex; gap: 10px; align-items: center; padding: 4px 0; font: 500 17px var(--f-ui); text-transform: uppercase; letter-spacing: .04em; color: var(--text-2); }
+  .goal i { width: 16px; height: 16px; border: 1.5px solid var(--text-3); flex: none; display: grid; place-items: center; }
+  .goal.ok { color: var(--text-3); text-decoration: line-through; text-decoration-color: var(--text-3); }
+  .goal.ok i::after { content: "✓"; font-size: 13px; color: var(--sage); font-style: normal; }
+  .meta { margin-top: auto; font-size: 14px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-3); }
+
+  .right { display: flex; flex-direction: column; }
+  .tabs { display: flex; gap: 14px; align-items: center; justify-content: center; margin-bottom: 16px; }
+  .tabs button { background: none; border: 0; cursor: pointer; font: 500 24px var(--f-ui); text-transform: uppercase; letter-spacing: .03em; color: var(--text-2); padding: 0 2px 4px; }
+  .tabs button.on { color: var(--text); box-shadow: inset 0 -2px 0 var(--text); }
+
+  .grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+  .tile {
+    aspect-ratio: 1; position: relative; background: rgba(22,26,25,.82); border: 1px solid rgba(255,255,255,.06);
+    cursor: pointer; color: var(--text-3); padding: 0;
+  }
+  .tile .n { position: absolute; inset: 0; display: grid; place-items: center; font: 400 clamp(22px, 2.2vw, 30px) var(--f-display); }
+  .tile .a { position: absolute; left: 6px; bottom: 3px; font: 600 14px var(--f-ui); color: var(--text); }
+  .tile .badge { position: absolute; top: 4px; left: 4px; }
+  .tile.ans { background: rgba(32,40,37,.88); }
+  .tile.ans .n { color: var(--sage); }
+  .tile.cur { outline: 2px solid var(--text-2); outline-offset: -2px; }
+  .tile:hover { border-color: rgba(255,255,255,.2); }
+
+  .detail { margin-top: 22px; background: linear-gradient(rgba(14,17,16,.0), rgba(14,17,16,.6) 20%); flex: 1; }
+  .detail-h { display: flex; justify-content: space-between; align-items: center; font: 500 21px var(--f-ui); text-transform: uppercase; letter-spacing: .04em; border-bottom: 1px solid rgba(255,255,255,.12); padding-bottom: 8px; margin-bottom: 12px; }
+  .detail-h .c { display: flex; gap: 12px; color: var(--text-2); }
+  .detail-h .c b { color: var(--text); font-weight: 500; }
+  .detail p { font: 400 19px/1.5 var(--f-body); color: var(--text); margin: 0 0 14px; }
+  .opts { display: grid; gap: 2px; }
+  .opt { display: flex; gap: 12px; align-items: baseline; background: none; border: 0; padding: 8px 6px; cursor: pointer; text-align: left; font: 400 17px/1.4 var(--f-body); color: var(--text-2); }
+  .opt:hover { background: rgba(255,255,255,.05); color: var(--text); }
+  .opt.sel { background: rgba(149,169,157,.14); color: var(--text); box-shadow: inset 2px 0 0 var(--sage); }
+  .opt.sel .key { background: var(--sage); color: var(--bg); }
+  .opt .key { flex: none; transform: translateY(-2px); }
+  .note { font: italic 400 18px/1.5 var(--f-body); color: var(--sage); }
+
+  /* Bottom-right ring like the ammo / health readout */
+  .foot { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; gap: 16px; }
+  .submit { display: inline-flex; gap: 10px; align-items: center; background: none; border: 0; cursor: pointer; font: 500 20px var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--text); }
+  .submit:disabled { color: var(--text-3); cursor: default; }
+  .ring { width: 74px; height: 74px; position: relative; flex: none; }
+  .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring circle { fill: none; stroke-width: 3; }
+  .ring .bg { stroke: rgba(255,255,255,.12); }
+  .ring .fg { stroke: var(--sage); stroke-linecap: butt; transition: stroke-dashoffset .4s; }
+  .ring span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 3px; font: 500 19px var(--f-ui); color: var(--text-2); }
+  .ring span b { color: var(--text); font-weight: 500; }
+
+  @media (max-width: 900px) {
+    .hud { grid-template-columns: 1fr; }
+    .left { flex-direction: row; flex-wrap: wrap; align-items: center; }
+    .goals { min-width: 0; flex: 1; }
+    .meta { display: none; }
+  }
+  @media (max-width: 480px) {
+    .grid { grid-template-columns: repeat(6, 1fr); }
+    .tile .a { font-size: 12px; left: 4px; }
+    .goals { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="vignette"></div>
+<div id="app"></div>
+
+<script src="common.js"></script>
+<script>
+const app = document.getElementById("app");
+const Q = QUIZ.questions;
+const answers = {};
+const L = ["A", "B", "C", "D"];
+let cur = 0, tab = "q", sid = "";
+const C = 2 * Math.PI * 33;
+
+renderIdentity(app, (id) => { sid = id; render(); });
+
+function render() {
+  const n = Object.keys(answers).length, all = n === Q.length, q = Q[cur];
+  app.innerHTML = `
+  <div class="hud">
+    <div class="left">
+      <button class="chip" id="exit"><span class="key">Esc</span>Exit</button>
+      <div class="goals">
+        <h3>Goals <b>${all ? 1 : 2}</b></h3>
+        <div class="goal ${all ? "ok" : ""}"><i></i>Answer all ${Q.length} questions</div>
+        <div class="goal"><i></i>Submit</div>
+      </div>
+      <div class="meta">${QUIZ.title} · ${sid}</div>
+    </div>
+    <div class="right">
+      <div class="tabs"><span class="key">Q</span><button data-t="q" class="${tab === "q" ? "on" : ""}">Questions</button><button data-t="n" class="${tab === "n" ? "on" : ""}">Hint</button><span class="key">E</span></div>
+      <div class="grid">${Q.map((_, i) => `<button class="tile ${answers[i] !== undefined ? "ans" : ""} ${i === cur ? "cur" : ""}" data-i="${i}" aria-label="Question ${i + 1}"><span class="n">${i + 1}</span>${answers[i] !== undefined ? `<span class="a">${L[answers[i]]}</span>` : ""}</button>`).join("")}</div>
+      <div class="detail">
+        <div class="detail-h"><span>Question ${cur + 1}</span><span class="c"><b>${cur + 1}</b>│<span>${Q.length}</span></span></div>
+        <p>${q.text}</p>
+        ${tab === "q"
+          ? `<div class="opts" role="radiogroup">${q.options.map((o, i) => `<button class="opt ${answers[cur] === i ? "sel" : ""}" role="radio" aria-checked="${answers[cur] === i}" data-o="${i}"><span class="key">${i + 1}</span>${o}</button>`).join("")}</div>`
+          : `<div class="note">${q.hint}</div>`}
+      </div>
+      <div class="foot">
+        <button class="submit" id="submit" ${all ? "" : "disabled"}><span class="key">Enter</span>${all ? "Submit answers" : "Answer every question to submit"}</button>
+        <div class="ring" title="${n} of ${Q.length} answered"><svg viewBox="0 0 74 74"><circle class="bg" cx="37" cy="37" r="33"/><circle class="fg" cx="37" cy="37" r="33" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - n / Q.length)}"/></svg><span><b>${n}</b>│${Q.length}</span></div>
+      </div>
+    </div>
+  </div>`;
+  app.querySelector("#exit").onclick = () => location.reload();
+  app.querySelectorAll(".tabs button").forEach(b => b.onclick = () => { tab = b.dataset.t; render(); });
+  app.querySelectorAll(".tile").forEach(b => b.onclick = () => { cur = +b.dataset.i; render(); });
+  app.querySelectorAll(".opt").forEach(b => b.onclick = () => pick(+b.dataset.o));
+  app.querySelector("#submit").onclick = submit;
+}
+
+function pick(o) {
+  answers[cur] = o; tab = "q"; render();
+  const at = cur;
+  setTimeout(() => {
+    if (cur !== at) return;
+    for (let k = 1; k < Q.length; k++) { const j = (at + k) % Q.length; if (answers[j] === undefined) { cur = j; return render(); } }
+  }, 420);
+}
+function submit() {
+  if (Object.keys(answers).length !== Q.length) return;
+  app.innerHTML = `<section class="done"><div class="kicker">${QUIZ.title}</div><h1>SUBMITTED</h1><p>Results are the next prototype round.</p></section>`;
+}
+
+addEventListener("keydown", (e) => {
+  if (isTyping(e) || !app.querySelector(".hud")) return;
+  const k = e.key.toLowerCase();
+  if (["1", "2", "3", "4"].includes(k)) pick(+k - 1);
+  else if (k === "q") { tab = "q"; render(); }
+  else if (k === "e" || k === "h") { tab = tab === "n" ? "q" : "n"; render(); }
+  else if (e.key === "ArrowRight") { cur = Math.min(Q.length - 1, cur + 1); render(); }
+  else if (e.key === "ArrowLeft") { cur = Math.max(0, cur - 1); render(); }
+  else if (e.key === "Enter") submit();
+});
+</script>
+</body>
+</html>

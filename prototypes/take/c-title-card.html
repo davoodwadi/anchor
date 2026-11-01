@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Take — C: Title Card</title>
+<link rel="stylesheet" href="../shared.css?v=3">
+<link rel="stylesheet" href="take.css">
+<style>
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 70% 45% at 50% 34%, rgba(149,169,157,.12), transparent 70%),
+      linear-gradient(#101413, #0b0c0c 70%);
+  }
+  #app { position: relative; z-index: 1; }
+
+  .card { min-height: 100svh; display: grid; grid-template-rows: auto 1fr auto; }
+  .top { display: flex; justify-content: space-between; align-items: center; padding: 22px clamp(16px, 4vw, 48px); }
+  .top button { display: inline-flex; gap: 10px; align-items: center; background: none; border: 0; cursor: pointer; font: 500 16px var(--f-ui); letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); }
+  .top button:hover { color: var(--text-2); }
+  .top .kicker { font-size: 13px; color: var(--text-3); }
+
+  .center { display: grid; align-content: center; justify-items: center; text-align: center; padding: 0 16px 4vh; }
+  .num {
+    font-family: var(--f-display); font-weight: 400; color: var(--sage);
+    font-size: clamp(120px, 22vw, 300px); line-height: .8; margin: 6px 0 22px;
+    font-variant-numeric: tabular-nums;
+  }
+  .num.in { animation: cardin 1s both; }
+  @keyframes cardin {
+    0% { opacity: 0; } 10% { opacity: .9; } 14% { opacity: .1; } 20% { opacity: .85; transform: translateX(2px); }
+    24% { opacity: .25; transform: none; } 32%, 100% { opacity: 1; }
+  }
+  .qtext {
+    font: 400 clamp(22px, 2.4vw, 32px)/1.35 var(--f-body); color: var(--text);
+    max-width: 30ch; margin: 0 0 40px; min-height: 2.7em;
+  }
+  .caret { display: inline-block; width: 2px; height: 1em; background: var(--text-2); vertical-align: -.12em; margin-left: 2px; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .menu { display: grid; gap: 8px; justify-items: center; opacity: 0; transition: opacity .4s; }
+  .menu.on { opacity: 1; }
+  .menu button {
+    position: relative; display: inline-flex; gap: 12px; align-items: center; background: none; border: 0; cursor: pointer;
+    font: 400 clamp(18px, 1.6vw, 21px)/1.4 var(--f-body); color: var(--text-2);
+    padding: 4px 6px; max-width: min(92vw, 760px); text-align: left;
+  }
+  .menu button:hover, .menu button:focus-visible { color: var(--text); outline: none; }
+  .menu button::before {
+    content: ""; position: absolute; left: -26px; top: 50%; width: 14px; height: 2px; background: var(--sage);
+    transform: scaleX(0); transform-origin: right; transition: transform .2s;
+  }
+  .menu button:hover::before, .menu button:focus-visible::before, .menu button.sel::before { transform: scaleX(1); }
+  .menu button.sel { color: var(--sage); }
+  .menu .key { flex: none; }
+  .menu button.sel .key { background: var(--sage); color: var(--bg); }
+
+  .hint { margin-top: 28px; min-height: 1.5em; font: italic 400 17px var(--f-body); color: var(--sage); opacity: .85; max-width: 46ch; }
+
+  /* HUD: segmented progress like the flashlight battery */
+  .hud { display: flex; justify-content: center; align-items: center; gap: 22px; padding: 18px 16px 26px; flex-wrap: wrap; }
+  .segs { display: flex; gap: 4px; }
+  .segs i { width: 34px; height: 6px; background: #2b2f2d; cursor: pointer; }
+  .segs i.ans { background: var(--sage-dim); }
+  .segs i.cur { background: var(--text); }
+  .hud .k { display: inline-flex; gap: 8px; align-items: center; font-size: 14px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); background: none; border: 0; cursor: pointer; font-family: var(--f-ui); }
+  .hud .k:hover { color: var(--text-2); }
+
+  /* Review card */
+  .review { display: grid; gap: 2px; width: min(100%, 680px); margin: 10px 0 34px; text-align: left; }
+  .review button { display: grid; grid-template-columns: 40px 1fr auto; gap: 12px; align-items: baseline; background: none; border: 0; border-bottom: 1px solid var(--line); padding: 12px 4px; cursor: pointer; color: var(--text-2); text-align: left; font: 400 16px/1.4 var(--f-body); }
+  .review button:hover { color: var(--text); background: rgba(255,255,255,.03); }
+  .review .n { font: 400 22px var(--f-display); color: var(--text-3); }
+  .review .a { font: 500 15px var(--f-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--sage); }
+  .go { display: inline-flex; gap: 12px; align-items: center; background: none; border: 1px solid var(--sage); padding: 12px 20px 12px 14px; cursor: pointer; font: 500 22px var(--f-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--sage); }
+  .go:hover { background: var(--sage); color: var(--bg); }
+
+  @media (max-width: 560px) {
+    .menu { justify-items: stretch; width: 100%; }
+    .menu button { width: 100%; }
+    .menu button::before { display: none; }
+    .segs i { width: 22px; }
+    .hud .k.hide-sm { display: none; }
+    .top .kicker:nth-of-type(1) { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="vignette"></div>
+<div id="app"></div>
+
+<script src="common.js"></script>
+<script>
+const app = document.getElementById("app");
+const Q = QUIZ.questions;
+const answers = {};
+let cur = 0, sid = "", typingToken = 0;
+const pad = (n) => String(n).padStart(2, "0");
+const L = ["A", "B", "C", "D"];
+
+renderIdentity(app, (id) => { sid = id; frame(); show(0); });
+
+function frame() {
+  app.innerHTML = `
+  <div class="card">
+    <div class="top"><button id="exit"><span class="key">Esc</span>Exit</button><span class="kicker">${QUIZ.title}</span><span class="kicker">${sid}</span></div>
+    <div class="center" id="center"></div>
+    <div class="hud">
+      <button class="k" id="prev"><span class="key">Q</span>Back</button>
+      <div class="segs">${Q.map((_, i) => `<i data-i="${i}" title="Question ${i + 1}"></i>`).join("")}</div>
+      <button class="k hide-sm" id="hintk"><span class="key">H</span>Hint</button>
+    </div>
+  </div>`;
+  app.querySelector("#exit").onclick = () => location.reload();
+  app.querySelector("#prev").onclick = () => show(cur - 1);
+  app.querySelector("#hintk").onclick = toggleHint;
+  app.querySelectorAll(".segs i").forEach(s => s.onclick = () => show(+s.dataset.i));
+}
+
+function hud() {
+  app.querySelectorAll(".segs i").forEach((s, i) => {
+    s.classList.toggle("ans", answers[i] !== undefined);
+    s.classList.toggle("cur", i === cur);
+  });
+}
+
+async function show(i) {
+  if (i < 0) return;
+  if (i >= Q.length) return review();
+  cur = i;
+  const q = Q[i], token = ++typingToken;
+  const c = app.querySelector("#center");
+  c.innerHTML = `
+    <div class="kicker">Question ${i + 1} of ${Q.length}</div>
+    <div class="num in">${pad(i + 1)}</div>
+    <p class="qtext" aria-label="${q.text.replace(/"/g, "&quot;")}"><span class="t"></span><span class="caret"></span></p>
+    <div class="menu" role="radiogroup">${q.options.map((o, oi) => `<button role="radio" aria-checked="${answers[i] === oi}" class="${answers[i] === oi ? "sel" : ""}" data-o="${oi}"><span class="key">${oi + 1}</span>${o}</button>`).join("")}</div>
+    <div class="hint" aria-live="polite"></div>`;
+  c.querySelectorAll(".menu button").forEach(b => b.onclick = () => pick(+b.dataset.o));
+  app.querySelector("#hintk").style.display = "";
+  hud();
+
+  // Type the question in; already-answered questions appear instantly
+  const t = c.querySelector(".t");
+  const fast = answers[i] !== undefined || matchMedia("(prefers-reduced-motion: reduce)").matches;
+  await new Promise(r => setTimeout(r, fast ? 0 : 450));
+  for (const ch of q.text) {
+    if (token !== typingToken) return;
+    t.textContent += ch;
+    if (!fast) await new Promise(r => setTimeout(r, ch === "," || ch === "." ? 120 : 16));
+  }
+  c.querySelector(".caret").remove();
+  c.querySelector(".menu").classList.add("on");
+}
+
+function pick(oi) {
+  if (!app.querySelector(".menu")) return;
+  answers[cur] = oi;
+  app.querySelectorAll(".menu button").forEach(b => { const on = +b.dataset.o === oi; b.classList.toggle("sel", on); b.setAttribute("aria-checked", on); });
+  hud();
+  const at = cur;
+  setTimeout(() => { if (cur === at) show(nextUnanswered(at)); }, 520);
+}
+function nextUnanswered(from) {
+  for (let k = 1; k <= Q.length; k++) { const j = (from + k) % Q.length; if (answers[j] === undefined) return j; }
+  return Q.length;
+}
+function toggleHint() {
+  const h = app.querySelector(".hint");
+  if (h) h.textContent = h.textContent ? "" : Q[cur].hint;
+}
+
+function review() {
+  cur = Q.length; ++typingToken; hud();
+  app.querySelector("#hintk").style.display = "none";
+  const c = app.querySelector("#center");
+  c.innerHTML = `
+    <div class="kicker">Before you submit</div>
+    <div class="num in" style="font-size:clamp(80px,13vw,180px)">REVIEW</div>
+    <div class="review">${Q.map((q, i) => `<button data-i="${i}"><span class="n">${pad(i + 1)}</span><span>${q.text}</span><span class="a">${L[answers[i]]}</span></button>`).join("")}</div>
+    <button class="go" id="submit"><span class="key">Enter</span>Submit answers</button>`;
+  c.querySelectorAll(".review button").forEach(b => b.onclick = () => show(+b.dataset.i));
+  c.querySelector("#submit").onclick = submit;
+}
+function submit() {
+  app.innerHTML = `<section class="done"><div class="kicker">${QUIZ.title}</div><h1>SUBMITTED</h1><p>Results are the next prototype round.</p></section>`;
+}
+
+addEventListener("keydown", (e) => {
+  if (isTyping(e) || !app.querySelector(".card")) return;
+  const k = e.key.toLowerCase();
+  if (["1", "2", "3", "4"].includes(k) && app.querySelector(".menu.on")) pick(+k - 1);
+  else if (k === "q" || e.key === "ArrowLeft") show(cur - 1);
+  else if ((k === "e" || e.key === "ArrowRight") && answers[cur] !== undefined) show(cur + 1);
+  else if (k === "h") toggleHint();
+  else if (e.key === "Enter" && app.querySelector("#submit")) submit();
+});
+</script>
+</body>
+</html>

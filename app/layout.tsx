@@ -1,5 +1,53 @@
 // import { Geist } from "next/font/google";
-import { Oswald, Inter, Lora } from "next/font/google";
+import {
+  Oswald,
+  Inter,
+  Lora,
+  Anton,
+  Barlow,
+  Barlow_Condensed,
+  Courier_Prime,
+  Covered_By_Your_Grace,
+} from "next/font/google";
+
+// Alan Wake 2 type system (see docs/alan-wake-2-reference):
+// Anton ~ Compacta (display), Barlow Condensed ~ Aktiv Grotesk Condensed (UI),
+// Courier Prime (typed manuscript), Covered By Your Grace (margin notes)
+const display = Anton({
+  subsets: ["latin"],
+  variable: "--font-display",
+  weight: "400",
+  display: "swap",
+});
+
+const ui = Barlow_Condensed({
+  subsets: ["latin"],
+  variable: "--font-ui",
+  weight: ["400", "500", "600"],
+  display: "swap",
+});
+
+const prose = Barlow({
+  subsets: ["latin"],
+  variable: "--font-prose",
+  weight: ["400", "500"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
+const typed = Courier_Prime({
+  subsets: ["latin"],
+  variable: "--font-typed",
+  weight: ["400", "700"],
+  display: "swap",
+});
+
+const hand = Covered_By_Your_Grace({
+  subsets: ["latin"],
+  variable: "--font-hand",
+  weight: "400",
+  display: "swap",
+});
 
 const oswald = Oswald({
   subsets: ["latin"],
@@ -44,7 +92,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${heading.variable} ${body.variable} antialiased font-body antialiased relative bg-black text-white min-h-screen selection:bg-red-900 selection:text-white`}
+        className={`${heading.variable} ${body.variable} ${display.variable} ${ui.variable} ${prose.variable} ${typed.variable} ${hand.variable} antialiased font-body antialiased relative bg-black text-white min-h-screen selection:bg-red-900 selection:text-white`}
       >
         <ThemeProvider
           attribute="class"

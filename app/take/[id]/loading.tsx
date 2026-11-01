@@ -1,38 +1,19 @@
-import { Skeleton } from "@/components/ui/skeleton";
-
+/** Blank sheet on the desk while the quiz loads. */
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-background p-6 md:p-12 font-body">
-      <div className="max-w-4xl mx-auto space-y-8 animate-pulse">
-        {/* Header Skeleton */}
-        <div className="flex justify-between items-center border-b-2 border-muted pb-4">
-          <div className="h-8 w-64 bg-muted" /> {/* Title */}
-          <div className="h-6 w-24 bg-muted" /> {/* ID Badge */}
-        </div>
-
-        {/* Questions Skeleton */}
-        <div className="space-y-12">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="space-y-4">
-              <div className="flex gap-4">
-                <div className="h-8 w-8 bg-muted" /> {/* Number */}
-                <div className="h-6 w-3/4 bg-muted" /> {/* Question Text */}
-              </div>
-
-              {/* Options */}
-              <div className="pl-12 space-y-3">
-                <div className="h-6 w-1/2 bg-muted/50" />
-                <div className="h-6 w-1/2 bg-muted/50" />
-                <div className="h-6 w-1/2 bg-muted/50" />
-                <div className="h-6 w-1/2 bg-muted/50" />
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Button Skeleton */}
-        <div className="pt-8 border-t-2 border-muted">
-          <div className="h-14 w-full md:w-64 bg-muted" />
+    <div
+      role="status"
+      aria-label="Loading quiz"
+      className="min-h-svh grid content-center justify-items-center gap-6 px-4"
+    >
+      <div className="aw-kicker text-aw-text-3 animate-pulse">Loading quiz</div>
+      <div className="aw-paper w-[min(100%,420px)] aspect-[1000/1296] rotate-[1.5deg] px-[10%] pt-[12%] opacity-80">
+        <div className="space-y-[1.4em] animate-pulse">
+          <div className="h-2.5 w-3/4 bg-aw-ink/20" />
+          <div className="h-2.5 w-1/2 bg-aw-ink/15" />
+          <div className="h-2.5 w-2/3 bg-aw-ink/15" />
+          <div className="h-2.5 w-1/2 bg-aw-ink/15" />
+          <div className="h-2.5 w-3/5 bg-aw-ink/15" />
         </div>
       </div>
     </div>

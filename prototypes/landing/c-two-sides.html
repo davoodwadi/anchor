@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anchor — C: Two Sides</title>
+<link rel="stylesheet" href="../shared.css?v=3">
+<style>
+  header.top {
+    position: absolute; z-index: 5; top: 0; left: 0; right: 0;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 22px clamp(16px, 4vw, 48px);
+  }
+  .wordmark { font-family: var(--f-display); font-size: 22px; letter-spacing: .14em; }
+  .top nav { display: flex; gap: 24px; font-size: 16px; }
+
+  .split { display: flex; min-height: 100svh; }
+  .side {
+    position: relative; flex: 1; overflow: hidden;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 120px clamp(20px, 4vw, 64px) clamp(40px, 8vh, 88px);
+    transition: flex-grow .7s cubic-bezier(.2,.7,.2,1);
+    isolation: isolate;
+  }
+  .split:hover .side { flex-grow: .75; }
+  .split .side:hover { flex-grow: 1.4; }
+
+  /* Bright Falls: overcast forest fog */
+  .side.saga::before {
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background:
+      radial-gradient(ellipse 80% 50% at 40% 30%, rgba(149,169,157,.22), transparent 70%),
+      repeating-linear-gradient(90deg, transparent 0 9%, rgba(0,0,0,.5) 9% 10.4%, transparent 10.4% 17%, rgba(0,0,0,.35) 17% 17.8%),
+      linear-gradient(#1a2220, #0c0f0e 75%);
+    filter: blur(0.5px);
+  }
+  .side.saga::after {
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background: linear-gradient(180deg, rgba(13,14,14,.2), rgba(13,14,14,.92) 70%);
+  }
+  /* The Dark Place: wet city night, red light */
+  .side.wake::before {
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background:
+      radial-gradient(ellipse 40% 30% at 70% 28%, rgba(175,38,38,.35), transparent 70%),
+      radial-gradient(ellipse 60% 25% at 60% 92%, rgba(175,38,38,.18), transparent 70%),
+      repeating-linear-gradient(0deg, transparent 0 46px, rgba(255,255,255,.012) 46px 47px),
+      linear-gradient(#120b0b, #070606 75%);
+  }
+  .side.wake::after {
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background: linear-gradient(180deg, rgba(7,6,6,.1), rgba(7,6,6,.92) 70%);
+  }
+  .side + .side { border-left: 1px solid var(--line); }
+
+  .side .kicker { margin-bottom: 6px; }
+  .side h2 {
+    font-family: var(--f-display); font-weight: 400; margin: 0;
+    font-size: clamp(64px, 24cqi, 210px); line-height: .85; white-space: nowrap;
+  }
+  .side { container-type: inline-size; }
+  .saga h2 { color: var(--sage); }
+  .wake h2 { color: var(--red); }
+  .wake .kicker { color: #c27a76; }
+  .side p { font-family: var(--f-body); font-size: 18px; color: var(--text-2); max-width: 40ch; margin: 22px 0 0; }
+  .side ol { list-style: none; padding: 0; margin: 24px 0 0; display: grid; gap: 8px; max-width: 44ch; }
+  .side li { display: grid; grid-template-columns: 28px 1fr; font-size: 18px; color: var(--text-2); }
+  .side li b { font-weight: 500; color: var(--text-3); letter-spacing: .08em; }
+  .cta {
+    margin-top: 34px; display: inline-flex; gap: 12px; align-items: center; align-self: flex-start;
+    font-size: 22px; text-transform: uppercase; letter-spacing: .06em;
+    padding: 12px 18px 12px 14px; border: 1px solid currentColor;
+    transition: background .2s, color .2s;
+  }
+  .saga .cta { color: var(--sage); }
+  .saga .cta:hover { background: var(--sage); color: var(--bg); }
+  .wake .cta { color: #d7a09c; }
+  .wake .cta:hover { background: var(--red); color: var(--text); border-color: var(--red); }
+  .cta .key { background: rgba(255,255,255,.12); color: inherit; }
+
+  /* Extra copy appears only on the focused side (desktop) */
+  .more { opacity: .0; max-height: 0; transition: opacity .5s, max-height .7s; overflow: hidden; }
+  .side:hover .more, .side:focus-within .more { opacity: 1; max-height: 260px; }
+
+  .center-mark {
+    position: absolute; z-index: 4; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    font-size: 12px; letter-spacing: .5em; color: var(--text-3); writing-mode: vertical-rl; text-transform: uppercase;
+    pointer-events: none; transition: opacity .4s;
+  }
+  .split:hover ~ .center-mark { opacity: 0; }
+
+  .strip {
+    border-top: 1px solid var(--line);
+    display: grid; grid-template-columns: repeat(3, 1fr);
+  }
+  .strip div { padding: 34px clamp(16px, 3vw, 40px); border-right: 1px solid var(--line); }
+  .strip div:last-child { border-right: 0; }
+  .strip .kicker { font-size: 13px; color: var(--text-3); }
+  .strip p { margin: 8px 0 0; font-family: var(--f-body); font-size: 16px; color: var(--text-2); }
+
+  footer { border-top: 1px solid var(--line); padding: 28px clamp(16px, 4vw, 48px); display: flex; justify-content: space-between; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-3); }
+
+  @media (max-width: 820px) {
+    .split { flex-direction: column; }
+    .side { min-height: 88svh; }
+    .split:hover .side, .split .side:hover { flex-grow: 1; }
+    .side + .side { border-left: 0; border-top: 1px solid var(--line); }
+    .more { opacity: 1; max-height: none; }
+    .center-mark { display: none; }
+    .strip { grid-template-columns: 1fr; }
+    .strip div { border-right: 0; border-bottom: 1px solid var(--line); }
+    .top nav .hide-sm { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="vignette"></div>
+
+<header class="top">
+  <a class="wordmark" href="#">ANCHOR</a>
+  <nav>
+    <a class="menu-item underline-sel hide-sm" href="#how">How it works</a>
+    <a class="menu-item underline-sel" href="#">Sign in</a>
+  </nav>
+</header>
+
+<div class="split">
+  <section class="side saga">
+    <div class="kicker">For instructors</div>
+    <h2>WRITE</h2>
+    <p>Turn your slides and readings into a quiz in minutes, then revise it in conversation until it's right.</p>
+    <div class="more">
+      <ol>
+        <li><b>01</b>Upload lecture slides, PDFs, notes.</li>
+        <li><b>02</b>Revise the draft in plain language.</li>
+        <li><b>03</b>Share one link. Watch the results come in.</li>
+      </ol>
+    </div>
+    <a class="cta" href="#"><span class="key">W</span>Create a quiz</a>
+  </section>
+
+  <section class="side wake">
+    <div class="kicker">For students</div>
+    <h2>ANSWER</h2>
+    <p>Rereading feels like studying. A quiz tells you whether it was.</p>
+    <div class="more">
+      <ol>
+        <li><b>01</b>Open the link from your instructor.</li>
+        <li><b>02</b>Enter your student number. No account.</li>
+        <li><b>03</b>See what you missed, and where it came from.</li>
+      </ol>
+    </div>
+    <a class="cta" href="#"><span class="key">A</span>I have a quiz link</a>
+  </section>
+</div>
+<div class="center-mark">Anchor</div>
+
+<section class="strip" id="how">
+  <div><div class="kicker">Grounded</div><p>Questions come only from the files you upload. Not the open web.</p></div>
+  <div><div class="kicker">Anonymous</div><p>Students take quizzes with a student number. No sign-up, no inbox.</p></div>
+  <div><div class="kicker">Visible</div><p>See every attempt, and which questions the whole class got wrong.</p></div>
+</section>
+
+<footer><span>Anchor</span><span>Created by Davood Wadi</span></footer>
+
+<script>
+  addEventListener("keydown", (e) => {
+    if (e.metaKey || e.ctrlKey) return;
+    const k = e.key.toLowerCase();
+    if (k === "w") document.querySelector(".saga .cta").focus();
+    if (k === "a") document.querySelector(".wake .cta").focus();
+  });
+</script>
+</body>
+</html>

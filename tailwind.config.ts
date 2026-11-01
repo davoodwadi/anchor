@@ -13,8 +13,29 @@ export default {
       fontFamily: {
         heading: ["var(--font-heading)", "sans-serif"],
         body: ["var(--font-body)", "serif"],
+        display: ["var(--font-display)", "Impact", "sans-serif"],
+        ui: ["var(--font-ui)", "Arial Narrow", "sans-serif"],
+        prose: ["var(--font-prose)", "system-ui", "sans-serif"],
+        typed: ["var(--font-typed)", "Courier New", "monospace"],
+        hand: ["var(--font-hand)", "cursive"],
       },
       colors: {
+        // Alan Wake 2 palette: sage is Saga's side, red is Alan's
+        aw: {
+          bg: "#0d0e0e",
+          "bg-2": "#151817",
+          line: "#2a2e2c",
+          text: "#e4e8e5",
+          "text-2": "#a3aaa5",
+          "text-3": "#6d746f",
+          sage: "#95a99d",
+          "sage-dim": "#5c6b62",
+          red: "#af2626",
+          amber: "#d4ad4b",
+          paper: "#a8977a",
+          ink: "#1a1815",
+          key: "#3a3e3c",
+        },
         "neon-red": {
           50: "hsl(var(--neon-red-50))",
           100: "hsl(var(--neon-red-100))",

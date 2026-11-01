@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Take — E: Mind Place + Paper</title>
+<link rel="stylesheet" href="../shared.css?v=3">
+<link rel="stylesheet" href="take.css">
+<style>
+  /* Lamp-lit desk (from A) */
+  body {
+    background:
+      radial-gradient(ellipse 48% 62% at 58% 46%, rgba(214,170,98,.20), transparent 70%),
+      radial-gradient(ellipse 90% 80% at 58% 50%, rgba(70,48,28,.5), transparent 75%),
+      repeating-linear-gradient(92deg, rgba(0,0,0,.18) 0 2px, transparent 2px 9px, rgba(255,220,170,.025) 9px 10px, transparent 10px 23px),
+      linear-gradient(#1b1510, #0d0b09);
+    min-height: 100svh;
+  }
+  .shade { position: fixed; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(8,8,8,.96) 0%, rgba(8,8,8,.85) 22%, rgba(8,8,8,.15) 42%, transparent 60%, rgba(8,8,8,.5) 100%); }
+  #app { position: relative; z-index: 1; }
+
+  .shell { min-height: 100svh; display: grid; grid-template-rows: auto 1fr auto; }
+  .bar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 20px clamp(16px, 3vw, 40px); gap: 12px; }
+  .chip { display: inline-flex; gap: 10px; align-items: center; background: rgba(30,32,31,.7); padding: 8px 12px; font: 500 18px var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--text); border: 0; cursor: pointer; }
+  .bar .right { justify-self: end; display: flex; gap: 8px; }
+  .bar .title { text-align: center; }
+
+  main { display: grid; grid-template-columns: minmax(200px, 280px) minmax(0, 1fr) minmax(0, 200px); gap: clamp(20px, 3vw, 48px); align-items: start; padding: 1vh clamp(16px, 3vw, 40px) 0; }
+
+  /* Question list (from A) */
+  .qlist h3 { font: 500 17px var(--f-ui); letter-spacing: .16em; text-transform: uppercase; color: var(--text-2); margin: 0 0 8px; display: flex; gap: 14px; }
+  .qlist h3 span { letter-spacing: .04em; }
+  .qlist button {
+    display: flex; gap: 8px; align-items: center; width: 100%; text-align: left;
+    background: none; border: 0; padding: 4px 0 4px 16px; position: relative; cursor: pointer;
+    font: 500 19px/1.3 var(--f-ui); letter-spacing: .02em; text-transform: uppercase; color: var(--text-2);
+  }
+  .qlist button:hover, .qlist button.is-active { color: var(--text); }
+  .qlist button.is-active::before { content: ""; position: absolute; left: 0; top: 6px; bottom: 6px; width: 2px; background: var(--text); }
+  .qlist .ans { color: var(--text-3); font-size: 15px; margin-left: auto; letter-spacing: .06em; }
+  .qlist .help { margin-top: 26px; display: grid; gap: 8px; font-size: 14px; color: var(--text-3); letter-spacing: .06em; text-transform: uppercase; }
+
+  /* The paper stack: the thing students actually use (from B) */
+  .desk { position: relative; justify-self: center; width: min(100%, 720px); }
+  .under { position: absolute; inset: 0; background: #8f8170; box-shadow: 0 20px 50px rgba(0,0,0,.5); }
+  .under.u1 { transform: rotate(-1.6deg) translate(-6px, 6px); filter: brightness(.7); }
+  .under.u2 { transform: rotate(1.2deg) translate(8px, 10px); filter: brightness(.55); }
+  .sheet {
+    position: relative; min-height: min(72vh, 860px);
+    padding: 9% 10% 8%;
+    font-size: clamp(14.5px, 1.25vw, 17px); line-height: 2.15;
+    transform: rotate(.5deg);
+    background-color: var(--paper-warm);
+  }
+  .sheet.turn-out { animation: out .22s ease-in forwards; }
+  .sheet.turn-in { animation: in .3s ease-out; }
+  @keyframes out { to { opacity: 0; transform: rotate(.5deg) translateX(-24px); } }
+  @keyframes in { from { opacity: 0; transform: rotate(.5deg) translateX(24px); } }
+
+  .head { display: flex; flex-wrap: wrap; gap: .2em 1em; justify-content: space-between; align-items: baseline; border-bottom: 1px dashed rgba(26,24,21,.35); padding-bottom: .3em; margin-bottom: 2.4em; font-size: .88em; }
+  .head .hand { font-size: 1.55em; line-height: 1; }
+  .stem { margin: 0 0 1.1em; padding: 0 2.4em 0 2.2em; text-indent: -2.2em; font-weight: 700; }
+  .o {
+    display: block; position: relative; width: fit-content; max-width: 100%; margin: 0 0 .25em;
+    background: none; border: 0; cursor: pointer; color: inherit; font: inherit; text-align: left;
+    padding: .1em .5em .1em 4.6em; text-indent: -1.7em; border-radius: 2px;
+  }
+  .o:hover { background: rgba(26,24,21,.07); }
+  .o:focus-visible { outline: 1.5px dashed rgba(26,24,21,.6); outline-offset: 2px; }
+  .o .l { position: relative; display: inline-block; text-indent: 0; }
+  .o.sel .l::after {
+    content: ""; position: absolute; left: 50%; top: 50%; width: 1.5em; height: 1.5em; margin: -.76em 0 0 -.74em;
+    border: 1.8px solid #161412; border-radius: 50% 45% 52% 48%; transform: rotate(-12deg);
+    animation: draw .3s ease-out;
+  }
+  .o.sel { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .32em; text-decoration-color: rgba(22,20,18,.55); }
+  @keyframes draw { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
+
+  .hint-toggle {
+    position: absolute; right: 4%; top: calc(9% + 4.2em); width: 1.9em; height: 1.9em; border-radius: 50%;
+    border: 1.5px solid rgba(26,24,21,.55); background: none; cursor: pointer;
+    font: 1.25em var(--f-hand); color: #191714; line-height: 1;
+  }
+  .hint-toggle:hover, .hint-toggle[aria-expanded="true"] { background: rgba(26,24,21,.08); }
+  .hint { margin: 1.6em 0 0 3em; font-size: 1.35em; line-height: 1.3; transform: rotate(-1.5deg); transform-origin: left; }
+  .hint[hidden] { display: none; }
+  .folio { position: absolute; right: 9%; bottom: 3.5%; font-size: .85em; opacity: .6; }
+  .nextnote { position: absolute; left: 10%; bottom: 3.5%; font-size: .85em; opacity: .6; }
+
+  /* Plain-type option for readability */
+  .plain .sheet { font-family: var(--f-body); font-size: clamp(16px, 1.3vw, 18px); line-height: 1.9; letter-spacing: 0; text-shadow: none; }
+
+  /* Bottom actions (from A) */
+  .actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px 34px; padding: 26px 16px 28px; }
+  .actions button { display: inline-flex; gap: 10px; align-items: center; background: none; border: 0; cursor: pointer; font: 500 19px var(--f-ui); text-transform: uppercase; letter-spacing: .05em; color: var(--text-2); }
+  .actions button:hover:not(:disabled) { color: var(--text); }
+  .actions button:disabled { opacity: .35; cursor: default; }
+  .actions .submit:not(:disabled) { color: var(--text); }
+  .actions .count { color: var(--text-3); font-size: 16px; letter-spacing: .1em; text-transform: uppercase; }
+
+  @media (max-width: 1180px) {
+    main { grid-template-columns: minmax(180px, 240px) minmax(0, 1fr); }
+    .spacer { display: none; }
+  }
+  @media (max-width: 760px) {
+    .bar { grid-template-columns: auto 1fr; }
+    .bar .title { display: none; }
+    main { grid-template-columns: 1fr; gap: 14px; }
+    .qlist { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; }
+    .qlist h3, .qlist .help, .qlist .qlabel { display: none; }
+    .qlist button { width: auto; padding: 6px 10px; border: 1px solid var(--line); white-space: nowrap; }
+    .qlist button.is-active::before { display: none; }
+    .qlist button.is-active { border-color: var(--text-2); }
+    .under { display: none; }
+    .sheet { transform: none; min-height: 0; padding: 10% 7% 16%; font-size: 14px; }
+    .o { padding-left: 3.6em; }
+    .hint-toggle { right: 3%; }
+    @keyframes out { to { opacity: 0; transform: translateX(-24px); } }
+    @keyframes in { from { opacity: 0; transform: translateX(24px); } }
+    .actions { position: sticky; bottom: 0; background: rgba(13,12,11,.94); border-top: 1px solid var(--line); padding: 12px 16px; gap: 10px 20px; }
+    .actions .count { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="shade"></div>
+<div class="grain"></div>
+<div class="vignette"></div>
+<div id="app"></div>
+
+<script src="common.js"></script>
+<script>
+const app = document.getElementById("app");
+const Q = QUIZ.questions;
+const answers = {}, hints = {};
+const L = ["a", "b", "c", "d"];
+let cur = 0, sid = "", plain = false;
+
+renderIdentity(app, (id) => { sid = id; shell(); });
+
+function shell() {
+  app.innerHTML = `
+  <div class="shell">
+    <header class="bar">
+      <div><button class="chip" id="exit"><span class="key">Esc</span>Exit</button></div>
+      <div class="title kicker">${QUIZ.title}</div>
+      <div class="right"><button class="chip" id="type" title="Switch between typewriter and plain text"><span class="key">T</span><span id="typeLabel">Plain text</span></button></div>
+    </header>
+    <main>
+      <nav class="qlist" aria-label="Questions"></nav>
+      <section class="desk">
+        <div class="under u2"></div><div class="under u1"></div>
+        <article class="sheet paper typed" aria-live="polite"></article>
+      </section>
+      <div class="spacer"></div>
+    </main>
+    <nav class="actions">
+      <button id="prev"><span class="key">Q</span>Previous</button>
+      <button id="next"><span class="key">E</span>Next</button>
+      <span class="count"></span>
+      <button class="submit" id="submit"><span class="key">Enter</span>Submit</button>
+    </nav>
+  </div>`;
+  app.querySelector("#prev").onclick = () => go(cur - 1);
+  app.querySelector("#next").onclick = () => go(cur + 1);
+  app.querySelector("#submit").onclick = submit;
+  app.querySelector("#exit").onclick = () => location.reload();
+  app.querySelector("#type").onclick = toggleType;
+  list(); page(); chrome();
+}
+
+function list() {
+  const n = Object.keys(answers).length;
+  app.querySelector(".qlist").innerHTML = `<h3>Questions <span>${n}/${Q.length}</span></h3>` +
+    Q.map((_, i) => `<button data-i="${i}" class="${i === cur ? "is-active" : ""}"><span class="qlabel">Question</span> ${i + 1}
+      ${answers[i] === undefined ? '<span class="unread"></span>' : `<span class="ans">${L[answers[i]].toUpperCase()}</span>`}</button>`).join("") +
+    `<div class="help"><span><span class="key">1</span>–<span class="key">4</span> circle an answer</span><span><span class="key">H</span> hint</span></div>`;
+  app.querySelectorAll(".qlist button").forEach(b => b.onclick = () => go(+b.dataset.i));
+}
+
+function page() {
+  const q = Q[cur];
+  const s = app.querySelector(".sheet");
+  s.innerHTML = `
+    <div class="head"><span>${QUIZ.course} · ${QUIZ.title.split(" · ")[1]}</span><span class="hand">${sid}</span></div>
+    <p class="stem">${cur + 1}.&nbsp; ${q.text}</p>
+    <div role="radiogroup" aria-label="Answers">
+      ${q.options.map((o, i) => `<button class="o ${answers[cur] === i ? "sel" : ""}" role="radio" aria-checked="${answers[cur] === i}" data-o="${i}"><span class="l">${L[i]}</span>) ${o}</button>`).join("")}
+    </div>
+    <button class="hint-toggle" aria-expanded="${!!hints[cur]}" aria-controls="hint" title="Hint (H)">?</button>
+    <div class="hint hand" id="hint" ${hints[cur] ? "" : "hidden"}>${q.hint}</div>
+    <div class="nextnote">${answers[cur] === undefined ? "Circle one answer." : cur < Q.length - 1 ? "Turn the page →" : "Last page."}</div>
+    <div class="folio">${cur + 1} / ${Q.length}</div>`;
+  s.querySelectorAll(".o").forEach(b => b.onclick = () => pick(+b.dataset.o));
+  s.querySelector(".hint-toggle").onclick = toggleHint;
+}
+
+function chrome() {
+  const n = Object.keys(answers).length, all = n === Q.length;
+  app.querySelector("#prev").disabled = cur === 0;
+  app.querySelector("#next").disabled = cur === Q.length - 1;
+  app.querySelector("#submit").disabled = !all;
+  app.querySelector(".count").textContent = all ? "All answered" : `${n} of ${Q.length} answered`;
+}
+
+let turning = false;
+function go(i) {
+  if (i < 0 || i >= Q.length || i === cur || turning) return;
+  const s = app.querySelector(".sheet");
+  turning = true;
+  s.classList.add("turn-out");
+  setTimeout(() => {
+    cur = i; page(); list(); chrome();
+    s.classList.remove("turn-out"); void s.offsetWidth; s.classList.add("turn-in");
+    setTimeout(() => { s.classList.remove("turn-in"); turning = false; }, 300);
+  }, 220);
+}
+
+function pick(o) {
+  answers[cur] = o;
+  app.querySelectorAll(".sheet .o").forEach(b => { const on = +b.dataset.o === o; b.classList.toggle("sel", on); b.setAttribute("aria-checked", on); });
+  app.querySelector(".nextnote").textContent = cur < Q.length - 1 ? "Turn the page →" : "Last page.";
+  list(); chrome();
+  // Turn to the next unanswered page after the circle is drawn
+  const at = cur;
+  setTimeout(() => {
+    if (cur !== at) return;
+    for (let k = 1; k < Q.length; k++) { const j = (at + k) % Q.length; if (answers[j] === undefined) return go(j); }
+  }, 650);
+}
+
+function toggleHint() {
+  hints[cur] = !hints[cur];
+  const h = app.querySelector("#hint"), t = app.querySelector(".hint-toggle");
+  h.hidden = !hints[cur]; t.setAttribute("aria-expanded", hints[cur]);
+}
+function toggleType() {
+  plain = !plain;
+  document.body.classList.toggle("plain", plain);
+  app.querySelector("#typeLabel").textContent = plain ? "Typewriter" : "Plain text";
+}
+function submit() {
+  if (Object.keys(answers).length !== Q.length) return;
+  app.innerHTML = `<section class="done"><div class="kicker">${QUIZ.title}</div><h1>SUBMITTED</h1><p>Results are the next prototype round.</p></section>`;
+}
+
+addEventListener("keydown", (e) => {
+  if (isTyping(e) || !app.querySelector(".shell")) return;
+  const k = e.key.toLowerCase();
+  if (["1", "2", "3", "4"].includes(k)) pick(+k - 1);
+  else if (k === "e" || e.key === "ArrowRight") go(cur + 1);
+  else if (k === "q" || e.key === "ArrowLeft") go(cur - 1);
+  else if (k === "h") toggleHint();
+  else if (k === "t") toggleType();
+  else if (e.key === "Enter") submit();
+});
+</script>
+</body>
+</html>
