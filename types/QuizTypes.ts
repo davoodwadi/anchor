@@ -14,7 +14,7 @@ export const OptionSchema = z.object({
   option_explanation: z
     .string()
     .describe(
-      "Explanation of why the option is correct/incorrect, with context from the original document to explain in more detail.",
+      "Teach the background a learner needs. Explain the context behind the question, then why this option is correct or incorrect. For an incorrect option, say what it actually refers to. Use the material where it covers this, otherwise well-established general knowledge. Do not refer to the document.",
     ),
 });
 export const QuestionSchema = z.object({
