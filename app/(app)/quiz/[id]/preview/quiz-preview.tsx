@@ -76,9 +76,7 @@ export function QuizPreview({ quizId, quizTitle, questions }: QuizPreviewProps) 
               }))}
               keyPrefix="preview"
               picks={picks}
-              onPick={(key, i) =>
-                setPicks((p) => (key in p ? p : { ...p, [key]: i }))
-              }
+              onPick={(key, i) => setPicks((p) => ({ ...p, [key]: i }))}
             />
           </article>
         </div>

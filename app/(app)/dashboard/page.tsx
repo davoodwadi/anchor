@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { quizStats } from "@/lib/quiz-stats";
+import { listStudySessions } from "@/lib/study-sessions";
 import { AwPage } from "@/components/aw2/shell";
 import {
   DashboardMindPlace,
@@ -61,7 +62,15 @@ async function Dashboard() {
     };
   });
 
-  return <DashboardMindPlace email={user.email ?? ""} quizzes={list} />;
+  const recentSessions = await listStudySessions(supabase, user.id, 5);
+
+  return (
+    <DashboardMindPlace
+      email={user.email ?? ""}
+      quizzes={list}
+      recentSessions={recentSessions}
+    />
+  );
 }
 
 function DashboardLoading() {

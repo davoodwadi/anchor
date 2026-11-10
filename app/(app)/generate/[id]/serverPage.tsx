@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import ClientPage from "./clientPage";
 import { GeneratedContent } from "@/types/QuizTypes";
+import { listStudySessions } from "@/lib/study-sessions";
 
 export default async function ServerPage({
   params,
@@ -24,11 +25,14 @@ export default async function ServerPage({
   }
   //   console.log("user", user);
   // We fetch messages to restore the chat if the user refreshes
-  const { data: messages, error } = await supabase
-    .from("chat_messages")
-    .select("*")
-    .eq("session_id", id)
-    .order("created_at", { ascending: true });
+  const [{ data: messages, error }, sessions] = await Promise.all([
+    supabase
+      .from("chat_messages")
+      .select("*")
+      .eq("session_id", id)
+      .order("created_at", { ascending: true }),
+    listStudySessions(supabase, user.id, 30),
+  ]);
 
   if (error) {
     console.error("Error fetching messages:", error);
@@ -42,12 +46,18 @@ export default async function ServerPage({
     // If you saved file_data in DB, map it here, otherwise undefined
     file: msg.file_data || undefined,
     extractedText: msg.extracted_text || null,
+    picks: msg.picks || undefined,
   }));
 
   // Pass the user object to the client component
   return (
     <Suspense>
-      <ClientPage user={user} sessionId={id} initialHistory={initialHistory} />
+      <ClientPage
+        user={user}
+        sessionId={id}
+        initialHistory={initialHistory}
+        sessions={sessions}
+      />
     </Suspense>
   );
 }

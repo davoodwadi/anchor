@@ -7,7 +7,6 @@ import { z } from "zod";
 import { wait } from "@/lib/utils";
 import fs from "fs";
 import path from "path";
-import { randomUUID } from "crypto";
 import {
   GeminiPart,
   GeminiContent,
@@ -22,7 +21,7 @@ import {
 } from "@/types/QuizTypes";
 
 const dummy = false;
-const model = "gemini-3-flash-preview";
+const model = "gemini-3.8-flash";
 
 // Initialize the new client
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
@@ -76,6 +75,22 @@ export async function generateQuizAction(
     if (userMsgError) {
       console.error("Failed to save user message:", userMsgError);
       return { success: false, error: "Database error saving user message" };
+    }
+
+    // Name the session after its source file on the first generate. A failure
+    // here only costs the name, so it shouldn't stop the generation.
+    const sessionTitle = title.trim().slice(0, 120);
+    if (sessionTitle && history.length === 1) {
+      const { data: renamed, error: titleError } = await supabase
+        .from("chat_sessions")
+        .update({ title: sessionTitle })
+        .eq("id", sessionId)
+        .eq("user_id", user.id)
+        .select("id");
+
+      if (titleError || !renamed?.length) {
+        console.error("Failed to name session:", titleError ?? "no row updated");
+      }
     }
   }
 
@@ -150,8 +165,6 @@ export async function generateQuizAction(
 
   // update db for generate
   if (sessionType === "generate") {
-    newId = randomUUID();
-
     const { data: savedAiMsg, error: aiMsgError } = await supabase
       .from("chat_messages")
       .insert({
@@ -168,6 +181,8 @@ export async function generateQuizAction(
       console.error("Failed to save AI message:", aiMsgError);
       return { success: false, error: "Database error saving AI message" };
     }
+    // The client saves answers against this row, so it needs the real id
+    newId = savedAiMsg.id;
     // update db
   } else if (sessionType === "createQuiz") {
     // update db for createQuiz
@@ -239,6 +254,42 @@ export async function generateQuizAction(
     success: true,
     data: { type: mode, content: aiResponseText, id: newId },
   };
+}
+
+const StudyPicksSchema = z.object({
+  messageId: z.uuid(),
+  // Question index -> chosen option index
+  picks: z.record(
+    z.string().regex(/^\d+$/),
+    z.number().int().min(0).max(9),
+  ),
+});
+
+/** Records the answers circled so far on one practice quiz in a study session. */
+export async function saveStudyPicks(
+  input: z.infer<typeof StudyPicksSchema>,
+): Promise<{ success: boolean }> {
+  const parsed = StudyPicksSchema.safeParse(input);
+  if (!parsed.success) return { success: false };
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false };
+
+  const { data, error } = await supabase
+    .from("chat_messages")
+    .update({ picks: parsed.data.picks })
+    .eq("id", parsed.data.messageId)
+    .eq("user_id", user.id)
+    .select("id");
+
+  if (error || !data?.length) {
+    console.error("Failed to save study answers:", error ?? "no row updated");
+    return { success: false };
+  }
+  return { success: true };
 }
 
 const mockQuiz = {

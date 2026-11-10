@@ -18,6 +18,7 @@ export default {
         prose: ["var(--font-prose)", "system-ui", "sans-serif"],
         typed: ["var(--font-typed)", "Courier New", "monospace"],
         hand: ["var(--font-hand)", "cursive"],
+        note: ["var(--font-note)", "cursive"],
       },
       colors: {
         // Alan Wake 2 palette: sage is Saga's side, red is Alan's

@@ -24,7 +24,14 @@ export const aw = {
   fieldLabel:
     "font-ui font-medium text-[14px] tracking-[.16em] uppercase text-aw-text-2",
   display: "font-display font-normal tracking-normal text-aw-sage leading-[.9]",
+  /** A full sentence written in pen on the paper, sized relative to the typing. */
+  note: "font-note text-[1.2em] leading-[1.55] max-w-[52ch]",
+  /** One- or two-word marker verdict that opens a note. */
+  noteVerdict: "font-hand uppercase text-[1.3em] leading-none mr-[.25em]",
   stage: "md:border-l md:border-white/20 md:pl-9",
+  /** Width the main content grows to while the left panel is folded away. */
+  stageWide: "md:group-data-[collapsed]/split:max-w-[820px]",
+  paperWide: "md:group-data-[collapsed]/split:max-w-[1040px]",
   /** Left column that stays put while the page (usually a long paper) scrolls. */
   side: "md:sticky md:top-6 md:self-start md:max-h-[calc(100svh-3rem)] md:overflow-y-auto md:overscroll-contain md:[scrollbar-width:thin] md:pr-2",
 };

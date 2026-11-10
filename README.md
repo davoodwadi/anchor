@@ -6,7 +6,7 @@ An AI-powered quiz creation platform for instructors. Upload course content, ref
 
 - **Next.js 15** — App Router, React Server Components, Server Actions
 - **Supabase** — PostgreSQL database + GoTrue cookie-based auth
-- **Google Gemini** (`gemini-3-flash-preview`) — structured quiz generation via `@google/genai`
+- **Google Gemini** (`gemini-3.8-flash`) — structured quiz generation via `@google/genai`
 - **Zod 4** — runtime validation + Gemini structured output schemas
 - **shadcn/ui** (New York) + **Tailwind CSS** — Alan Wake 2 brutalist theme
 

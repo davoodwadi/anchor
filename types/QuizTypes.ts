@@ -13,7 +13,9 @@ export const OptionSchema = z.object({
   option_text: z.string().describe("The text of the option"),
   option_explanation: z
     .string()
-    .describe("Explanation of why the option is correct/incorrect"),
+    .describe(
+      "Explanation of why the option is correct/incorrect, with context from the original document to explain in more detail.",
+    ),
 });
 export const QuestionSchema = z.object({
   question_text: z.string().describe("The text of the question"),
@@ -51,6 +53,8 @@ export type GeneratedContent = {
   file?: string;
   extractedText?: string | null;
   id: string;
+  /** Answers circled on a practice quiz: question index -> option index. */
+  picks?: Record<string, number>;
 };
 // Define the return state type
 export type ActionState = {

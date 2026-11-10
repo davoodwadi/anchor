@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { aw } from "@/components/aw2/shell";
 
 export type PracticeQuestion = {
   question_text: string;
@@ -10,10 +11,11 @@ export type PracticeQuestion = {
 };
 
 const LETTERS = ["a", "b", "c", "d", "e", "f"];
+const noteClass = cn(aw.note, "ml-[2.4em] [grid-area:1/1]");
 
 /**
  * Practice questions typed on paper. Circle an answer and it is marked straight
- * away in pen with the reason. Nothing is recorded.
+ * away in pen with the reason; circling another option changes it. Whether picks are kept is up to the parent.
  * Render inside an `aw-paper` sheet; picks are keyed `${keyPrefix}-${index}`.
  */
 export function PracticePaper({
@@ -34,6 +36,8 @@ export function PracticePaper({
         const pick = picks[key];
         const answered = pick !== undefined;
         const right = pick === q.correct;
+        const explanation = q.options[q.correct]?.option_explanation;
+        const wrongVerdict = `No, it's ${LETTERS[q.correct]}.`;
         return (
           <section key={key} className="mb-[2em]">
             <p className="font-bold mb-[.6em] pl-[2.2em] -indent-[2.2em]">
@@ -48,11 +52,10 @@ export function PracticePaper({
                     key={oi}
                     role="radio"
                     aria-checked={chosen}
-                    disabled={answered}
                     onClick={() => onPick(key, oi)}
                     className={cn(
                       "aw-btn-reset block w-fit max-w-full text-left mb-[.2em] py-[.05em] pr-[.4em] pl-[3.6em] md:pl-[4.4em] -indent-[1.6em]",
-                      !answered && "hover:bg-aw-ink/[.07]",
+                      !chosen && "hover:bg-aw-ink/[.07]",
                       chosen &&
                         !right &&
                         "line-through decoration-[#141210] decoration-[1.5px]",
@@ -71,21 +74,33 @@ export function PracticePaper({
                       {LETTERS[oi]}
                     </span>
                     ) {o.option_text}
-                    {answered && correct && (
-                      <span className="aw-pen font-hand text-[1.3em] ml-[.4em] indent-0 inline-block">
-                        ✓
-                      </span>
-                    )}
+                    <span
+                      className={cn(
+                        "aw-pen font-hand text-[1.3em] leading-none ml-[.4em] indent-0 inline-block",
+                        !(answered && correct) && "invisible",
+                      )}
+                    >
+                      ✓
+                    </span>
                   </button>
                 );
               })}
             </div>
-            {answered && (
-              <p className="aw-pen font-hand uppercase text-[1.25em] leading-[1.3] mt-[.8em] ml-[2.4em] max-w-[48ch] -rotate-1 origin-left">
-                {right ? "Right. " : "Not quite. "}
-                {q.options[q.correct]?.option_explanation}
+            {/* The longest possible note holds the space, so answering moves nothing */}
+            <div className="grid mt-[.7em]">
+              <p className={cn(noteClass, "invisible")}>
+                <span className={aw.noteVerdict}>{wrongVerdict}</span>
+                {explanation}
               </p>
-            )}
+              {answered && (
+                <p className={cn(noteClass, "aw-pen")}>
+                  <span className={aw.noteVerdict}>
+                    {right ? "Yes." : wrongVerdict}
+                  </span>
+                  {explanation}
+                </p>
+              )}
+            </div>
           </section>
         );
       })}

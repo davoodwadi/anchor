@@ -8,6 +8,7 @@ import QRCode from "react-qr-code";
 import { cn } from "@/lib/utils";
 import type { QuizStats } from "@/lib/quiz-stats";
 import { AwTopBar, aw } from "@/components/aw2/shell";
+import { AwSide, AwSplit } from "@/components/aw2/collapsible-side";
 import { Key } from "@/components/aw2/key";
 import { useHotkeys } from "@/components/aw2/use-hotkeys";
 import { CopyLinkBox, useShareLink } from "@/components/aw2/copy-link";
@@ -71,8 +72,11 @@ export function QuizViewMindPlace({
         }
       />
 
-      <main className="grid gap-8 xl:gap-12 px-4 md:px-10 pt-[1vh] pb-16 items-start grid-cols-1 md:grid-cols-[minmax(220px,300px)_minmax(0,1fr)] xl:grid-cols-[minmax(240px,320px)_minmax(0,1fr)_minmax(280px,380px)]">
-        <section className={aw.side}>
+      <AwSplit
+        className="grid gap-8 xl:gap-12 px-4 md:px-10 pt-[1vh] pb-16 items-start grid-cols-1 md:grid-cols-[minmax(220px,300px)_minmax(0,1fr)] xl:grid-cols-[minmax(240px,320px)_minmax(0,1fr)_minmax(280px,380px)]"
+        collapsedClassName="md:grid-cols-[auto_minmax(0,1fr)] xl:grid-cols-[auto_minmax(0,1fr)_minmax(280px,380px)]"
+      >
+        <AwSide className={aw.side}>
           <div className={aw.kicker}>Quiz</div>
           <h1
             className={cn(
@@ -122,9 +126,9 @@ export function QuizViewMindPlace({
               ))}
             </ul>
           )}
-        </section>
+        </AwSide>
 
-        <section aria-live="polite" className={cn(aw.stage, "pt-1 max-w-[64ch]")}>
+        <section aria-live="polite" className={cn(aw.stage, "pt-1 max-w-[64ch]", aw.stageWide)}>
           {attempt ? (
             <AttemptDetail attempt={attempt} questions={questions} />
           ) : (
@@ -153,7 +157,7 @@ export function QuizViewMindPlace({
             </p>
           </div>
         </section>
-      </main>
+      </AwSplit>
     </div>
   );
 }

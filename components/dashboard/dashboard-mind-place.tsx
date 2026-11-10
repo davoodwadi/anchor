@@ -6,7 +6,9 @@ import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { QuizStats } from "@/lib/quiz-stats";
+import type { StudySession } from "@/lib/study-sessions";
 import { AwTopBar, aw } from "@/components/aw2/shell";
+import { AwSide, AwSplit } from "@/components/aw2/collapsible-side";
 import { Key } from "@/components/aw2/key";
 import { useHotkeys } from "@/components/aw2/use-hotkeys";
 import { CopyLinkBox, useShareLink } from "@/components/aw2/copy-link";
@@ -26,9 +28,11 @@ const LETTERS = ["a", "b", "c", "d", "e", "f"];
 export function DashboardMindPlace({
   email,
   quizzes,
+  recentSessions,
 }: {
   email: string;
   quizzes: DashboardQuiz[];
+  recentSessions: StudySession[];
 }) {
   const router = useRouter();
   const [current, setCurrent] = useState(0);
@@ -60,8 +64,11 @@ export function DashboardMindPlace({
         }
       />
 
-      <main className="grid gap-8 xl:gap-12 px-4 md:px-10 pt-[1vh] items-start grid-cols-1 md:grid-cols-[minmax(240px,340px)_minmax(0,1fr)] xl:grid-cols-[minmax(260px,360px)_minmax(0,1fr)_minmax(300px,460px)]">
-        <section className={aw.side}>
+      <AwSplit
+        className="grid gap-8 xl:gap-12 px-4 md:px-10 pt-[1vh] items-start grid-cols-1 md:grid-cols-[minmax(240px,340px)_minmax(0,1fr)] xl:grid-cols-[minmax(260px,360px)_minmax(0,1fr)_minmax(300px,460px)]"
+        collapsedClassName="md:grid-cols-[auto_minmax(0,1fr)] xl:grid-cols-[auto_minmax(0,1fr)_minmax(300px,460px)]"
+      >
+        <AwSide className={aw.side}>
           <div className={aw.kicker}>Your quizzes</div>
           <h1 className={cn(aw.display, "text-[clamp(54px,5.6vw,84px)] mt-1.5 mb-6")}>
             THE DESK
@@ -92,9 +99,24 @@ export function DashboardMindPlace({
             Study session
             <span className={aw.itemMeta}>Explain and practise</span>
           </Link>
-        </section>
+          {recentSessions.length > 0 && (
+            <ul className="mt-1">
+              {recentSessions.map((s) => (
+                <li key={s.id}>
+                  <Link
+                    href={`/generate/${s.id}`}
+                    className={cn(aw.item, aw.itemIdle)}
+                  >
+                    <span className="truncate">{s.title}</span>
+                    <span className={aw.itemMeta}>{s.date}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </AwSide>
 
-        <section className={cn(aw.stage, "pt-1 max-w-[58ch]")}>
+        <section className={cn(aw.stage, "pt-1 max-w-[58ch]", aw.stageWide)}>
           {quiz ? (
             <>
               <div className={aw.label}>
@@ -185,7 +207,7 @@ export function DashboardMindPlace({
             </div>
           </div>
         </section>
-      </main>
+      </AwSplit>
 
       <nav className="flex flex-wrap items-center justify-center gap-x-9 gap-y-3 px-4 pt-7 pb-8">
         <Link href="/create" className={aw.action + " text-aw-text"}>

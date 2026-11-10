@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { AwSide, AwSplit } from "@/components/aw2/collapsible-side";
 import { Key } from "@/components/aw2/key";
 import { aw } from "@/components/aw2/shell";
 import { useHotkeys } from "@/components/aw2/use-hotkeys";
@@ -138,9 +139,12 @@ export function QuizPaper({
         </button>
       </header>
 
-      <main className="grid gap-3.5 md:gap-10 px-4 md:px-10 pt-[1vh] items-start grid-cols-1 md:grid-cols-[minmax(180px,240px)_minmax(0,1fr)] xl:grid-cols-[minmax(200px,280px)_minmax(0,1fr)_minmax(0,200px)]">
+      <AwSplit
+        className="grid gap-3.5 md:gap-10 px-4 md:px-10 pt-[1vh] items-start grid-cols-1 md:grid-cols-[minmax(180px,240px)_minmax(0,1fr)] xl:grid-cols-[minmax(200px,280px)_minmax(0,1fr)_minmax(0,200px)]"
+        collapsedClassName="md:grid-cols-[auto_minmax(0,1fr)] xl:grid-cols-[auto_minmax(0,1fr)_auto]"
+      >
         {/* Question list */}
-        <nav aria-label="Questions" className={aw.side}>
+        <AwSide as="nav" aria-label="Questions" className={aw.side}>
           <h3 className="hidden md:flex gap-3.5 font-ui font-medium text-[17px] tracking-[.16em] uppercase text-aw-text-2 mb-2">
             Questions{" "}
             <span className="tracking-[.04em]">
@@ -187,10 +191,10 @@ export function QuizPaper({
               <Key>H</Key> hint
             </span>
           </div>
-        </nav>
+        </AwSide>
 
         {/* The paper stack */}
-        <section className="relative justify-self-center w-full max-w-[720px]">
+        <section className={cn("relative justify-self-center w-full max-w-[720px]", aw.paperWide)}>
           <div
             aria-hidden="true"
             className="hidden md:block absolute inset-0 bg-[#8f8170] brightness-[.55] rotate-[1.2deg] translate-x-2 translate-y-2.5 shadow-[0_20px_50px_rgba(0,0,0,.5)]"
@@ -265,7 +269,7 @@ export function QuizPaper({
                   <div
                     id="question-hint"
                     hidden={!hintOpen}
-                    className="font-hand uppercase text-[1.35em] leading-[1.3] mt-[1.6em] ml-[3em] -rotate-[1.5deg] origin-left text-[#191714]"
+                    className={cn(aw.note, "mt-[1.2em] ml-[2.4em] text-[#191714]")}
                   >
                     {q.hint}
                   </div>
@@ -282,7 +286,7 @@ export function QuizPaper({
           </div>
         </section>
         <div className="hidden xl:block" />
-      </main>
+      </AwSplit>
 
       <div className="sticky bottom-0 md:static bg-[rgba(13,12,11,.94)] md:bg-transparent border-t border-aw-line md:border-0">
         {error && (

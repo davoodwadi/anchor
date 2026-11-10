@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { AwSide, AwSplit } from "@/components/aw2/collapsible-side";
 import { Key } from "@/components/aw2/key";
 import { useHotkeys } from "@/components/aw2/use-hotkeys";
 import { QuizLinkForm } from "./quiz-link-form";
@@ -229,8 +230,11 @@ export function MindPlace({ auth }: { auth: React.ReactNode }) {
         <div className="justify-self-end">{auth}</div>
       </header>
 
-      <main className="grid gap-8 lg:gap-12 px-4 md:px-10 pt-[2vh] items-start grid-cols-1 md:grid-cols-[minmax(240px,320px)_minmax(0,1fr)] xl:grid-cols-[minmax(260px,360px)_minmax(0,1fr)_minmax(320px,520px)]">
-        <section>
+      <AwSplit
+        className="grid gap-8 lg:gap-12 px-4 md:px-10 pt-[2vh] items-start grid-cols-1 md:grid-cols-[minmax(240px,320px)_minmax(0,1fr)] xl:grid-cols-[minmax(260px,360px)_minmax(0,1fr)_minmax(320px,520px)]"
+        collapsedClassName="md:grid-cols-[auto_minmax(0,1fr)] xl:grid-cols-[auto_minmax(0,1fr)_minmax(320px,520px)]"
+      >
+        <AwSide>
           <div className="aw-kicker !text-[14px] text-aw-text-3">
             Quizzes from your course material
           </div>
@@ -284,11 +288,11 @@ export function MindPlace({ auth }: { auth: React.ReactNode }) {
               </div>
             );
           })}
-        </section>
+        </AwSide>
 
         <section
           aria-live="polite"
-          className="md:border-l md:border-white/20 md:pl-9 pt-3 max-w-[52ch] min-h-[300px]"
+          className="md:border-l md:border-white/20 md:pl-9 pt-3 max-w-[52ch] min-h-[300px] md:group-data-[collapsed]/split:max-w-[820px]"
         >
           <div>
             <div className="aw-kicker !text-[14px] !tracking-[.16em] text-aw-text-3 mb-3.5">
@@ -317,7 +321,7 @@ export function MindPlace({ auth }: { auth: React.ReactNode }) {
             </div>
           </div>
         </section>
-      </main>
+      </AwSplit>
 
       <nav
         aria-label="Get started"

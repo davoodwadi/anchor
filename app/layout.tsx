@@ -8,11 +8,13 @@ import {
   Barlow_Condensed,
   Courier_Prime,
   Covered_By_Your_Grace,
+  Kalam,
 } from "next/font/google";
 
 // Alan Wake 2 type system (see docs/alan-wake-2-reference):
 // Anton ~ Compacta (display), Barlow Condensed ~ Aktiv Grotesk Condensed (UI),
-// Courier Prime (typed manuscript), Covered By Your Grace (margin notes)
+// Courier Prime (typed manuscript), Covered By Your Grace (short margin notes),
+// Kalam (full sentences written in pen)
 const display = Anton({
   subsets: ["latin"],
   variable: "--font-display",
@@ -45,6 +47,13 @@ const typed = Courier_Prime({
 const hand = Covered_By_Your_Grace({
   subsets: ["latin"],
   variable: "--font-hand",
+  weight: "400",
+  display: "swap",
+});
+
+const note = Kalam({
+  subsets: ["latin"],
+  variable: "--font-note",
   weight: "400",
   display: "swap",
 });
@@ -92,7 +101,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${heading.variable} ${body.variable} ${display.variable} ${ui.variable} ${prose.variable} ${typed.variable} ${hand.variable} antialiased font-body antialiased relative bg-black text-white min-h-screen selection:bg-red-900 selection:text-white`}
+        className={`${heading.variable} ${body.variable} ${display.variable} ${ui.variable} ${prose.variable} ${typed.variable} ${hand.variable} ${note.variable} antialiased font-body antialiased relative bg-black text-white min-h-screen selection:bg-red-900 selection:text-white`}
       >
         <ThemeProvider
           attribute="class"

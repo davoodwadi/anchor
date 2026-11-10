@@ -2,6 +2,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
+import { NEW_SESSION_TITLE } from "@/lib/study-sessions";
 
 export default async function GenerateRootPage() {
   await connection();
@@ -22,7 +23,7 @@ export default async function GenerateRootPage() {
     .from("chat_sessions")
     .insert({
       user_id: user.id,
-      title: "New Session", // You can update this later based on the quiz topic
+      title: NEW_SESSION_TITLE, // Replaced with the file name on the first generate
     })
     .select("id")
     .single();

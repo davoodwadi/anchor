@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { AwSide, AwSplit } from "@/components/aw2/collapsible-side";
 import { aw } from "@/components/aw2/shell";
 
 export type GradedResponse = {
@@ -44,9 +45,13 @@ export function GradedPaper({
   const missed = graded.filter((g) => !g.right).length;
 
   return (
-    <main className="grid gap-8 xl:gap-12 px-4 md:px-10 pt-[1vh] pb-16 items-start grid-cols-1 lg:grid-cols-[minmax(220px,290px)_minmax(0,1fr)] xl:grid-cols-[minmax(220px,290px)_minmax(0,1fr)_minmax(0,200px)]">
+    <AwSplit
+      at="lg"
+      className="grid gap-8 xl:gap-12 px-4 md:px-10 pt-[1vh] pb-16 items-start grid-cols-1 lg:grid-cols-[minmax(220px,290px)_minmax(0,1fr)] xl:grid-cols-[minmax(220px,290px)_minmax(0,1fr)_minmax(0,200px)]"
+      collapsedClassName="lg:grid-cols-[auto_minmax(0,1fr)] xl:grid-cols-[auto_minmax(0,1fr)_auto]"
+    >
       {/* Score and question index */}
-      <section className="lg:sticky lg:top-6 lg:self-start lg:max-h-[calc(100svh-3rem)] lg:overflow-y-auto lg:overscroll-contain lg:[scrollbar-width:thin] lg:pr-2">
+      <AwSide className="lg:sticky lg:top-6 lg:self-start lg:max-h-[calc(100svh-3rem)] lg:overflow-y-auto lg:overscroll-contain lg:[scrollbar-width:thin] lg:pr-2">
         <div className={aw.kicker}>Your result</div>
         <h1
           className={cn(
@@ -105,10 +110,10 @@ export function GradedPaper({
             ))}
           </ol>
         </nav>
-      </section>
+      </AwSide>
 
       {/* The marked paper */}
-      <section className="justify-self-center w-full max-w-[720px]">
+      <section className="justify-self-center w-full max-w-[720px] lg:group-data-[collapsed]/split:max-w-[1040px]">
         <div className="md:rotate-[.4deg]">
           <article className="aw-paper aw-typed relative px-[7%] md:px-[10%] pt-[9%] md:pt-[6%] pb-[8%] md:pb-[5%] text-[14px] md:text-[clamp(14.5px,1.2vw,16.5px)] leading-[2.1]">
             <div className="flex flex-wrap justify-between items-baseline gap-x-4 gap-y-1 border-b border-dashed border-aw-ink/35 pb-1 mb-[2.4em] text-[.88em]">
@@ -179,8 +184,12 @@ export function GradedPaper({
                     })}
                   </ul>
                   {correct?.option_explanation && (
-                    <p className="aw-pen font-hand uppercase text-[1.3em] leading-[1.3] mt-[1em] ml-[2.4em] max-w-[48ch] -rotate-[1deg] origin-left">
-                      {right ? "Right. " : ""}
+                    <p className={cn(aw.note, "aw-pen mt-[.8em] ml-[2.4em]")}>
+                      <span className={aw.noteVerdict}>
+                        {right
+                          ? "Yes."
+                          : `No, it's ${LETTERS[q.options.indexOf(correct)]}.`}
+                      </span>
                       {correct.option_explanation}
                     </p>
                   )}
@@ -204,6 +213,6 @@ export function GradedPaper({
         </div>
       </section>
       <div className="hidden xl:block" />
-    </main>
+    </AwSplit>
   );
 }

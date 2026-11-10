@@ -1,16 +1,29 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 import Markdown from "react-markdown";
 
-import { generateQuizAction } from "@/actions/generate-actions";
+import {
+  generateQuizAction,
+  saveStudyPicks,
+} from "@/actions/generate-actions";
 import { GeneratedContent, QuizData } from "@/types/QuizTypes";
 import { extractText } from "@/lib/extract-text";
+import type { StudySession } from "@/lib/study-sessions";
 import { cn } from "@/lib/utils";
 import { AwPage, AwTopBar, aw } from "@/components/aw2/shell";
+import { AwSide, AwSplit } from "@/components/aw2/collapsible-side";
 import { Key } from "@/components/aw2/key";
 import { useHotkeys } from "@/components/aw2/use-hotkeys";
 import { PracticePaper } from "@/components/aw2/practice-paper";
@@ -23,6 +36,7 @@ interface Props {
   user: User;
   sessionId: string;
   initialHistory: GeneratedContent[];
+  sessions: StudySession[];
 }
 
 type Mode = "quiz" | "explanation";
@@ -48,7 +62,82 @@ function labelEntries(history: GeneratedContent[]) {
     }));
 }
 
-export default function GeneratePage({ sessionId, initialHistory }: Props) {
+/** Saved answers, keyed the way PracticePaper expects. */
+function restorePicks(history: GeneratedContent[]) {
+  const picks: Record<string, number> = {};
+  for (const h of history) {
+    for (const [question, option] of Object.entries(h.picks ?? {})) {
+      picks[`${h.id}-${question}`] = option;
+    }
+  }
+  return picks;
+}
+
+function parseQuestions(content: string) {
+  try {
+    return (JSON.parse(content) as QuizData).questions.map((q) => ({
+      question_text: q.question_text,
+      options: q.options,
+      correct: q.correct_answer_index,
+    }));
+  } catch {
+    return null;
+  }
+}
+
+/** One explanation or quiz batch. Memoized so the "Writing…" timer skips it. */
+const StudySheet = memo(function StudySheet({
+  item,
+  label,
+  className,
+  picks,
+  onPick,
+  register,
+}: {
+  item: GeneratedContent;
+  label: string;
+  className: string;
+  picks: Record<string, number>;
+  onPick: (key: string, option: number) => void;
+  register: (id: string, el: HTMLElement | null) => void;
+}) {
+  const questions = useMemo(
+    () => (item.type === "quiz" ? parseQuestions(item.content) : null),
+    [item],
+  );
+
+  return (
+    <div
+      ref={(el) => register(item.id, el)}
+      tabIndex={-1}
+      className="scroll-mt-6 outline-none md:rotate-[.4deg]"
+    >
+      <article aria-label={label} className={className}>
+        <p className="font-bold uppercase tracking-[.16em] mb-[2em]">{label}</p>
+        {item.type !== "quiz" ? (
+          <div className="aw-manuscript">
+            <Markdown>{item.content}</Markdown>
+          </div>
+        ) : questions ? (
+          <PracticePaper
+            questions={questions}
+            keyPrefix={item.id}
+            picks={picks}
+            onPick={onPick}
+          />
+        ) : (
+          <p>This quiz could not be displayed.</p>
+        )}
+      </article>
+    </div>
+  );
+});
+
+export default function GeneratePage({
+  sessionId,
+  initialHistory,
+  sessions,
+}: Props) {
   const router = useRouter();
   const [history, setHistory] = useState<GeneratedContent[]>(initialHistory);
   const [extractedText, setExtractedText] = useState<string | null>(
@@ -69,13 +158,87 @@ export default function GeneratePage({ sessionId, initialHistory }: Props) {
   );
   const [plainOverride, setPlainOverride] = useState<boolean | null>(null);
   const plain = plainOverride ?? storedPlain;
-  const [picks, setPicks] = useState<Record<string, number>>({});
+  const [picks, setPicks] = useState(() => restorePicks(initialHistory));
+  const picksRef = useRef(picks);
   const fileInput = useRef<HTMLInputElement>(null);
 
-  const entries = labelEntries(history);
-  const [selected, setSelected] = useState(entries.length - 1);
+  const entries = useMemo(() => labelEntries(history), [history]);
+  // Which sheet is being read, kept in step with the scroll position
+  const [selected, setSelected] = useState(0);
   const started = history.length > 0;
-  const current = entries[selected];
+  const sheets = useRef(new Map<string, HTMLElement>());
+  const pendingSheet = useRef<HTMLDivElement>(null);
+  const scrollToLatest = useRef(false);
+
+  const registerSheet = useCallback((id: string, el: HTMLElement | null) => {
+    if (el) sheets.current.set(id, el);
+    else sheets.current.delete(id);
+  }, []);
+
+  const handlePick = useCallback((key: string, option: number) => {
+    if (picksRef.current[key] === option) return;
+    const next = { ...picksRef.current, [key]: option };
+    picksRef.current = next;
+    setPicks(next);
+
+    // Keys are `${messageId}-${questionIndex}`; save this quiz's answers together
+    const messageId = key.slice(0, key.lastIndexOf("-"));
+    const prefix = `${messageId}-`;
+    const quizPicks = Object.fromEntries(
+      Object.entries(next)
+        .filter(([k]) => k.startsWith(prefix))
+        .map(([k, v]) => [k.slice(prefix.length), v]),
+    );
+    const notSaved = () =>
+      setError("That answer couldn't be saved. It will be lost on refresh.");
+    saveStudyPicks({ messageId, picks: quizPicks })
+      .then((r) => {
+        if (!r.success) notSaved();
+      })
+      .catch(notSaved);
+  }, []);
+
+  const goToSheet = (i: number) => {
+    const el = sheets.current.get(entries[i].item.id);
+    el?.scrollIntoView({ block: "start" });
+    el?.focus({ preventScroll: true });
+  };
+
+  // Show progress as soon as a new sheet starts being written
+  useEffect(() => {
+    if (pending) pendingSheet.current?.scrollIntoView({ block: "start" });
+  }, [pending]);
+
+  // Runs before the outline effect below, so it reads the new position
+  useEffect(() => {
+    if (!scrollToLatest.current) return;
+    scrollToLatest.current = false;
+    const latest = entries.at(-1);
+    if (latest) {
+      sheets.current.get(latest.item.id)?.scrollIntoView({ block: "start" });
+    }
+  }, [entries]);
+
+  useEffect(() => {
+    if (entries.length === 0) return;
+    const updateOutline = () => {
+      const { scrollHeight } = document.documentElement;
+      if (window.innerHeight + window.scrollY >= scrollHeight - 2) {
+        setSelected(entries.length - 1);
+        return;
+      }
+      const readingLine = window.innerHeight * 0.3;
+      let at = 0;
+      entries.forEach((e, i) => {
+        const top = sheets.current.get(e.item.id)?.getBoundingClientRect().top;
+        if (top !== undefined && top <= readingLine) at = i;
+      });
+      setSelected(at);
+    };
+    updateOutline();
+    window.addEventListener("scroll", updateOutline, { passive: true });
+    return () => window.removeEventListener("scroll", updateOutline);
+  }, [entries]);
 
   useEffect(() => {
     if (!pending) return;
@@ -153,14 +316,16 @@ export default function GeneratePage({ sessionId, initialHistory }: Props) {
       mode,
       history: nextHistory,
       numQuestions,
-      title: "",
+      title: fileName?.replace(/\.[^.]+$/, "") ?? "",
       sessionType: "generate",
     });
 
     if (result.success && result.data) {
       const withReply = [...nextHistory, result.data];
       setHistory(withReply);
-      setSelected(labelEntries(withReply).length - 1);
+      scrollToLatest.current = true;
+      // A brand-new session has content now, so it can join the session list
+      if (!started) router.refresh();
     } else {
       setError(result.error || "That didn't work. Please try again.");
     }
@@ -183,13 +348,16 @@ export default function GeneratePage({ sessionId, initialHistory }: Props) {
     q: () => handleGenerate("quiz"),
     n: () => router.push("/generate"),
     t: togglePlain,
-    arrowdown: () => setSelected((s) => Math.min(entries.length - 1, s + 1)),
-    arrowup: () => setSelected((s) => Math.max(0, s - 1)),
   });
 
   const paperText = plain
     ? "font-prose text-[16px] md:text-[clamp(16px,1.3vw,18px)] leading-[1.85]"
     : "aw-typed text-[14px] md:text-[clamp(14.5px,1.2vw,16.5px)] leading-[2.05]";
+
+  const sheetClass = cn(
+    "aw-paper relative md:min-h-[min(70vh,820px)] px-[7%] md:px-[10%] pt-[9%] md:pt-[7%] pb-[8%] md:pb-[6%]",
+    paperText,
+  );
 
   return (
     <AwPage>
@@ -213,8 +381,11 @@ export default function GeneratePage({ sessionId, initialHistory }: Props) {
           }
         />
 
-        <main className="grid gap-6 md:gap-10 px-4 md:px-10 pt-[1vh] pb-6 items-start grid-cols-1 md:grid-cols-[minmax(200px,260px)_minmax(0,1fr)] xl:grid-cols-[minmax(220px,280px)_minmax(0,1fr)_minmax(0,220px)]">
-          <section className={aw.side}>
+        <AwSplit
+          className="grid gap-6 md:gap-10 px-4 md:px-10 pt-[1vh] pb-6 items-start grid-cols-1 md:grid-cols-[minmax(200px,260px)_minmax(0,1fr)] xl:grid-cols-[minmax(220px,280px)_minmax(0,1fr)_minmax(0,220px)]"
+          collapsedClassName="md:grid-cols-[auto_minmax(0,1fr)] xl:grid-cols-[auto_minmax(0,1fr)_auto]"
+        >
+          <AwSide className={aw.side}>
             <div className={aw.kicker}>Studying</div>
             <h1
               className={cn(
@@ -224,8 +395,34 @@ export default function GeneratePage({ sessionId, initialHistory }: Props) {
             >
               STUDY
             </h1>
-            {started && (
+            {sessions.length > 0 && (
               <>
+                <h2 className={aw.groupTitle}>All sessions</h2>
+                <ul className="flex md:block gap-1.5 overflow-x-auto md:max-h-[34svh] md:overflow-y-auto md:[scrollbar-width:thin]">
+                  {sessions.map((s) => (
+                    <li key={s.id}>
+                      <Link
+                        href={`/generate/${s.id}`}
+                        aria-current={s.id === sessionId ? "page" : undefined}
+                        className={cn(
+                          aw.item,
+                          s.id === sessionId ? aw.itemOn : aw.itemIdle,
+                          "max-md:w-auto max-md:max-w-[70vw] max-md:whitespace-nowrap max-md:border max-md:border-aw-line max-md:px-2.5 max-md:py-1.5",
+                        )}
+                      >
+                        <span className="truncate">{s.title}</span>
+                        <span className={aw.itemMeta}>{s.date}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+            {(entries.length > 0 || pending) && (
+              <nav
+                aria-label="This session"
+                className={cn(sessions.length > 0 && "mt-5")}
+              >
                 <h2 className={aw.groupTitle}>
                   Session{" "}
                   <span className="tracking-[.04em]">{entries.length}</span>
@@ -234,7 +431,7 @@ export default function GeneratePage({ sessionId, initialHistory }: Props) {
                   {entries.map((e, i) => (
                     <li key={e.item.id}>
                       <button
-                        onClick={() => setSelected(i)}
+                        onClick={() => goToSheet(i)}
                         aria-current={
                           i === selected && !pending ? "true" : undefined
                         }
@@ -255,21 +452,45 @@ export default function GeneratePage({ sessionId, initialHistory }: Props) {
                     </li>
                   )}
                 </ul>
-              </>
+              </nav>
             )}
-          </section>
+          </AwSide>
 
-          {/* The paper is the whole study surface */}
-          <section className="justify-self-center w-full max-w-[760px]">
-            <div className="md:rotate-[.4deg]">
-              <article
-                aria-live="polite"
-                className={cn(
-                  "aw-paper relative md:min-h-[min(70vh,820px)] px-[7%] md:px-[10%] pt-[9%] md:pt-[7%] pb-[8%] md:pb-[6%]",
-                  paperText,
-                )}
-              >
-                {pending ? (
+          {/* One sheet per explanation or quiz batch, read by scrolling */}
+          <section
+            aria-live="polite"
+            className={cn(
+              "flex flex-col gap-8 md:gap-12 justify-self-center w-full max-w-[760px]",
+              aw.paperWide,
+            )}
+          >
+            {entries.length === 0 && !pending && (
+              <div className="md:rotate-[.4deg]">
+                <article className={sheetClass}>
+                  <StartSheet
+                    fileName={fileName}
+                    isReading={isReading}
+                    ready={!!extractedText}
+                    onPick={() => fileInput.current?.click()}
+                    onDrop={handleFile}
+                  />
+                </article>
+              </div>
+            )}
+            {entries.map((e) => (
+              <StudySheet
+                key={e.item.id}
+                item={e.item}
+                label={e.label}
+                className={sheetClass}
+                picks={picks}
+                onPick={handlePick}
+                register={registerSheet}
+              />
+            ))}
+            {pending && (
+              <div ref={pendingSheet} className="scroll-mt-6 md:rotate-[.4deg]">
+                <article className={sheetClass}>
                   <p role="status">
                     Writing{" "}
                     {pending === "quiz"
@@ -278,49 +499,22 @@ export default function GeneratePage({ sessionId, initialHistory }: Props) {
                     from your file. This usually takes 20 to 40 seconds.{" "}
                     {elapsed}s so far.
                   </p>
-                ) : !started ? (
-                  <StartSheet
-                    fileName={fileName}
-                    isReading={isReading}
-                    ready={!!extractedText}
-                    onPick={() => fileInput.current?.click()}
-                    onDrop={handleFile}
-                  />
-                ) : current?.item.type === "quiz" ? (
-                  <PracticePaper
-                    questions={(
-                      JSON.parse(current.item.content) as QuizData
-                    ).questions.map((q) => ({
-                      question_text: q.question_text,
-                      options: q.options,
-                      correct: q.correct_answer_index,
-                    }))}
-                    keyPrefix={current.item.id}
-                    picks={picks}
-                    onPick={(key, i) =>
-                      setPicks((p) => (key in p ? p : { ...p, [key]: i }))
-                    }
-                  />
-                ) : current ? (
-                  <div className="aw-manuscript">
-                    <Markdown>{current.item.content}</Markdown>
-                  </div>
-                ) : null}
-                <input
-                  ref={fileInput}
-                  type="file"
-                  accept=".pdf,.md,.markdown,application/pdf,text/markdown"
-                  hidden
-                  onChange={(e) => {
-                    handleFile(e.target.files?.[0]);
-                    e.target.value = "";
-                  }}
-                />
-              </article>
-            </div>
+                </article>
+              </div>
+            )}
+            <input
+              ref={fileInput}
+              type="file"
+              accept=".pdf,.md,.markdown,application/pdf,text/markdown"
+              hidden
+              onChange={(e) => {
+                handleFile(e.target.files?.[0]);
+                e.target.value = "";
+              }}
+            />
           </section>
           <div className="hidden xl:block" />
-        </main>
+        </AwSplit>
 
         <div className="sticky bottom-0 md:static bg-[rgba(13,12,11,.94)] md:bg-transparent border-t border-aw-line md:border-0">
           {error && (

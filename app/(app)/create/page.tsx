@@ -9,6 +9,7 @@ import { GeneratedContent } from "@/types/QuizTypes";
 import { extractText } from "@/lib/extract-text";
 import { cn } from "@/lib/utils";
 import { AwPage, AwTopBar, aw } from "@/components/aw2/shell";
+import { AwSide, AwSplit } from "@/components/aw2/collapsible-side";
 import { Key } from "@/components/aw2/key";
 import { useHotkeys } from "@/components/aw2/use-hotkeys";
 
@@ -122,8 +123,11 @@ export default function CreateQuizPage() {
           mid="New quiz"
         />
 
-        <main className="grid gap-8 xl:gap-12 px-4 md:px-10 pt-[1vh] pb-16 items-start grid-cols-1 md:grid-cols-[minmax(200px,280px)_minmax(0,1fr)] xl:grid-cols-[minmax(220px,300px)_minmax(0,1fr)_minmax(300px,460px)]">
-          <section className={aw.side}>
+        <AwSplit
+          className="grid gap-8 xl:gap-12 px-4 md:px-10 pt-[1vh] pb-16 items-start grid-cols-1 md:grid-cols-[minmax(200px,280px)_minmax(0,1fr)] xl:grid-cols-[minmax(220px,300px)_minmax(0,1fr)_minmax(300px,460px)]"
+          collapsedClassName="md:grid-cols-[auto_minmax(0,1fr)] xl:grid-cols-[auto_minmax(0,1fr)_minmax(300px,460px)]"
+        >
+          <AwSide className={aw.side}>
             <div className={aw.kicker}>From your material</div>
             <h1 className={cn(aw.display, "text-[clamp(54px,5.6vw,84px)] mt-1.5 mb-6")}>
               NEW QUIZ
@@ -143,9 +147,9 @@ export default function CreateQuizPage() {
                 </li>
               ))}
             </ol>
-          </section>
+          </AwSide>
 
-          <section className={cn(aw.stage, "pt-1 max-w-[560px]")}>
+          <section className={cn(aw.stage, "pt-1 max-w-[560px]", aw.stageWide)}>
             {isLoading ? (
               <div role="status" className="grid gap-3 font-prose text-[18px] leading-relaxed text-aw-text">
                 <div className={aw.label}>Drafting</div>
@@ -294,7 +298,7 @@ export default function CreateQuizPage() {
               </div>
             </div>
           </section>
-        </main>
+        </AwSplit>
       </div>
     </AwPage>
   );
