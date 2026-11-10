@@ -33,7 +33,7 @@ export const aw = {
   stageWide: "md:group-data-[collapsed]/split:max-w-[820px]",
   paperWide: "md:group-data-[collapsed]/split:max-w-[1040px]",
   /** Left column that stays put while the page (usually a long paper) scrolls. */
-  side: "md:sticky md:top-6 md:self-start md:max-h-[calc(100svh-3rem)] md:overflow-y-auto md:overscroll-contain md:[scrollbar-width:thin] md:pr-2",
+  side: "md:sticky md:top-[calc(var(--aw-top,0px)+1.5rem)] md:self-start md:max-h-[calc(100svh-var(--aw-top,0px)-3rem)] md:overflow-y-auto md:overscroll-contain md:[scrollbar-width:thin] md:pr-2",
 };
 
 /** Full-page wrapper: lamp-lit desk or plain dark, with grain and vignette. */
@@ -78,7 +78,8 @@ export function AwTopBar({
   right?: React.ReactNode;
 }) {
   return (
-    <header className="grid grid-cols-[auto_1fr] md:grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 md:px-10 py-5">
+    // Stays put while the page scrolls; its height is --aw-top (globals.css)
+    <header className="aw-top sticky top-0 z-30 h-16 grid grid-cols-[auto_1fr] md:grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 md:px-10 bg-[rgba(13,14,14,.86)] backdrop-blur-sm">
       <div className="justify-self-start">
         {left ?? (
           <Link

@@ -136,7 +136,7 @@ export function QuizViewMindPlace({
           )}
         </section>
 
-        <section className="md:col-span-2 xl:col-span-1 w-full max-w-[400px] justify-self-center xl:sticky xl:top-6">
+        <section className="md:col-span-2 xl:col-span-1 w-full max-w-[400px] justify-self-center xl:sticky xl:top-[calc(var(--aw-top,0px)+1.5rem)]">
           <div className="aw-paper aw-typed xl:rotate-[1.2deg] px-[10%] pt-[9%] pb-[8%] text-[14px] leading-[2]">
             <p className="font-bold tracking-[.14em] mb-[1em]">SHARE WITH STUDENTS</p>
             <div className="w-[62%] mx-auto mt-[.6em] mb-[1.2em] bg-white p-2 shadow-[0_2px_6px_rgba(0,0,0,.25)] -rotate-1">

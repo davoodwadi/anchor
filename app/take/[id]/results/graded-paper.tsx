@@ -51,7 +51,7 @@ export function GradedPaper({
       collapsedClassName="lg:grid-cols-[auto_minmax(0,1fr)] xl:grid-cols-[auto_minmax(0,1fr)_auto]"
     >
       {/* Score and question index */}
-      <AwSide className="lg:sticky lg:top-6 lg:self-start lg:max-h-[calc(100svh-3rem)] lg:overflow-y-auto lg:overscroll-contain lg:[scrollbar-width:thin] lg:pr-2">
+      <AwSide className="lg:sticky lg:top-[calc(var(--aw-top,0px)+1.5rem)] lg:self-start lg:max-h-[calc(100svh-var(--aw-top,0px)-3rem)] lg:overflow-y-auto lg:overscroll-contain lg:[scrollbar-width:thin] lg:pr-2">
         <div className={aw.kicker}>Your result</div>
         <h1
           className={cn(
@@ -136,7 +136,7 @@ export function GradedPaper({
                 <section
                   key={res.question_id}
                   id={`q${i + 1}`}
-                  className="relative scroll-mt-8 pt-[1.6em] mb-[1.6em] border-t border-dashed border-aw-ink/20 first-of-type:border-0 first-of-type:pt-[2.4em]"
+                  className="relative scroll-mt-[calc(var(--aw-top,0px)+2rem)] pt-[1.6em] mb-[1.6em] border-t border-dashed border-aw-ink/20 first-of-type:border-0 first-of-type:pt-[2.4em]"
                 >
                   <span
                     aria-label={right ? "Correct" : "Incorrect"}

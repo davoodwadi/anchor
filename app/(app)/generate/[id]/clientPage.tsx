@@ -112,7 +112,7 @@ const StudySheet = memo(function StudySheet({
     <div
       ref={(el) => register(item.id, el)}
       tabIndex={-1}
-      className="scroll-mt-6 outline-none md:rotate-[.4deg]"
+      className="scroll-mt-[calc(var(--aw-top,0px)+1.5rem)] outline-none md:rotate-[.4deg]"
     >
       <article aria-label={label} className={className}>
         <p className="font-bold uppercase tracking-[.16em] mb-[2em]">{label}</p>
@@ -491,7 +491,7 @@ export default function GeneratePage({
               />
             ))}
             {pending && (
-              <div ref={pendingSheet} className="scroll-mt-6 md:rotate-[.4deg]">
+              <div ref={pendingSheet} className="scroll-mt-[calc(var(--aw-top,0px)+1.5rem)] md:rotate-[.4deg]">
                 <article className={sheetClass}>
                   <p role="status">
                     Writing{" "}

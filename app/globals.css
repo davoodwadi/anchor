@@ -195,6 +195,11 @@ html {
     text-transform: uppercase;
     flex: none;
   }
+  /* Height of the sticky top bar, so sticky side columns start below it */
+  body:has(.aw-top) {
+    --aw-top: 4rem;
+  }
+
   /* Height of a sticky bottom action bar on phones, so floating buttons sit above it */
   @media (max-width: 767px) {
     body:has(.aw-dock) {
