@@ -8,6 +8,8 @@ export type PracticeQuestion = {
   options: { option_text: string; option_explanation?: string | null }[];
   /** Index of the correct option. */
   correct: number;
+  /** Context behind the question, written under the answer once it is marked. */
+  background?: string | null;
 };
 
 const LETTERS = ["a", "b", "c", "d", "e", "f"];
@@ -38,6 +40,15 @@ export function PracticePaper({
         const right = pick === q.correct;
         const explanation = q.options[q.correct]?.option_explanation;
         const wrongVerdict = `No, it's ${LETTERS[q.correct]}.`;
+        const noteBody = (verdict: string) => (
+          <>
+            <span className={aw.noteVerdict}>{verdict}</span>
+            {explanation}
+            {q.background && (
+              <span className="block mt-[.7em]">{q.background}</span>
+            )}
+          </>
+        );
         return (
           <section key={key} className="mb-[2em]">
             <p className="font-bold mb-[.6em] pl-[2.2em] -indent-[2.2em]">
@@ -89,15 +100,11 @@ export function PracticePaper({
             {/* The longest possible note holds the space, so answering moves nothing */}
             <div className="grid mt-[.7em]">
               <p className={cn(noteClass, "invisible")}>
-                <span className={aw.noteVerdict}>{wrongVerdict}</span>
-                {explanation}
+                {noteBody(wrongVerdict)}
               </p>
               {answered && (
                 <p className={cn(noteClass, "aw-pen")}>
-                  <span className={aw.noteVerdict}>
-                    {right ? "Yes." : wrongVerdict}
-                  </span>
-                  {explanation}
+                  {noteBody(right ? "Yes." : wrongVerdict)}
                 </p>
               )}
             </div>

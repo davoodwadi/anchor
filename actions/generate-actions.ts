@@ -13,6 +13,7 @@ import {
   QuestionSchema,
   OptionSchema,
   QuizOutputSchema,
+  StudyQuizSchema,
   Question,
   QuizData,
   ActionState,
@@ -27,6 +28,7 @@ const model = "gemini-3.8-flash";
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 const jsonSchema = QuizOutputSchema.toJSONSchema();
+const studyJsonSchema = StudyQuizSchema.toJSONSchema();
 
 export async function generateQuizAction(
   input: GenerateInput,
@@ -122,7 +124,8 @@ export async function generateQuizAction(
         contents: contents,
         config: {
           responseMimeType: "application/json",
-          responseSchema: jsonSchema,
+          responseSchema:
+            sessionType === "createQuiz" ? jsonSchema : studyJsonSchema,
         },
       });
       if (!response.candidates) {

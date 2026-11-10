@@ -18,7 +18,7 @@ import {
   generateQuizAction,
   saveStudyPicks,
 } from "@/actions/generate-actions";
-import { GeneratedContent, QuizData } from "@/types/QuizTypes";
+import { GeneratedContent, StudyQuizData } from "@/types/QuizTypes";
 import { extractText } from "@/lib/extract-text";
 import type { StudySession } from "@/lib/study-sessions";
 import { cn } from "@/lib/utils";
@@ -75,8 +75,10 @@ function restorePicks(history: GeneratedContent[]) {
 
 function parseQuestions(content: string) {
   try {
-    return (JSON.parse(content) as QuizData).questions.map((q) => ({
+    // Quizzes from before the background field simply have none
+    return (JSON.parse(content) as StudyQuizData).questions.map((q) => ({
       question_text: q.question_text,
+      background: q.background || null,
       options: q.options,
       correct: q.correct_answer_index,
     }));
