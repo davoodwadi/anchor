@@ -56,7 +56,7 @@ export function GradedPaper({
         <h1
           className={cn(
             aw.display,
-            "text-[clamp(64px,6.4vw,104px)] mt-1 mb-3 whitespace-nowrap",
+            "text-[clamp(64px,6.4vw,104px)] mt-3 mb-3 whitespace-nowrap",
           )}
         >
           {score} / {total}

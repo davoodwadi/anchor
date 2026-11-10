@@ -195,6 +195,19 @@ html {
     text-transform: uppercase;
     flex: none;
   }
+  /* Height of a sticky bottom action bar on phones, so floating buttons sit above it */
+  @media (max-width: 767px) {
+    body:has(.aw-dock) {
+      --aw-dock: calc(3.25rem + env(safe-area-inset-bottom));
+    }
+  }
+
+  /* No keyboard to press on a touch-only device */
+  @media (hover: none) and (pointer: coarse) {
+    .aw-key {
+      display: none;
+    }
+  }
 
   /* Small tracked caps */
   .aw-kicker {

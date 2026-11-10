@@ -518,7 +518,7 @@ export default function GeneratePage({
           <div className="hidden xl:block" />
         </AwSplit>
 
-        <div className="sticky bottom-0 md:static bg-[rgba(13,12,11,.94)] md:bg-transparent border-t border-aw-line md:border-0">
+        <div className="aw-dock sticky bottom-0 md:static bg-aw-bg md:bg-transparent border-t border-aw-line md:border-0 pb-[env(safe-area-inset-bottom)] md:pb-0">
           {error && (
             <p
               role="alert"
@@ -527,7 +527,7 @@ export default function GeneratePage({
               {error}
             </p>
           )}
-          <nav className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2.5 px-4 py-3 md:pt-6 md:pb-7">
+          <nav className="flex md:flex-wrap items-center justify-between md:justify-center gap-x-4 md:gap-x-8 gap-y-2.5 px-4 py-2.5 md:pt-6 md:pb-7">
             <button
               onClick={() => handleGenerate("explanation")}
               disabled={!!pending || !extractedText}
@@ -552,7 +552,8 @@ export default function GeneratePage({
                 >
                   −
                 </button>
-                <span className="text-aw-text">{numQuestions}</span> questions
+                <span className="text-aw-text">{numQuestions}</span>
+                <span className="max-md:sr-only">questions</span>
                 <button
                   onClick={() => setNumQuestions((n) => Math.min(20, n + 1))}
                   aria-label="More questions"
@@ -564,7 +565,7 @@ export default function GeneratePage({
             </span>
             {started && (
               <Link href="/generate" className={aw.action}>
-                <Key>N</Key>New session
+                <Key>N</Key>New<span className="max-md:sr-only"> session</span>
               </Link>
             )}
           </nav>
